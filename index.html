@@ -36,7 +36,15 @@
   <div class="w-full max-w-4xl mx-auto px-4 py-8">
     <div class="wide-layout-results mb-6">
       <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm">
-        <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Cost Per Mile</h2>
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">Cost Per Mile</h2>
+          <button
+            @click="share"
+            x-ref="shareButton"
+            class="px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors">
+            Share
+          </button>
+        </div>
         <div class="flex flex-col md:flex-row md:space-x-8 space-y-4 md:space-y-0">
           <div class="flex flex-col flex-1">
             <div x-text="evResult.trip" class="text-lg font-bold text-green-600 dark:text-green-400"></div>
@@ -269,6 +277,28 @@
         isMiPerKwh: localStorage.getItem('evMode') === 'mikwh',
         mpg: parseFloat(localStorage.getItem('mpg')) || 28,
         miles: parseFloat(localStorage.getItem('miles')) || 10,
+
+        async share() {
+          if (navigator.share) {
+            try {
+              await navigator.share({
+                title: 'Cost Per Mile Comparison',
+                url: window.location.href
+              });
+            } catch {
+              // Fall back to clipboard if share is cancelled or fails
+              this.copyToClipboard();
+            }
+          } else {
+            this.copyToClipboard();
+          }
+        },
+
+        async copyToClipboard() {
+          await navigator.clipboard.writeText(window.location.href);
+          this.$refs.shareButton.textContent = 'Copied!';
+          setTimeout(() => this.$refs.shareButton.textContent = 'Share', 2000);
+        },
 
         init() {
           // First try to get values from URL
