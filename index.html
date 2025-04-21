@@ -21,21 +21,7 @@
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#38bdf8" />
 </head>
-<body class="bg-gradient-to-br from-sky-100 to-blue-200 dark:from-slate-800 dark:to-slate-900 min-h-screen flex flex-col items-center justify-center px-4 transition-colors duration-200">
-  <!-- Dark mode toggle -->
-  <div class="absolute top-4 right-4">
-    <button id="darkModeToggle" class="p-2 rounded-full bg-blue-100 dark:bg-slate-700 text-blue-800 dark:text-yellow-300">
-      <!-- Sun icon for light mode -->
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-      </svg>
-      <!-- Moon icon for dark mode -->
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-      </svg>
-    </button>
-  </div>
-
+<body class="bg-gradient-to-br from-sky-100 to-blue-200 dark:from-slate-800 dark:to-slate-900 min-h-screen flex flex-col items-center justify-between px-4 transition-colors duration-200">
   <div class="w-full max-w-2xl bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-10 my-4">
     <h1 class="text-4xl font-extrabold text-center text-blue-700 dark:text-blue-400 mb-10">Cost Per Mile</h1>
 
@@ -135,6 +121,51 @@
     </div>
   </div>
 
+  <!-- Footer with Theme Toggle -->
+  <footer class="w-full max-w-2xl mb-6 mt-2 flex justify-center">
+    <div class="bg-white dark:bg-slate-800 rounded-full shadow-md px-4 py-2 flex items-center space-x-2">
+      <div class="relative">
+        <!-- Dropdown trigger button -->
+        <button id="themeMenuButton" class="flex items-center space-x-2 px-3 py-1 rounded-full bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors">
+          <!-- Current theme icon will be inserted dynamically -->
+          <span id="currentThemeIcon" class="h-5 w-5"></span>
+          <span id="currentThemeText" class="text-sm text-gray-700 dark:text-gray-300"></span>
+          <!-- Dropdown arrow -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        
+        <!-- Dropdown menu (hidden by default) -->
+        <div id="themeDropdown" class="absolute bottom-full mb-2 w-40 bg-white dark:bg-slate-800 rounded-lg shadow-lg p-2 hidden transform origin-bottom transition-transform duration-150 ease-in-out">
+          <!-- Light mode option -->
+          <button id="lightModeBtn" class="theme-option w-full flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <span class="text-sm text-gray-700 dark:text-gray-300">Light</span>
+          </button>
+          
+          <!-- Dark mode option -->
+          <button id="darkModeBtn" class="theme-option w-full flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+            <span class="text-sm text-gray-700 dark:text-gray-300">Dark</span>
+          </button>
+          
+          <!-- System mode option -->
+          <button id="systemModeBtn" class="theme-option w-full flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span class="text-sm text-gray-700 dark:text-gray-300">System</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
   <script>
     // Track EV efficiency mode (false = Wh/mile, true = miles/kWh)
     let evEfficiencyMode = false;
@@ -207,33 +238,18 @@
       calculate();
     }
     
-    // Toggle dark mode
-    function toggleDarkMode() {
-      // Toggle the dark class regardless of system preference
-      document.documentElement.classList.toggle('dark');
+    // Theme modes: 'light', 'dark', 'system'
+    function setThemeMode(mode) {
+      // Store the user's theme preference
+      localStorage.setItem('themeMode', mode);
       
-      // Store the user preference which will override system preference
-      const isDark = document.documentElement.classList.contains('dark');
-      localStorage.setItem('darkMode', isDark ? 'dark' : 'light');
+      // Update dropdown menu to show current theme
+      updateCurrentThemeIndicator(mode);
       
-      // Update manual override flag
-      localStorage.setItem('darkModeManual', 'true');
-    }
-    
-    // Set dark mode based on system preference or stored preference
-    function setColorScheme() {
-      // Check if user has manually set a preference
-      const manualOverride = localStorage.getItem('darkModeManual') === 'true';
+      // Close the dropdown
+      closeThemeDropdown();
       
-      if (manualOverride) {
-        // Use the stored preference
-        const savedDarkMode = localStorage.getItem('darkMode');
-        if (savedDarkMode === 'dark') {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-      } else {
+      if (mode === 'system') {
         // Use system preference
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (prefersDark) {
@@ -241,18 +257,93 @@
         } else {
           document.documentElement.classList.remove('dark');
         }
+      } else if (mode === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
       }
     }
-
-    // Save inputs to localStorage
-    window.addEventListener('DOMContentLoaded', () => {
-      // Set up dark mode based on system preference or stored preference
-      setColorScheme();
+    
+    // Update the current theme indicator in the dropdown button
+    function updateCurrentThemeIndicator(mode) {
+      const iconContainer = document.getElementById('currentThemeIcon');
+      const textContainer = document.getElementById('currentThemeText');
       
-      // Listen for changes in system color scheme preference
+      // Clear previous icon
+      iconContainer.innerHTML = '';
+      
+      // Create new icon based on current mode
+      let newIcon;
+      if (mode === 'light') {
+        newIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>`;
+        textContainer.textContent = 'Light';
+      } else if (mode === 'dark') {
+        newIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>`;
+        textContainer.textContent = 'Dark';
+      } else {
+        newIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>`;
+        textContainer.textContent = 'System';
+      }
+      
+      iconContainer.innerHTML = newIcon;
+      
+      // Highlight the active option in dropdown
+      document.querySelectorAll('.theme-option').forEach(option => {
+        option.classList.remove('bg-gray-100', 'dark:bg-slate-700');
+      });
+      
+      if (mode === 'light') {
+        document.getElementById('lightModeBtn').classList.add('bg-gray-100', 'dark:bg-slate-700');
+      } else if (mode === 'dark') {
+        document.getElementById('darkModeBtn').classList.add('bg-gray-100', 'dark:bg-slate-700');
+      } else {
+        document.getElementById('systemModeBtn').classList.add('bg-gray-100', 'dark:bg-slate-700');
+      }
+    }
+    
+    // Toggle theme dropdown
+    function toggleThemeDropdown() {
+      const dropdown = document.getElementById('themeDropdown');
+      if (dropdown.classList.contains('hidden')) {
+        // Open dropdown
+        dropdown.classList.remove('hidden');
+        // Add click outside listener to close dropdown
+        setTimeout(() => {
+          window.addEventListener('click', closeDropdownOnClickOutside);
+        }, 10);
+      } else {
+        closeThemeDropdown();
+      }
+    }
+    
+    // Close theme dropdown
+    function closeThemeDropdown() {
+      const dropdown = document.getElementById('themeDropdown');
+      dropdown.classList.add('hidden');
+      window.removeEventListener('click', closeDropdownOnClickOutside);
+    }
+    
+    // Close dropdown when clicking outside
+    function closeDropdownOnClickOutside(event) {
+      const dropdown = document.getElementById('themeDropdown');
+      const button = document.getElementById('themeMenuButton');
+      
+      if (!dropdown.contains(event.target) && !button.contains(event.target)) {
+        closeThemeDropdown();
+      }
+    }
+    
+    // Listen for system theme changes
+    function setupSystemThemeListener() {
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-        // Only update if user hasn't manually overridden
-        if (localStorage.getItem('darkModeManual') !== 'true') {
+        // Only update if system mode is active
+        if (localStorage.getItem('themeMode') === 'system') {
           if (e.matches) {
             document.documentElement.classList.add('dark');
           } else {
@@ -260,8 +351,25 @@
           }
         }
       });
+    }
+
+    // Save inputs to localStorage
+    window.addEventListener('DOMContentLoaded', () => {
+      // Set up theme mode - use 'system' as default if no preference is stored
+      const savedThemeMode = localStorage.getItem('themeMode') || 'system';
+      setThemeMode(savedThemeMode);
+      setupSystemThemeListener();
       
-      document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+      // Set up theme menu button click listener
+      document.getElementById('themeMenuButton').addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleThemeDropdown();
+      });
+      
+      // Set up theme option click listeners
+      document.getElementById('lightModeBtn').addEventListener('click', () => setThemeMode('light'));
+      document.getElementById('darkModeBtn').addEventListener('click', () => setThemeMode('dark'));
+      document.getElementById('systemModeBtn').addEventListener('click', () => setThemeMode('system'));
       
       // Load EV efficiency mode from localStorage
       const savedMode = localStorage.getItem('evEfficiencyMode');
