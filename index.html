@@ -267,28 +267,99 @@
         miles: parseFloat(localStorage.getItem('miles')) || 10,
 
         init() {
+          // First try to get values from URL
+          const params = new URLSearchParams(window.location.search);
+          const urlValues = {
+            evPrice: parseFloat(params.get('ev')) || null,
+            gasPrice: parseFloat(params.get('gas')) || null,
+            evWhPerMile: parseFloat(params.get('whmi')) || null,
+            isMiPerKwh: params.get('mikwh') === 'true',
+            mpg: parseFloat(params.get('mpg')) || null,
+            miles: parseFloat(params.get('mi')) || null
+          };
+
+          // If we have any valid URL params, update both the state and localStorage
+          if (Object.values(urlValues).some(v => v !== null)) {
+            if (urlValues.evPrice !== null) {
+              this.evPrice = urlValues.evPrice;
+              localStorage.setItem('evPrice', urlValues.evPrice);
+            }
+            if (urlValues.gasPrice !== null) {
+              this.gasPrice = urlValues.gasPrice;
+              localStorage.setItem('gasPrice', urlValues.gasPrice);
+            }
+            if (urlValues.evWhPerMile !== null) {
+              this.evWhPerMile = urlValues.evWhPerMile;
+              localStorage.setItem('evWhPerMile', urlValues.evWhPerMile);
+            }
+            if (params.has('mikwh')) {
+              this.isMiPerKwh = urlValues.isMiPerKwh;
+              localStorage.setItem('evMode', this.evMode);
+            }
+            if (urlValues.mpg !== null) {
+              this.mpg = urlValues.mpg;
+              localStorage.setItem('mpg', urlValues.mpg);
+            }
+            if (urlValues.miles !== null) {
+              this.miles = urlValues.miles;
+              localStorage.setItem('miles', urlValues.miles);
+            }
+          }
+
+          // Update URL with initial values if no params were present
+          if (!window.location.search) {
+            this.updateURL();
+          }
+
           this.updateTheme();
 
           window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
             if (this.theme === 'system') this.updateTheme();
           });
 
-          this.$watch('evPrice', value => localStorage.setItem('evPrice', value));
-          this.$watch('gasPrice', value => localStorage.setItem('gasPrice', value));
-          this.$watch('mpg', value => localStorage.setItem('mpg', value));
-          this.$watch('miles', value => localStorage.setItem('miles', value));
+          // Watch for changes and update both localStorage and URL
+          this.$watch('evPrice', value => {
+            localStorage.setItem('evPrice', value);
+            this.updateURL();
+          });
+          this.$watch('gasPrice', value => {
+            localStorage.setItem('gasPrice', value);
+            this.updateURL();
+          });
+          this.$watch('mpg', value => {
+            localStorage.setItem('mpg', value);
+            this.updateURL();
+          });
+          this.$watch('miles', value => {
+            localStorage.setItem('miles', value);
+            this.updateURL();
+          });
           this.$watch('isMiPerKwh', value => {
             localStorage.setItem('evMode', this.evMode);
-            // When toggling mode, convert evWhPerMile accordingly to keep value consistent in Wh/mi
-            // No change needed here because evWhPerMile is always stored in Wh/mi
+            this.updateURL();
           });
           this.$watch('evWhPerMile', value => {
             localStorage.setItem('evWhPerMile', value);
+            this.updateURL();
           });
           this.$watch('theme', value => {
             this.updateTheme();
             localStorage.setItem('theme', value);
           });
+        },
+
+        updateURL() {
+          const params = new URLSearchParams();
+          if (this.evPrice) params.set('ev', this.evPrice);
+          if (this.gasPrice) params.set('gas', this.gasPrice);
+          if (this.evWhPerMile) params.set('whmi', this.evWhPerMile);
+          params.set('mikwh', this.isMiPerKwh);
+          if (this.mpg) params.set('mpg', this.mpg);
+          if (this.miles) params.set('mi', this.miles);
+
+          // Update URL without reloading the page
+          const newURL = `${window.location.pathname}?${params.toString()}`;
+          window.history.replaceState({}, '', newURL);
         },
 
         updateTheme() {
