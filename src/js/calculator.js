@@ -1,6 +1,71 @@
 // Track EV efficiency mode (false = Wh/mile, true = miles/kWh)
 let evEfficiencyMode = false;
 
+// Calculator module
+const Calculator = {
+    // Get all current input values
+    getInputValues() {
+        return {
+            evEfficiency: parseFloat(document.getElementById('evEfficiency').value) || 0,
+            evPrice: parseFloat(document.getElementById('evPrice').value) || 0,
+            mpg: parseFloat(document.getElementById('mpg').value) || 0,
+            gasPrice: parseFloat(document.getElementById('gasPrice').value) || 0,
+            miles: parseFloat(document.getElementById('miles').value) || 1,
+            isLocked: document.getElementById('evPrice').disabled || document.getElementById('gasPrice').disabled
+        };
+    },
+
+    // Calculate costs
+    calculateCosts(values) {
+        const evEfficiencyKWh = values.evEfficiency / 1000;
+        const evCostPerMile = values.evPrice * evEfficiencyKWh;
+        const gasCostPerMile = values.gasPrice / values.mpg;
+        const evCost = evCostPerMile * values.miles;
+        const gasCost = gasCostPerMile * values.miles;
+        const savings = Math.abs(evCost - gasCost);
+        const cheaper = evCost < gasCost ? 'EV' : 'Gas';
+
+        return {
+            evCostPerMile,
+            gasCostPerMile,
+            evCost,
+            gasCost,
+            savings,
+            cheaper
+        };
+    },
+
+    // Update the UI with calculated values
+    updateUI(values, costs) {
+        // Update cost per mile display
+        document.getElementById('evResult').textContent = `EV: $${costs.evCostPerMile.toFixed(4)}/mi`;
+        document.getElementById('gasResult').textContent = `Gas: $${costs.gasCostPerMile.toFixed(4)}/mi`;
+        document.getElementById('savingsResult').textContent = `${costs.cheaper} saves $${costs.savings.toFixed(4)}/mi`;
+
+        // Update chart
+        if (window.chart && window.chart.updateChart) {
+            window.chart.updateChart(
+                values.evEfficiency,
+                values.mpg,
+                values.evPrice,
+                values.gasPrice,
+                values.miles,
+                values.isLocked
+            );
+        }
+    },
+
+    // Main update function that should be called whenever anything changes
+    update() {
+        const values = this.getInputValues();
+        const costs = this.calculateCosts(values);
+        this.updateUI(values, costs);
+    }
+};
+
+// Export the calculator
+window.calculator = Calculator;
+
 function calculate() {
   const evPrice = parseFloat(document.getElementById('evPrice').value);
   const evEfficiencyInput = parseFloat(document.getElementById('evEfficiency').value);

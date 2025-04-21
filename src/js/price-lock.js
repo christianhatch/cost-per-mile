@@ -43,14 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
             gasPriceInput.value = equivalentGasPrice.toFixed(4);
         }
 
-        // Dispatch custom event for chart update
-        document.dispatchEvent(new CustomEvent('priceUpdate', {
-            detail: {
-                evPrice: parseFloat(evPriceInput.value),
-                gasPrice: parseFloat(gasPriceInput.value),
-                isLocked: true
-            }
-        }));
+        // Update all calculations
+        window.calculator.update();
     }
 
     // Function to update lock states
@@ -85,12 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Dispatch event to reset chart
-        document.dispatchEvent(new CustomEvent('priceUpdate', {
-            detail: {
-                isLocked: false
-            }
-        }));
+        // Update all calculations
+        window.calculator.update();
     }
 
     // Function to update lock button appearance
@@ -129,12 +119,16 @@ document.addEventListener('DOMContentLoaded', () => {
     evPriceInput.addEventListener('input', () => {
         if (gasPriceInput.disabled) {
             calculateEquivalentPrice(gasPriceInput, evPriceInput);
+        } else {
+            window.calculator.update();
         }
     });
 
     gasPriceInput.addEventListener('input', () => {
         if (evPriceInput.disabled) {
             calculateEquivalentPrice(evPriceInput, gasPriceInput);
+        } else {
+            window.calculator.update();
         }
     });
 
@@ -144,6 +138,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const lockedInput = evPriceInput.disabled ? evPriceInput : gasPriceInput;
             const unlockedInput = evPriceInput.disabled ? gasPriceInput : evPriceInput;
             calculateEquivalentPrice(lockedInput, unlockedInput);
+        } else {
+            window.calculator.update();
         }
     });
 
@@ -152,6 +148,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const lockedInput = evPriceInput.disabled ? evPriceInput : gasPriceInput;
             const unlockedInput = evPriceInput.disabled ? gasPriceInput : evPriceInput;
             calculateEquivalentPrice(lockedInput, unlockedInput);
+        } else {
+            window.calculator.update();
         }
     });
 }); 
