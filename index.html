@@ -96,7 +96,7 @@
               <span class="text-xs text-green-700 dark:text-green-400">mi/kWh</span>
             </div>
             <div class="relative">
-              <input type="number" x-model="evEfficiency" step="0.01" class="w-full px-3 py-2 pr-16 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+              <input type="number" x-model="evEfficiencyDisplay" step="0.01" class="w-full px-3 py-2 pr-16 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
               <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <template x-if="evMode === 'whmi'">
                   <span class="text-gray-500 dark:text-gray-400">Wh/mi</span>
@@ -205,7 +205,7 @@
         theme: localStorage.getItem('theme') || 'system',
         evPrice: parseFloat(localStorage.getItem('evPrice')) || 0.25,
         gasPrice: parseFloat(localStorage.getItem('gasPrice')) || 2.83,
-        evEfficiency: parseFloat(localStorage.getItem('evEfficiency')) || 250,
+        evWhPerMile: parseFloat(localStorage.getItem('evWhPerMile')) || 250,
         isMiPerKwh: localStorage.getItem('evMode') === 'mikwh',
         mpg: parseFloat(localStorage.getItem('mpg')) || 28,
         miles: parseFloat(localStorage.getItem('miles')) || 10,
@@ -219,15 +219,15 @@
 
           $watch('evPrice', value => localStorage.setItem('evPrice', value));
           $watch('gasPrice', value => localStorage.setItem('gasPrice', value));
-          $watch('evEfficiency', value => {
-            localStorage.setItem('evEfficiency', value);
-            localStorage.setItem('evMode', this.evMode);
-          });
           $watch('mpg', value => localStorage.setItem('mpg', value));
           $watch('miles', value => localStorage.setItem('miles', value));
           $watch('isMiPerKwh', value => {
             localStorage.setItem('evMode', this.evMode);
-            this.evEfficiency = value ? 1000 / this.whPerMile : this.whPerMile;
+            // When toggling mode, convert evWhPerMile accordingly to keep value consistent in Wh/mi
+            // No change needed here because evWhPerMile is always stored in Wh/mi
+          });
+          $watch('evWhPerMile', value => {
+            localStorage.setItem('evWhPerMile', value);
           });
           $watch('theme', value => {
             this.updateTheme();
@@ -244,9 +244,17 @@
           return this.isMiPerKwh ? 'mikwh' : 'whmi';
         },
 
+        get evEfficiencyDisplay() {
+          return this.evMode === 'whmi' ? this.evWhPerMile : 1000 / this.evWhPerMile;
+        },
+        set evEfficiencyDisplay(val) {
+          const parsed = parseFloat(val);
+          if (!parsed || parsed <= 0) return;
+          this.evWhPerMile = this.evMode === 'whmi' ? parsed : 1000 / parsed;
+        },
+
         get whPerMile() {
-          if (!this.evEfficiency) return null;
-          return this.evMode === 'whmi' ? this.evEfficiency : 1000 / this.evEfficiency;
+          return this.evWhPerMile;
         },
 
         get evCostPerMile() {
