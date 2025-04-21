@@ -183,7 +183,7 @@
     // Register service worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js');
+        navigator.serviceWorker.register('src/sw.js');
       });
     }
 
@@ -225,19 +225,19 @@
             if (this.theme === 'system') this.updateTheme();
           });
 
-          $watch('evPrice', value => localStorage.setItem('evPrice', value));
-          $watch('gasPrice', value => localStorage.setItem('gasPrice', value));
-          $watch('mpg', value => localStorage.setItem('mpg', value));
-          $watch('miles', value => localStorage.setItem('miles', value));
-          $watch('isMiPerKwh', value => {
+          this.$watch('evPrice', value => localStorage.setItem('evPrice', value));
+          this.$watch('gasPrice', value => localStorage.setItem('gasPrice', value));
+          this.$watch('mpg', value => localStorage.setItem('mpg', value));
+          this.$watch('miles', value => localStorage.setItem('miles', value));
+          this.$watch('isMiPerKwh', value => {
             localStorage.setItem('evMode', this.evMode);
             // When toggling mode, convert evWhPerMile accordingly to keep value consistent in Wh/mi
             // No change needed here because evWhPerMile is always stored in Wh/mi
           });
-          $watch('evWhPerMile', value => {
+          this.$watch('evWhPerMile', value => {
             localStorage.setItem('evWhPerMile', value);
           });
-          $watch('theme', value => {
+          this.$watch('theme', value => {
             this.updateTheme();
             localStorage.setItem('theme', value);
           });
