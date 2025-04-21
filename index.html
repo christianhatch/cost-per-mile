@@ -52,46 +52,8 @@
     
     <!-- Right side: Input section -->
     <div class="bg-white/95 dark:bg-slate-800/95 rounded-xl shadow-lg p-6">
-      <!-- Car Section -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- EV Car -->
-        <div>
-          <div class="flex items-center mb-3">
-            <span class="text-2xl mr-2">🔌</span>
-            <h2 class="text-lg font-semibold text-green-600 dark:text-green-400">Electric Vehicle</h2>
-          </div>
-          <label class="block">
-            <div class="flex justify-between items-center mb-1">
-              <span id="evEfficiencyLabel" class="block text-base font-medium text-gray-800 dark:text-gray-200">Efficiency (Wh per mile)</span>
-              <div class="flex items-center">
-                <span class="text-xs text-green-700 dark:text-green-400 mr-1">Wh/mi</span>
-                <div class="relative inline-block w-8 mr-1 align-middle select-none">
-                  <input type="checkbox" id="evModeToggle" class="sr-only peer">
-                  <div class="block h-5 w-8 rounded-full bg-gray-200 dark:bg-gray-600 peer-checked:bg-green-500"></div>
-                  <div class="dot absolute left-1 top-1 h-3 w-3 rounded-full bg-white transition peer-checked:translate-x-3"></div>
-                </div>
-                <span class="text-xs text-green-700 dark:text-green-400">mi/kWh</span>
-              </div>
-            </div>
-            <input type="number" id="evEfficiency" step="0.01" class="w-full px-3 py-2 text-base border border-green-200 dark:border-green-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-          </label>
-        </div>
-
-        <!-- Gas Car -->
-        <div>
-          <div class="flex items-center mb-3">
-            <span class="text-2xl mr-2">⛽</span>
-            <h2 class="text-lg font-semibold text-red-600 dark:text-red-400">Gas Vehicle</h2>
-          </div>
-          <label class="block">
-            <span class="block text-base font-medium mb-1 text-gray-800 dark:text-gray-200">Efficiency (miles per gallon)</span>
-            <input type="number" id="mpg" step="0.1" class="w-full px-3 py-2 text-base border border-red-200 dark:border-red-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
-          </label>
-        </div>
-      </div>
-
       <!-- Price Section -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-200 dark:border-gray-700 mt-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Electricity Price -->
         <div>
           <div class="flex items-center mb-3">
@@ -99,7 +61,10 @@
             <h2 class="text-lg font-semibold text-green-600 dark:text-green-400">Electricity</h2>
           </div>
           <label class="block">
-            <span class="block text-base font-medium mb-1 text-gray-800 dark:text-gray-200">Price ($/kWh)</span>
+            <div class="flex items-center justify-between mb-1">
+              <span class="block text-base font-medium text-gray-800 dark:text-gray-200">Price ($/kWh)</span>
+              <button id="evPriceLock" class="lock-btn text-xl" title="Lock price">🔓</button>
+            </div>
             <input type="number" id="evPrice" step="0.01" class="w-full px-3 py-2 text-base border border-green-200 dark:border-green-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
           </label>
         </div>
@@ -111,22 +76,60 @@
             <h2 class="text-lg font-semibold text-red-600 dark:text-red-400">Gasoline</h2>
           </div>
           <label class="block">
-            <span class="block text-base font-medium mb-1 text-gray-800 dark:text-gray-200">Price ($/gallon)</span>
+            <div class="flex items-center justify-between mb-1">
+              <span class="block text-base font-medium text-gray-800 dark:text-gray-200">Price ($/gallon)</span>
+              <button id="gasPriceLock" class="lock-btn text-xl" title="Lock price">🔓</button>
+            </div>
             <input type="number" id="gasPrice" step="0.01" class="w-full px-3 py-2 text-base border border-red-200 dark:border-red-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
           </label>
         </div>
       </div>
    
-      <!-- Distance Input -->
-      <div class="pt-6 border-t border-gray-200 dark:border-gray-700 mt-6">
-        <div class="flex items-center mb-3">
-          <span class="text-2xl mr-2">📍</span>
-          <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Trip Distance</h2>
+      <!-- Efficiency and Distance Inputs -->
+      <div class="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200 dark:border-gray-700 mt-6">
+        <!-- EV Efficiency -->
+        <div>
+          <label class="block">
+            <div class="flex items-center mb-3">
+              <span class="text-2xl mr-2">🔌</span>
+              <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-200">Electric Vehicle</h2>
+            </div>
+              <div class="flex items-center mb-1">
+              <span class="text-xs text-green-700 dark:text-green-400 mr-1">Wh/mi</span>
+              <div class="relative inline-block w-8 mx-1 align-middle select-none">
+                <input type="checkbox" id="evModeToggle" class="sr-only peer">
+                <div class="block h-5 w-8 rounded-full bg-gray-200 dark:bg-gray-600 peer-checked:bg-green-500"></div>
+                <div class="dot absolute left-1 top-1 h-3 w-3 rounded-full bg-white transition peer-checked:translate-x-3"></div>
+              </div>
+              <span class="text-xs text-green-700 dark:text-green-400">mi/kWh</span>
+            </div>
+            <input type="number" id="evEfficiency" step="0.01" class="w-full px-3 py-2 text-base border border-green-200 dark:border-green-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          </label>
         </div>
-        <label class="block">
-          <span class="block text-base font-medium mb-1 text-gray-800 dark:text-gray-200">Number of miles</span>
-          <input type="number" id="miles" step="1" min="1" value="1" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
-        </label>
+
+        <!-- Gas Efficiency -->
+        <div>
+          <label class="block">
+            <div class="flex items-center mb-3">
+              <span class="text-2xl mr-2">⛽</span>
+              <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-200">Gas Vehicle</h2>
+            </div>
+              <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1">(miles per gallon)</span>
+            <input type="number" id="mpg" step="0.1" class="w-full px-3 py-2 text-base border border-red-200 dark:border-red-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
+          </label>
+        </div>
+
+        <!-- Distance -->
+        <div>
+          <label class="block">
+            <div class="flex items-center mb-3">
+              <span class="text-2xl mr-2">📍</span>
+              <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-200">Trip Distance</h2>
+            </div>
+            <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1">(miles)</span>
+            <input type="number" id="miles" step="1" min="1" value="1" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          </label>
+        </div>
       </div>
     </div>
   </div>
@@ -169,6 +172,9 @@
   <script src="src/js/theme.js"></script>
   <script src="src/js/chart.js"></script>
   <script src="src/js/calculator.js"></script>
+  <script src="src/js/price-lock.js"></script>
+  <script src="src/js/ev-efficiency.js"></script>
+  <script src="src/js/storage.js"></script>
   <script src="src/js/app.js"></script>
 </body>
 </html>
