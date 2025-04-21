@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cost Per Mile Calculator</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon-512.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icon-192.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="CostPerMile">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="apple-touch-icon" href="icon-512.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#38bdf8" />
+</head>
+<body class="bg-gradient-to-br from-sky-100 to-blue-200 min-h-screen flex items-center justify-center px-4">
+  <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-10 my-4">
+    <h1 class="text-4xl font-extrabold text-center text-blue-700 mb-10">Cost Per Mile</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+      <!-- EV Inputs -->
+      <div>
+        <h2 class="text-2xl font-semibold text-green-600 mb-4">Electric Vehicle</h2>
+        <label class="block mb-5">
+          <span class="block text-lg font-medium mb-1">Electricity price ($/kWh)</span>
+          <input type="number" id="evPrice" step="0.01" class="w-full px-4 py-3 text-lg border border-green-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+        </label>
+        <label class="block">
+          <span class="block text-lg font-medium mb-1">Consumption (kWh per mile)</span>
+          <input type="number" id="evEfficiency" step="0.01" class="w-full px-4 py-3 text-lg border border-green-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+        </label>
+      </div>
+
+      <!-- Gas Inputs -->
+      <div>
+        <h2 class="text-2xl font-semibold text-red-600 mb-4">Gas Vehicle</h2>
+        <label class="block mb-5">
+          <span class="block text-lg font-medium mb-1">Gas price ($/gallon)</span>
+          <input type="number" id="gasPrice" step="0.01" class="w-full px-4 py-3 text-lg border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
+        </label>
+        <label class="block">
+          <span class="block text-lg font-medium mb-1">Efficiency (miles per gallon)</span>
+          <input type="number" id="mpg" step="0.1" class="w-full px-4 py-3 text-lg border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
+        </label>
+      </div>
+    </div>
+ 
+    <!-- Distance Input -->
+    <div class="mt-6">
+      <h2 class="text-xl font-semibold text-gray-700 mb-4">Trip Distance</h2>
+      <label class="block">
+        <span class="block text-lg font-medium mb-1">Number of miles</span>
+        <input type="number" id="miles" step="1" min="1" value="1" class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+      </label>
+    </div>
+ 
+    <!-- Button -->
+    <div class="mt-10 text-center">
+      <button onclick="calculate()"
+        class="bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105 active:scale-95">
+        Calculate
+      </button>
+    </div>
+
+    <!-- Results -->
+    <div class="mt-10 text-center space-y-4">
+      <div id="evResult" class="text-2xl font-bold text-green-600"></div>
+      <div id="gasResult" class="text-2xl font-bold text-rose-600"></div>
+    </div>
+  </div>
+
+  <script>
+    function calculate() {
+      const evPrice = parseFloat(document.getElementById('evPrice').value);
+      const evEfficiency = parseFloat(document.getElementById('evEfficiency').value);
+      const gasPrice = parseFloat(document.getElementById('gasPrice').value);
+      const mpg = parseFloat(document.getElementById('mpg').value);
+      const miles = parseFloat(document.getElementById('miles').value) || 1;
+
+      const evResultEl = document.getElementById('evResult');
+      const gasResultEl = document.getElementById('gasResult');
+
+      if (!isNaN(evPrice) && !isNaN(evEfficiency)) {
+        const evCost = evPrice * evEfficiency * miles;
+        const evCostPerMile = evPrice * evEfficiency;
+        evResultEl.textContent = `EV: $${evCost.toFixed(2)} total (${evCostPerMile.toFixed(3)} per mile)`;
+      } else {
+        evResultEl.textContent = '';
+      }
+
+      if (!isNaN(gasPrice) && !isNaN(mpg)) {
+        const gasCost = (gasPrice / mpg) * miles;
+        const gasCostPerMile = gasPrice / mpg;
+        gasResultEl.textContent = `Gas: $${gasCost.toFixed(2)} total (${gasCostPerMile.toFixed(3)} per mile)`;
+      } else {
+        gasResultEl.textContent = '';
+      }
+    }
+
+    // Save inputs to localStorage
+    window.addEventListener('DOMContentLoaded', () => {
+      ['evPrice', 'evEfficiency', 'gasPrice', 'mpg', 'miles'].forEach(id => {
+        const input = document.getElementById(id);
+        input.value = localStorage.getItem(id) || '';
+        input.addEventListener('input', () => {
+          localStorage.setItem(id, input.value);
+          calculate();
+        });
+      });
+      calculate();
+    });
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js');
+      });
+    }
+
+    // Prompt to install PWA
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+
+      const installBtn = document.createElement('button');
+      installBtn.textContent = 'Install App';
+      installBtn.className = 'fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white px-4 py-3 text-lg font-semibold rounded-full shadow-lg z-50';
+      installBtn.addEventListener('click', () => {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => {
+          installBtn.remove();
+        });
+      });
+
+      document.body.appendChild(installBtn);
+    });
+  </script>
+</body>
+</html>
