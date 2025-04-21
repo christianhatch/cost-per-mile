@@ -8,12 +8,10 @@ function calculate() {
   const mpg = parseFloat(document.getElementById('mpg').value);
   const miles = parseFloat(document.getElementById('miles').value) || 1;
   
-  // Get all result elements
-  const fixedEvResultEl = document.getElementById('fixedEvResult');
-  const fixedGasResultEl = document.getElementById('fixedGasResult');
-  const inlineEvResultEl = document.getElementById('inlineEvResult');
-  const inlineGasResultEl = document.getElementById('inlineGasResult');
-  const inlineSavingsResultEl = document.getElementById('inlineSavingsResult');
+  // Get result elements
+  const evResultEl = document.getElementById('evResult');
+  const gasResultEl = document.getElementById('gasResult');
+  const savingsResultEl = document.getElementById('savingsResult');
   
   let evCost = 0;
   let gasCost = 0;
@@ -36,11 +34,9 @@ function calculate() {
     evCostPerMile = evPrice * (evEfficiencyWh / 1000);
     
     const evResultText = `EV: $${evCost.toFixed(2)} total ($${evCostPerMile.toFixed(3)}/mi)`;
-    fixedEvResultEl.textContent = evResultText;
-    inlineEvResultEl.textContent = evResultText;
+    evResultEl.textContent = evResultText;
   } else {
-    fixedEvResultEl.textContent = '';
-    inlineEvResultEl.textContent = '';
+    evResultEl.textContent = '';
   }
 
   if (!isNaN(gasPrice) && !isNaN(mpg)) {
@@ -48,44 +44,34 @@ function calculate() {
     gasCostPerMile = gasPrice / mpg;
     
     const gasResultText = `Gas: $${gasCost.toFixed(2)} total ($${gasCostPerMile.toFixed(3)}/mi)`;
-    fixedGasResultEl.textContent = gasResultText;
-    inlineGasResultEl.textContent = gasResultText;
+    gasResultEl.textContent = gasResultText;
   } else {
-    fixedGasResultEl.textContent = '';
-    inlineGasResultEl.textContent = '';
+    gasResultEl.textContent = '';
   }
   
-  // Calculate savings for the inline display (only on wide screens)
+  // Calculate savings
   if (!isNaN(evCost) && !isNaN(gasCost)) {
     const diff = gasCost - evCost;
     const percentSavings = (diff / gasCost) * 100;
     
     if (diff > 0) {
-      inlineSavingsResultEl.textContent = `EV saves $${diff.toFixed(2)} (${percentSavings.toFixed(1)}%)`;
+      savingsResultEl.textContent = `EV saves $${diff.toFixed(2)} (${percentSavings.toFixed(1)}%)`;
     } else if (diff < 0) {
-      inlineSavingsResultEl.textContent = `Gas saves $${Math.abs(diff).toFixed(2)} (${Math.abs(percentSavings).toFixed(1)}%)`;
+      savingsResultEl.textContent = `Gas saves $${Math.abs(diff).toFixed(2)} (${Math.abs(percentSavings).toFixed(1)}%)`;
     } else {
-      inlineSavingsResultEl.textContent = 'Both options cost the same';
+      savingsResultEl.textContent = 'Both options cost the same';
     }
   } else {
-    inlineSavingsResultEl.textContent = '';
+    savingsResultEl.textContent = '';
   }
   
-  // Check if we should show/hide the header based on results
-  const resultsHeader = document.getElementById('resultsHeader');
-  if (fixedEvResultEl.textContent === '' && fixedGasResultEl.textContent === '') {
-    resultsHeader.classList.add('opacity-0', '-translate-y-10');
-    
-    // Also hide chart section if no valid results
-    const chartSection = document.getElementById('chartSection');
+  // Show/hide chart section based on results
+  const chartSection = document.getElementById('chartSection');
+  if (evResultEl.textContent === '' && gasResultEl.textContent === '') {
     chartSection.classList.add('opacity-0', '-translate-y-10');
-  } else {
-    resultsHeader.classList.remove('opacity-0', '-translate-y-10');
-    
-    // Update chart if both values are valid
-    if (!isNaN(evCost) && !isNaN(gasCost)) {
-      window.chart.updateChart(evCost, gasCost, miles);
-    }
+  } else if (!isNaN(evCost) && !isNaN(gasCost)) {
+    chartSection.classList.remove('opacity-0', '-translate-y-10');
+    window.chart.updateChart(evCost, gasCost, miles);
   }
 }
 

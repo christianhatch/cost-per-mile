@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <title>Cost Per Mile Calculator</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <link rel="apple-touch-icon" sizes="180x180" href="icon-512.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="icon-192.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="icon-192.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-512.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-192.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="CostPerMile">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="apple-touch-icon" href="icon-512.png">
+  <link rel="apple-touch-icon" href="icons/icon-512.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -21,37 +21,29 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#38bdf8" />
-  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="css/main.css">
 </head>
-<body class="bg-gradient-to-br from-sky-100 to-blue-200 dark:from-slate-800 dark:to-slate-900 min-h-screen flex flex-col items-center justify-between px-4 transition-colors duration-200 pt-1">
-  <!-- Fixed Results Header (visible only on mobile/smaller screens) -->
-  <div id="resultsHeader" class="results-header-fixed sticky-results w-full max-w-4xl bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm shadow-md rounded-lg mb-3 p-3 flex items-center justify-between transition-all duration-200 transform translate-y-0 opacity-100">
-    <div class="flex flex-col sm:flex-row sm:space-x-6">
-      <div id="fixedEvResult" class="text-lg font-bold text-green-600 dark:text-green-400"></div>
-      <div id="fixedGasResult" class="text-lg font-bold text-rose-600 dark:text-rose-400"></div>
-    </div>
-  </div>
-
+<body class="bg-gradient-to-br from-sky-100 to-blue-200 dark:from-slate-800 dark:to-slate-900 min-h-screen flex flex-col items-center justify-between transition-colors duration-200">
   <!-- Main content container with responsive layout -->
-  <div class="wide-layout w-full max-w-4xl my-4">
+  <div class="wide-layout w-full">
     <!-- Left side: Results section -->
     <div class="wide-layout-results">
-      <!-- Inline Results (visible only on wide screens) -->
-      <div class="results-header-inline bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 mb-4">
+      <!-- Results Card -->
+      <div class="results-card bg-white/95 dark:bg-slate-800/95 rounded-xl shadow-lg p-6">
         <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Cost Per Mile</h2>
         <div class="flex flex-col space-y-3">
-          <div id="inlineEvResult" class="text-xl font-bold text-green-600 dark:text-green-400"></div>
-          <div id="inlineGasResult" class="text-xl font-bold text-rose-600 dark:text-rose-400"></div>
-          <div id="inlineSavingsResult" class="text-xl font-bold text-blue-600 dark:text-blue-400 mt-2"></div>
+          <div id="evResult" class="text-lg sm:text-xl font-bold text-green-600 dark:text-green-400"></div>
+          <div id="gasResult" class="text-lg sm:text-xl font-bold text-rose-600 dark:text-rose-400"></div>
+          <div id="savingsResult" class="text-lg sm:text-xl font-bold text-blue-600 dark:text-blue-400 mt-1"></div>
         </div>
       </div>
       
       <!-- Chart Visualization Section -->
-      <div id="chartSection" class="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 mb-4 transform transition-all duration-300 opacity-0 -translate-y-10">
+      <div id="chartSection" class="bg-white/95 dark:bg-slate-800/95 rounded-xl shadow-lg p-6">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">Cost Over Distance</h2>
         </div>
-        <div class="relative h-64">
+        <div class="relative flex-1">
           <canvas id="costChart"></canvas>
         </div>
         <div class="text-center mt-4 text-sm text-gray-600 dark:text-gray-400" id="chartSummary"></div>
@@ -59,31 +51,31 @@
     </div>
     
     <!-- Right side: Input section -->
-    <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-10">
+    <div class="bg-white/95 dark:bg-slate-800/95 rounded-xl shadow-lg p-6">
       <!-- Car Section -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- EV Car -->
         <div>
-          <div class="flex items-center mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600 dark:text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div class="flex items-center mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 dark:text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 16v3a2 2 0 01-2 2h-1a2 2 0 01-2-2v-1h-2v1a2 2 0 01-2 2H9a2 2 0 01-2-2v-3m11-3H6m0 0V5a2 2 0 012-2h8a2 2 0 012 2v8m-5 0h2" />
             </svg>
-            <h2 class="text-2xl font-semibold text-green-600 dark:text-green-400">Electric Vehicle</h2>
+            <h2 class="text-lg font-semibold text-green-600 dark:text-green-400">Electric Vehicle</h2>
           </div>
           <label class="block">
             <div class="flex justify-between items-center mb-1">
-              <span id="evEfficiencyLabel" class="block text-lg font-medium text-gray-800 dark:text-gray-200">Efficiency (Wh per mile)</span>
+              <span id="evEfficiencyLabel" class="block text-base font-medium text-gray-800 dark:text-gray-200">Efficiency (Wh per mile)</span>
               <div class="flex items-center">
-                <span class="text-sm text-green-700 dark:text-green-400 mr-2">Wh/mi</span>
-                <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                <span class="text-xs text-green-700 dark:text-green-400 mr-1">Wh/mi</span>
+                <div class="relative inline-block w-8 mr-1 align-middle select-none">
                   <input type="checkbox" id="evModeToggle" class="sr-only peer">
-                  <div class="block h-6 w-10 rounded-full bg-gray-200 dark:bg-gray-600 peer-checked:bg-green-500"></div>
-                  <div class="dot absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition peer-checked:translate-x-4"></div>
+                  <div class="block h-5 w-8 rounded-full bg-gray-200 dark:bg-gray-600 peer-checked:bg-green-500"></div>
+                  <div class="dot absolute left-1 top-1 h-3 w-3 rounded-full bg-white transition peer-checked:translate-x-3"></div>
                 </div>
-                <span class="text-sm text-green-700 dark:text-green-400">mi/kWh</span>
+                <span class="text-xs text-green-700 dark:text-green-400">mi/kWh</span>
               </div>
             </div>
-            <input type="number" id="evEfficiency" step="0.01" class="w-full px-4 py-3 text-lg border border-green-200 dark:border-green-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+            <input type="number" id="evEfficiency" step="0.01" class="w-full px-3 py-2 text-base border border-green-200 dark:border-green-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
           </label>
         </div>
 
@@ -103,7 +95,7 @@
       </div>
 
       <!-- Price Section -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-200 dark:border-gray-700 mt-6">
         <!-- Electricity Price -->
         <div>
           <div class="flex items-center mb-4">
@@ -135,7 +127,7 @@
       </div>
    
       <!-- Distance Input -->
-      <div class="mb-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+      <div class="pt-6 border-t border-gray-200 dark:border-gray-700 mt-6">
         <div class="flex items-center mb-4">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-700 dark:text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -152,7 +144,7 @@
   </div>
 
   <!-- Footer with Theme Toggle -->
-  <footer class="w-full max-w-4xl mb-6 mt-2 flex justify-center">
+  <footer class="w-full flex justify-center py-4">
     <div class="bg-white dark:bg-slate-800 rounded-full shadow-md px-4 py-2 flex items-center space-x-2">
       <div class="relative">
         <!-- Dropdown trigger button -->

@@ -48,7 +48,16 @@ function initApp() {
   // Load input values from localStorage
   ['evPrice', 'evEfficiency', 'gasPrice', 'mpg', 'miles'].forEach(id => {
     const input = document.getElementById(id);
-    input.value = localStorage.getItem(id) || '';
+    // Set default values if no value is stored
+    const defaultValue = {
+      evPrice: '0.25', // $0.25 per kWh
+      evEfficiency: '250', // 250 Wh per mile
+      gasPrice: '2.98', // $2.98 per gallon
+      mpg: '28', // 28 miles per gallon
+      miles: '10' // 10 miles
+    }[id];
+    
+    input.value = localStorage.getItem(id) || defaultValue;
     input.addEventListener('input', () => {
       localStorage.setItem(id, input.value);
       window.calculator.calculate();
