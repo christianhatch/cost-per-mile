@@ -1,114 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" x-data="{
-  theme: localStorage.getItem('theme') || 'system',
-  evPrice: parseFloat(localStorage.getItem('evPrice')) || 0.25,
-  gasPrice: parseFloat(localStorage.getItem('gasPrice')) || 2.83,
-  evEfficiency: parseFloat(localStorage.getItem('evEfficiency')) || 250,
-  evMode: localStorage.getItem('evMode') || 'whmi',
-  mpg: parseFloat(localStorage.getItem('mpg')) || 28,
-  miles: parseFloat(localStorage.getItem('miles')) || 10,
-
-  init() {
-    this.updateTheme();
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      if (this.theme === 'system') this.updateTheme();
-    });
-
-    // Save defaults to localStorage if they don't exist
-    if (!localStorage.getItem('evPrice')) this.saveToStorage('evPrice', this.evPrice);
-    if (!localStorage.getItem('gasPrice')) this.saveToStorage('gasPrice', this.gasPrice);
-    if (!localStorage.getItem('evEfficiency')) this.saveToStorage('evEfficiency', this.evEfficiency);
-    if (!localStorage.getItem('mpg')) this.saveToStorage('mpg', this.mpg);
-    if (!localStorage.getItem('miles')) this.saveToStorage('miles', this.miles);
-    if (!localStorage.getItem('evMode')) this.saveToStorage('evMode', this.evMode);
-  },
-
-  updateTheme() {
-    const isDark = this.theme === 'dark' || (this.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    document.documentElement.classList.toggle('dark', isDark);
-    localStorage.setItem('theme', this.theme);
-  },
-
-  saveToStorage(key, value) {
-    localStorage.setItem(key, value);
-  },
-
-  toggleEvMode() {
-    // Calculate the current Wh/mi value
-    const currentWhPerMile = this.whPerMile;
-
-    // Update the mode
-    this.evMode = this.evMode === 'whmi' ? 'mikwh' : 'whmi';
-
-    // Set the new value based on the current Wh/mi
-    this.evEfficiency = this.evMode === 'whmi' ? currentWhPerMile : 1000 / currentWhPerMile;
-
-    // Save both values
-    this.saveToStorage('evMode', this.evMode);
-    this.saveToStorage('evEfficiency', this.evEfficiency);
-  },
-
-  get whPerMile() {
-    if (!this.evEfficiency) return null;
-    // Convert to Wh/mi if in mi/kWh mode
-    return this.evMode === 'whmi' ? this.evEfficiency : 1000 / this.evEfficiency;
-  },
-
-  get evCostPerMile() {
-    if (!this.whPerMile || !this.evPrice) return '';
-    // Convert Wh to kWh by dividing by 1000, then multiply by price per kWh
-    return (this.whPerMile / 1000) * this.evPrice;
-  },
-
-  get gasCostPerMile() {
-    if (!this.mpg || !this.gasPrice) return '';
-    return this.gasPrice / this.mpg;
-  },
-
-  get evResult() {
-    if (!this.evCostPerMile) return '';
-    const tripCost = this.evCostPerMile * this.miles;
-    return {
-      trip: `EV Trip: $${tripCost.toFixed(4)}`,
-      perMile: `$${this.evCostPerMile.toFixed(4)}/mi`
-    };
-  },
-
-  get gasResult() {
-    if (!this.gasCostPerMile) return '';
-    const tripCost = this.gasCostPerMile * this.miles;
-    return {
-      trip: `Gas Trip: $${tripCost.toFixed(4)}`,
-      perMile: `$${this.gasCostPerMile.toFixed(4)}/mi`
-    };
-  },
-
-  get savingsResult() {
-    if (!this.evCostPerMile || !this.gasCostPerMile) return '';
-    const savingsPerMile = this.gasCostPerMile - this.evCostPerMile;
-    const totalSavings = savingsPerMile * this.miles;
-    return {
-      trip: `Savings: $${totalSavings.toFixed(4)}`,
-      perMile: `$${savingsPerMile.toFixed(4)}/mi`
-    };
-  },
-
-  get formattedGasPrice() {
-    return this.gasPrice.toFixed(2);
-  },
-
-  set formattedGasPrice(value) {
-    this.gasPrice = parseFloat(value);
-  },
-
-  get formattedEvPrice() {
-    return this.evPrice.toFixed(2);
-  },
-
-  set formattedEvPrice(value) {
-    this.evPrice = parseFloat(value);
-  }
-}" x-init="init">
+<html lang="en" x-data="costPerMile()" x-init="init()">
 <head>
   <meta charset="UTF-8" />
   <title>Cost Per Mile</title>
@@ -172,7 +63,7 @@
           </div>
           <label class="block">
             <span class="block text-base font-medium text-gray-800 dark:text-gray-200 mb-1">Price ($/kWh)</span>
-            <input type="number" x-model="formattedEvPrice" @change="saveToStorage('evPrice', evPrice)" step="0.01" min="0" class="w-full px-3 py-2 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+            <input type="number" x-model="evPrice" step="0.01" min="0" class="w-full px-3 py-2 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
           </label>
         </div>
 
@@ -183,7 +74,7 @@
           </div>
           <label class="block">
             <span class="block text-base font-medium text-gray-800 dark:text-gray-200 mb-1">Price ($/gallon)</span>
-            <input type="number" x-model="formattedGasPrice" @change="saveToStorage('gasPrice', gasPrice)" step="0.01" min="0" class="w-full px-3 py-2 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+            <input type="number" x-model="gasPrice" step="0.01" min="0" class="w-full px-3 py-2 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
           </label>
         </div>
       </div>
@@ -198,14 +89,14 @@
             <div class="flex items-center mb-2">
               <span class="text-xs text-green-700 dark:text-green-400 mr-1">Wh/mi</span>
               <div class="relative inline-block w-8 mx-1">
-                <input type="checkbox" x-model="evMode" @change="toggleEvMode()" value="mikwh" class="sr-only peer">
+                <input type="checkbox" x-model="isMiPerKwh" class="sr-only peer">
                 <div class="block h-5 w-8 rounded-full bg-gray-200 dark:bg-gray-600 peer-checked:bg-green-500"></div>
                 <div class="dot absolute left-1 top-1 h-3 w-3 rounded-full bg-white transition peer-checked:translate-x-3"></div>
               </div>
               <span class="text-xs text-green-700 dark:text-green-400">mi/kWh</span>
             </div>
             <div class="relative">
-              <input type="number" x-model="evEfficiency" @change="saveToStorage('evEfficiency', evEfficiency)" step="0.01" class="w-full px-3 py-2 pr-16 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+              <input type="number" x-model="evEfficiency" step="0.01" class="w-full px-3 py-2 pr-16 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
               <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <template x-if="evMode === 'whmi'">
                   <span class="text-gray-500 dark:text-gray-400">Wh/mi</span>
@@ -225,7 +116,7 @@
               <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-200">Gas</h2>
             </div>
             <div class="relative">
-              <input type="number" x-model="mpg" @change="saveToStorage('mpg', mpg)" step="0.1" class="w-full px-3 py-2 pr-12 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+              <input type="number" x-model="mpg" step="0.1" class="w-full px-3 py-2 pr-12 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
               <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <span class="text-gray-500 dark:text-gray-400">mpg</span>
               </div>
@@ -239,9 +130,8 @@
               <span class="text-2xl mr-2">📍</span>
               <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-200">Trip Distance</h2>
             </div>
-            <input type="number" x-model="miles" @change="saveToStorage('miles', miles)" step="1" min="1" class="w-full px-3 py-2 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
             <div class="relative">
-              <input type="number" x-model="miles" @change="saveToStorage('miles', miles)" step="1" min="1" class="w-full px-3 py-2 pr-8 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+              <input type="number" x-model="miles" step="1" min="1" class="w-full px-3 py-2 pr-8 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
               <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <span class="text-gray-500 dark:text-gray-400">mi</span>
               </div>
@@ -307,6 +197,103 @@
 
       document.body.appendChild(installBtn);
     });
+  </script>
+
+  <script>
+    function costPerMile() {
+      return {
+        theme: localStorage.getItem('theme') || 'system',
+        evPrice: parseFloat(localStorage.getItem('evPrice')) || 0.25,
+        gasPrice: parseFloat(localStorage.getItem('gasPrice')) || 2.83,
+        evEfficiency: parseFloat(localStorage.getItem('evEfficiency')) || 250,
+        isMiPerKwh: localStorage.getItem('evMode') === 'mikwh',
+        mpg: parseFloat(localStorage.getItem('mpg')) || 28,
+        miles: parseFloat(localStorage.getItem('miles')) || 10,
+
+        init() {
+          this.updateTheme();
+
+          window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (this.theme === 'system') this.updateTheme();
+          });
+
+          $watch('evPrice', value => localStorage.setItem('evPrice', value));
+          $watch('gasPrice', value => localStorage.setItem('gasPrice', value));
+          $watch('evEfficiency', value => {
+            localStorage.setItem('evEfficiency', value);
+            localStorage.setItem('evMode', this.evMode);
+          });
+          $watch('mpg', value => localStorage.setItem('mpg', value));
+          $watch('miles', value => localStorage.setItem('miles', value));
+          $watch('isMiPerKwh', value => {
+            localStorage.setItem('evMode', this.evMode);
+            this.evEfficiency = value ? 1000 / this.whPerMile : this.whPerMile;
+          });
+          $watch('theme', value => {
+            this.updateTheme();
+            localStorage.setItem('theme', value);
+          });
+        },
+
+        updateTheme() {
+          const isDark = this.theme === 'dark' || (this.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.classList.toggle('dark', isDark);
+        },
+
+        get evMode() {
+          return this.isMiPerKwh ? 'mikwh' : 'whmi';
+        },
+
+        get whPerMile() {
+          if (!this.evEfficiency) return null;
+          return this.evMode === 'whmi' ? this.evEfficiency : 1000 / this.evEfficiency;
+        },
+
+        get evCostPerMile() {
+          if (!this.whPerMile || !this.evPrice) return '';
+          return (this.whPerMile / 1000) * this.evPrice;
+        },
+
+        get gasCostPerMile() {
+          if (!this.mpg || !this.gasPrice) return '';
+          return this.gasPrice / this.mpg;
+        },
+
+        get evResult() {
+          if (!this.evCostPerMile) return '';
+          const tripCost = this.evCostPerMile * this.miles;
+          return {
+            trip: `EV Trip: $${tripCost.toFixed(4)}`,
+            perMile: `$${this.evCostPerMile.toFixed(4)}/mi`
+          };
+        },
+
+        get gasResult() {
+          if (!this.gasCostPerMile) return '';
+          const tripCost = this.gasCostPerMile * this.miles;
+          return {
+            trip: `Gas Trip: $${tripCost.toFixed(4)}`,
+            perMile: `$${this.gasCostPerMile.toFixed(4)}/mi`
+          };
+        },
+
+        get savingsResult() {
+          if (!this.evCostPerMile || !this.gasCostPerMile) return '';
+          const ev = this.evCostPerMile;
+          const gas = this.gasCostPerMile;
+
+          const savingsPerMile = gas - ev;
+          const totalSavings = savingsPerMile * this.miles;
+          const percentDiff = Math.abs(savingsPerMile) / Math.max(ev, gas) * 100;
+          const whoSaves = savingsPerMile > 0 ? 'EV' : 'Gas';
+
+          return {
+            trip: `${whoSaves} saves $${Math.abs(totalSavings).toFixed(2)} (${percentDiff.toFixed(1)}%)`,
+            perMile: `${whoSaves} saves $${Math.abs(savingsPerMile).toFixed(4)}/mi`
+          };
+        }
+      }
+    }
   </script>
 </body>
 </html>
