@@ -41,7 +41,7 @@
       <!-- Chart Visualization Section -->
       <div id="chartSection" class="bg-white/95 dark:bg-slate-800/95 rounded-xl shadow-lg p-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">Cost Over Distance</h2>
+          <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">📈 Cost Over Distance</h2>
         </div>
         <div class="relative flex-1">
           <canvas id="costChart"></canvas>
@@ -57,9 +57,7 @@
         <!-- EV Car -->
         <div>
           <div class="flex items-center mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 dark:text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 16v3a2 2 0 01-2 2h-1a2 2 0 01-2-2v-1h-2v1a2 2 0 01-2 2H9a2 2 0 01-2-2v-3m11-3H6m0 0V5a2 2 0 012-2h8a2 2 0 012 2v8m-5 0h2" />
-            </svg>
+            <span class="text-2xl mr-2">🔌</span>
             <h2 class="text-lg font-semibold text-green-600 dark:text-green-400">Electric Vehicle</h2>
           </div>
           <label class="block">
@@ -81,15 +79,13 @@
 
         <!-- Gas Car -->
         <div>
-          <div class="flex items-center mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600 dark:text-red-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 16v3a2 2 0 01-2 2h-1a2 2 0 01-2-2v-1h-2v1a2 2 0 01-2 2H9a2 2 0 01-2-2v-3m11-3H6m0 0V5a2 2 0 012-2h8a2 2 0 012 2v8m-5 0h2" />
-            </svg>
-            <h2 class="text-2xl font-semibold text-red-600 dark:text-red-400">Gas Vehicle</h2>
+          <div class="flex items-center mb-3">
+            <span class="text-2xl mr-2">⛽</span>
+            <h2 class="text-lg font-semibold text-red-600 dark:text-red-400">Gas Vehicle</h2>
           </div>
           <label class="block">
-            <span class="block text-lg font-medium mb-1 text-gray-800 dark:text-gray-200">Efficiency (miles per gallon)</span>
-            <input type="number" id="mpg" step="0.1" class="w-full px-4 py-3 text-lg border border-red-200 dark:border-red-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
+            <span class="block text-base font-medium mb-1 text-gray-800 dark:text-gray-200">Efficiency (miles per gallon)</span>
+            <input type="number" id="mpg" step="0.1" class="w-full px-3 py-2 text-base border border-red-200 dark:border-red-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
           </label>
         </div>
       </div>
@@ -98,46 +94,38 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-200 dark:border-gray-700 mt-6">
         <!-- Electricity Price -->
         <div>
-          <div class="flex items-center mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600 dark:text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-            <h2 class="text-2xl font-semibold text-green-600 dark:text-green-400">Electricity</h2>
+          <div class="flex items-center mb-3">
+            <span class="text-2xl mr-2">⚡</span>
+            <h2 class="text-lg font-semibold text-green-600 dark:text-green-400">Electricity</h2>
           </div>
           <label class="block">
-            <span class="block text-lg font-medium mb-1 text-gray-800 dark:text-gray-200">Price ($/kWh)</span>
-            <input type="number" id="evPrice" step="0.01" class="w-full px-4 py-3 text-lg border border-green-200 dark:border-green-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+            <span class="block text-base font-medium mb-1 text-gray-800 dark:text-gray-200">Price ($/kWh)</span>
+            <input type="number" id="evPrice" step="0.01" class="w-full px-3 py-2 text-base border border-green-200 dark:border-green-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
           </label>
         </div>
 
         <!-- Gas Price -->
         <div>
-          <div class="flex items-center mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600 dark:text-red-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14a3 3 0 100-6 3 3 0 000 6z" />
-            </svg>
-            <h2 class="text-2xl font-semibold text-red-600 dark:text-red-400">Gasoline</h2>
+          <div class="flex items-center mb-3">
+            <span class="text-2xl mr-2">💰</span>
+            <h2 class="text-lg font-semibold text-red-600 dark:text-red-400">Gasoline</h2>
           </div>
           <label class="block">
-            <span class="block text-lg font-medium mb-1 text-gray-800 dark:text-gray-200">Price ($/gallon)</span>
-            <input type="number" id="gasPrice" step="0.01" class="w-full px-4 py-3 text-lg border border-red-200 dark:border-red-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
+            <span class="block text-base font-medium mb-1 text-gray-800 dark:text-gray-200">Price ($/gallon)</span>
+            <input type="number" id="gasPrice" step="0.01" class="w-full px-3 py-2 text-base border border-red-200 dark:border-red-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
           </label>
         </div>
       </div>
    
       <!-- Distance Input -->
       <div class="pt-6 border-t border-gray-200 dark:border-gray-700 mt-6">
-        <div class="flex items-center mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-700 dark:text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-300">Trip Distance</h2>
+        <div class="flex items-center mb-3">
+          <span class="text-2xl mr-2">📍</span>
+          <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Trip Distance</h2>
         </div>
         <label class="block">
-          <span class="block text-lg font-medium mb-1 text-gray-800 dark:text-gray-200">Number of miles</span>
-          <input type="number" id="miles" step="1" min="1" value="1" class="w-full px-4 py-3 text-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          <span class="block text-base font-medium mb-1 text-gray-800 dark:text-gray-200">Number of miles</span>
+          <input type="number" id="miles" step="1" min="1" value="1" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
         </label>
       </div>
     </div>
@@ -149,38 +137,28 @@
       <div class="relative">
         <!-- Dropdown trigger button -->
         <button id="themeMenuButton" class="flex items-center space-x-2 px-3 py-1 rounded-full bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors">
-          <!-- Current theme icon will be inserted dynamically -->
-          <span id="currentThemeIcon" class="h-5 w-5"></span>
+          <span id="currentThemeIcon" class="text-xl">🌤️</span>
           <span id="currentThemeText" class="text-sm text-gray-700 dark:text-gray-300"></span>
-          <!-- Dropdown arrow -->
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
+          <span class="text-sm text-gray-600 dark:text-gray-400">▼</span>
         </button>
         
         <!-- Dropdown menu (hidden by default) -->
         <div id="themeDropdown" class="absolute bottom-full mb-2 w-40 bg-white dark:bg-slate-800 rounded-lg shadow-lg p-2 hidden transform origin-bottom transition-transform duration-150 ease-in-out">
           <!-- Light mode option -->
           <button id="lightModeBtn" class="theme-option w-full flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
+            <span class="text-xl">☀️</span>
             <span class="text-sm text-gray-700 dark:text-gray-300">Light</span>
           </button>
           
           <!-- Dark mode option -->
           <button id="darkModeBtn" class="theme-option w-full flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
+            <span class="text-xl">🌙</span>
             <span class="text-sm text-gray-700 dark:text-gray-300">Dark</span>
           </button>
           
           <!-- System mode option -->
           <button id="systemModeBtn" class="theme-option w-full flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
+            <span class="text-xl">💻</span>
             <span class="text-sm text-gray-700 dark:text-gray-300">System</span>
           </button>
         </div>
