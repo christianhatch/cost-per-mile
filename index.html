@@ -62,8 +62,12 @@
             <h2 class="text-lg font-semibold text-green-600 dark:text-green-400">Electricity</h2>
           </div>
           <label class="block">
-            <span class="block text-base font-medium text-gray-800 dark:text-gray-200 mb-1">Price ($/kWh)</span>
-            <input type="number" x-model="evPrice" step="0.01" min="0" class="w-full px-3 py-2 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+            <div class="relative">
+              <input type="number" x-model="evPrice" step="0.01" min="0" class="w-full px-3 py-2 pr-16 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <span class="text-gray-500 dark:text-gray-400">$/kWh</span>
+              </div>
+            </div>
           </label>
         </div>
 
@@ -73,14 +77,18 @@
             <h2 class="text-lg font-semibold text-red-600 dark:text-red-400">Gasoline</h2>
           </div>
           <label class="block">
-            <span class="block text-base font-medium text-gray-800 dark:text-gray-200 mb-1">Price ($/gallon)</span>
-            <input type="number" x-model="gasPrice" step="0.01" min="0" class="w-full px-3 py-2 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+            <div class="relative">
+              <input type="number" x-model="gasPrice" step="0.01" min="0" class="w-full px-3 py-2 pr-16 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <span class="text-gray-500 dark:text-gray-400">$/gallon</span>
+              </div>
+            </div>
           </label>
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t border-gray-200 dark:border-gray-700 mt-6">
-        <div>
+        <div class="flex flex-col max-w-xs">
           <label class="block">
             <div class="flex items-center mb-3">
               <span class="text-2xl mr-2">🔌</span>
@@ -109,7 +117,7 @@
           </label>
         </div>
 
-        <div>
+        <div class="flex flex-col max-w-xs">
           <label class="block">
             <div class="flex items-center mb-3">
               <span class="text-2xl mr-2">⛽</span>
@@ -124,7 +132,7 @@
           </label>
         </div>
 
-        <div>
+        <div class="flex flex-col max-w-xs">
           <label class="block">
             <div class="flex items-center mb-3">
               <span class="text-2xl mr-2">📍</span>
