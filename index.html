@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
   <meta charset="UTF-8" />
   <title>Cost Per Mile Calculator</title>
@@ -13,69 +13,135 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="apple-touch-icon" href="icon-512.png">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#38bdf8" />
 </head>
-<body class="bg-gradient-to-br from-sky-100 to-blue-200 min-h-screen flex items-center justify-center px-4">
-  <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-10 my-4">
-    <h1 class="text-4xl font-extrabold text-center text-blue-700 mb-10">Cost Per Mile</h1>
+<body class="bg-gradient-to-br from-sky-100 to-blue-200 dark:from-slate-800 dark:to-slate-900 min-h-screen flex flex-col items-center justify-center px-4 transition-colors duration-200">
+  <!-- Dark mode toggle -->
+  <div class="absolute top-4 right-4">
+    <button id="darkModeToggle" class="p-2 rounded-full bg-blue-100 dark:bg-slate-700 text-blue-800 dark:text-yellow-300">
+      <!-- Sun icon for light mode -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+      <!-- Moon icon for dark mode -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+      </svg>
+    </button>
+  </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-      <!-- EV Inputs -->
+  <div class="w-full max-w-2xl bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-10 my-4">
+    <h1 class="text-4xl font-extrabold text-center text-blue-700 dark:text-blue-400 mb-10">Cost Per Mile</h1>
+
+    <!-- Car Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-8">
+      <!-- EV Car -->
       <div>
-        <h2 class="text-2xl font-semibold text-green-600 mb-4">Electric Vehicle</h2>
-        <label class="block mb-5">
-          <span class="block text-lg font-medium mb-1">Electricity price ($/kWh)</span>
-          <input type="number" id="evPrice" step="0.01" class="w-full px-4 py-3 text-lg border border-green-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-        </label>
+        <div class="flex items-center mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600 dark:text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 16v3a2 2 0 01-2 2h-1a2 2 0 01-2-2v-1h-2v1a2 2 0 01-2 2H9a2 2 0 01-2-2v-3m11-3H6m0 0V5a2 2 0 012-2h8a2 2 0 012 2v8m-5 0h2" />
+          </svg>
+          <h2 class="text-2xl font-semibold text-green-600 dark:text-green-400">Electric Vehicle</h2>
+        </div>
         <label class="block">
-          <span class="block text-lg font-medium mb-1">Consumption (kWh per mile)</span>
-          <input type="number" id="evEfficiency" step="0.01" class="w-full px-4 py-3 text-lg border border-green-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <div class="flex justify-between items-center mb-1">
+            <span id="evEfficiencyLabel" class="block text-lg font-medium text-gray-800 dark:text-gray-200">Efficiency (Wh per mile)</span>
+            <div class="flex items-center">
+              <span class="text-sm text-green-700 dark:text-green-400 mr-2">Wh/mi</span>
+              <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                <input type="checkbox" id="evModeToggle" class="sr-only peer">
+                <div class="block h-6 w-10 rounded-full bg-gray-200 dark:bg-gray-600 peer-checked:bg-green-500"></div>
+                <div class="dot absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition peer-checked:translate-x-4"></div>
+              </div>
+              <span class="text-sm text-green-700 dark:text-green-400">mi/kWh</span>
+            </div>
+          </div>
+          <input type="number" id="evEfficiency" step="0.01" class="w-full px-4 py-3 text-lg border border-green-200 dark:border-green-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
         </label>
       </div>
 
-      <!-- Gas Inputs -->
+      <!-- Gas Car -->
       <div>
-        <h2 class="text-2xl font-semibold text-red-600 mb-4">Gas Vehicle</h2>
-        <label class="block mb-5">
-          <span class="block text-lg font-medium mb-1">Gas price ($/gallon)</span>
-          <input type="number" id="gasPrice" step="0.01" class="w-full px-4 py-3 text-lg border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
-        </label>
+        <div class="flex items-center mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600 dark:text-red-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 16v3a2 2 0 01-2 2h-1a2 2 0 01-2-2v-1h-2v1a2 2 0 01-2 2H9a2 2 0 01-2-2v-3m11-3H6m0 0V5a2 2 0 012-2h8a2 2 0 012 2v8m-5 0h2" />
+          </svg>
+          <h2 class="text-2xl font-semibold text-red-600 dark:text-red-400">Gas Vehicle</h2>
+        </div>
         <label class="block">
-          <span class="block text-lg font-medium mb-1">Efficiency (miles per gallon)</span>
-          <input type="number" id="mpg" step="0.1" class="w-full px-4 py-3 text-lg border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
+          <span class="block text-lg font-medium mb-1 text-gray-800 dark:text-gray-200">Efficiency (miles per gallon)</span>
+          <input type="number" id="mpg" step="0.1" class="w-full px-4 py-3 text-lg border border-red-200 dark:border-red-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
+        </label>
+      </div>
+    </div>
+
+    <!-- Price Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+      <!-- Electricity Price -->
+      <div>
+        <div class="flex items-center mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600 dark:text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          <h2 class="text-2xl font-semibold text-green-600 dark:text-green-400">Electricity</h2>
+        </div>
+        <label class="block">
+          <span class="block text-lg font-medium mb-1 text-gray-800 dark:text-gray-200">Price ($/kWh)</span>
+          <input type="number" id="evPrice" step="0.01" class="w-full px-4 py-3 text-lg border border-green-200 dark:border-green-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+        </label>
+      </div>
+
+      <!-- Gas Price -->
+      <div>
+        <div class="flex items-center mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600 dark:text-red-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14a3 3 0 100-6 3 3 0 000 6z" />
+          </svg>
+          <h2 class="text-2xl font-semibold text-red-600 dark:text-red-400">Gasoline</h2>
+        </div>
+        <label class="block">
+          <span class="block text-lg font-medium mb-1 text-gray-800 dark:text-gray-200">Price ($/gallon)</span>
+          <input type="number" id="gasPrice" step="0.01" class="w-full px-4 py-3 text-lg border border-red-200 dark:border-red-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
         </label>
       </div>
     </div>
  
     <!-- Distance Input -->
-    <div class="mt-6">
-      <h2 class="text-xl font-semibold text-gray-700 mb-4">Trip Distance</h2>
+    <div class="mb-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+      <div class="flex items-center mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-700 dark:text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-300">Trip Distance</h2>
+      </div>
       <label class="block">
-        <span class="block text-lg font-medium mb-1">Number of miles</span>
-        <input type="number" id="miles" step="1" min="1" value="1" class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+        <span class="block text-lg font-medium mb-1 text-gray-800 dark:text-gray-200">Number of miles</span>
+        <input type="number" id="miles" step="1" min="1" value="1" class="w-full px-4 py-3 text-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
       </label>
-    </div>
- 
-    <!-- Button -->
-    <div class="mt-10 text-center">
-      <button onclick="calculate()"
-        class="bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105 active:scale-95">
-        Calculate
-      </button>
     </div>
 
     <!-- Results -->
-    <div class="mt-10 text-center space-y-4">
-      <div id="evResult" class="text-2xl font-bold text-green-600"></div>
-      <div id="gasResult" class="text-2xl font-bold text-rose-600"></div>
+    <div class="pt-6 border-t border-gray-200 dark:border-gray-700 text-center space-y-4">
+      <div id="evResult" class="text-2xl font-bold text-green-600 dark:text-green-400"></div>
+      <div id="gasResult" class="text-2xl font-bold text-rose-600 dark:text-rose-400"></div>
     </div>
   </div>
 
   <script>
+    // Track EV efficiency mode (false = Wh/mile, true = miles/kWh)
+    let evEfficiencyMode = false;
+
     function calculate() {
       const evPrice = parseFloat(document.getElementById('evPrice').value);
-      const evEfficiency = parseFloat(document.getElementById('evEfficiency').value);
+      const evEfficiencyInput = parseFloat(document.getElementById('evEfficiency').value);
       const gasPrice = parseFloat(document.getElementById('gasPrice').value);
       const mpg = parseFloat(document.getElementById('mpg').value);
       const miles = parseFloat(document.getElementById('miles').value) || 1;
@@ -83,9 +149,20 @@
       const evResultEl = document.getElementById('evResult');
       const gasResultEl = document.getElementById('gasResult');
 
-      if (!isNaN(evPrice) && !isNaN(evEfficiency)) {
-        const evCost = evPrice * evEfficiency * miles;
-        const evCostPerMile = evPrice * evEfficiency;
+      if (!isNaN(evPrice) && !isNaN(evEfficiencyInput)) {
+        // Convert between the two modes
+        let evEfficiencyWh;
+        if (evEfficiencyMode) {
+          // Input is miles per kWh, convert to Wh per mile
+          evEfficiencyWh = 1000 / evEfficiencyInput;
+        } else {
+          // Input is already Wh per mile
+          evEfficiencyWh = evEfficiencyInput;
+        }
+        
+        // Convert Wh to kWh for calculation (divide by 1000)
+        const evCost = evPrice * (evEfficiencyWh / 1000) * miles;
+        const evCostPerMile = evPrice * (evEfficiencyWh / 1000);
         evResultEl.textContent = `EV: $${evCost.toFixed(2)} total (${evCostPerMile.toFixed(3)} per mile)`;
       } else {
         evResultEl.textContent = '';
@@ -100,8 +177,108 @@
       }
     }
 
+    // Toggle between Wh/mile and miles/kWh
+    function toggleEvMode() {
+      const evEfficiencyInput = document.getElementById('evEfficiency');
+      const evEfficiencyLabel = document.getElementById('evEfficiencyLabel');
+      const currentValue = parseFloat(evEfficiencyInput.value);
+      
+      if (!isNaN(currentValue) && currentValue !== 0) {
+        if (evEfficiencyMode) {
+          // Converting from miles/kWh to Wh/mile
+          evEfficiencyInput.value = (1000 / currentValue).toFixed(1);
+        } else {
+          // Converting from Wh/mile to miles/kWh
+          evEfficiencyInput.value = (1000 / currentValue).toFixed(1);
+        }
+      }
+      
+      // Update the mode flag
+      evEfficiencyMode = !evEfficiencyMode;
+      
+      // Update the label
+      evEfficiencyLabel.textContent = evEfficiencyMode 
+        ? 'Efficiency (miles per kWh)' 
+        : 'Efficiency (Wh per mile)';
+      
+      // Save mode to localStorage
+      localStorage.setItem('evEfficiencyMode', evEfficiencyMode);
+      
+      calculate();
+    }
+    
+    // Toggle dark mode
+    function toggleDarkMode() {
+      // Toggle the dark class regardless of system preference
+      document.documentElement.classList.toggle('dark');
+      
+      // Store the user preference which will override system preference
+      const isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('darkMode', isDark ? 'dark' : 'light');
+      
+      // Update manual override flag
+      localStorage.setItem('darkModeManual', 'true');
+    }
+    
+    // Set dark mode based on system preference or stored preference
+    function setColorScheme() {
+      // Check if user has manually set a preference
+      const manualOverride = localStorage.getItem('darkModeManual') === 'true';
+      
+      if (manualOverride) {
+        // Use the stored preference
+        const savedDarkMode = localStorage.getItem('darkMode');
+        if (savedDarkMode === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } else {
+        // Use system preference
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefersDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+    }
+
     // Save inputs to localStorage
     window.addEventListener('DOMContentLoaded', () => {
+      // Set up dark mode based on system preference or stored preference
+      setColorScheme();
+      
+      // Listen for changes in system color scheme preference
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        // Only update if user hasn't manually overridden
+        if (localStorage.getItem('darkModeManual') !== 'true') {
+          if (e.matches) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        }
+      });
+      
+      document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+      
+      // Load EV efficiency mode from localStorage
+      const savedMode = localStorage.getItem('evEfficiencyMode');
+      if (savedMode !== null) {
+        evEfficiencyMode = savedMode === 'true';
+        document.getElementById('evModeToggle').checked = evEfficiencyMode;
+        
+        const evEfficiencyLabel = document.getElementById('evEfficiencyLabel');
+        evEfficiencyLabel.textContent = evEfficiencyMode 
+          ? 'Efficiency (miles per kWh)' 
+          : 'Efficiency (Wh per mile)';
+      }
+      
+      // Set up toggle event listener
+      document.getElementById('evModeToggle').addEventListener('change', toggleEvMode);
+      
+      // Load input values from localStorage
       ['evPrice', 'evEfficiency', 'gasPrice', 'mpg', 'miles'].forEach(id => {
         const input = document.getElementById(id);
         input.value = localStorage.getItem(id) || '';
@@ -110,6 +287,7 @@
           calculate();
         });
       });
+      
       calculate();
     });
 
@@ -129,7 +307,7 @@
 
       const installBtn = document.createElement('button');
       installBtn.textContent = 'Install App';
-      installBtn.className = 'fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white px-4 py-3 text-lg font-semibold rounded-full shadow-lg z-50';
+      installBtn.className = 'fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white px-4 py-3 text-lg font-semibold rounded-full shadow-lg z-50 dark:bg-green-700 dark:hover:bg-green-600';
       installBtn.addEventListener('click', () => {
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then(() => {
