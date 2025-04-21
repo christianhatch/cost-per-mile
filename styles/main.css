@@ -1,0 +1,41 @@
+.sticky-results {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+body {
+  scroll-padding-top: 70px; /* Adjust based on the height of your sticky header */
+}
+
+/* Add layout styles for different screen sizes */
+@media (min-width: 1200px) {
+  .wide-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+  
+  /* Hide the fixed header on wide screens - we'll show results inline instead */
+  .results-header-fixed {
+    display: none;
+  }
+  
+  /* Keep the chart visible at all times in wide layout */
+  .wide-layout-results {
+    position: sticky;
+    top: 1rem;
+  }
+}
+
+/* Show the fixed header only on smaller screens */
+@media (max-width: 1199px) {
+  .results-header-fixed {
+    display: flex;
+  }
+  
+  .results-header-inline {
+    display: none;
+  }
+} 
