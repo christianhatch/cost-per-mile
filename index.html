@@ -59,7 +59,7 @@
         <!-- Main Input Sections Container -->
         <div class="flex flex-col lg:flex-row lg:gap-12 lg:justify-center">
           <!-- EV Section -->
-          <div class="flex-1 max-w-sm mb-6 lg:mb-0">
+          <div class="flex-1 max-w-sm lg:mb-0">
             <div class="flex items-center mb-4">
               <span class="text-2xl mr-2">⚡</span>
               <h2 class="text-lg font-semibold text-green-600 dark:text-green-400">Electric</h2>
@@ -122,7 +122,7 @@
             </div>
           </div>
 
-          <hr class="border-gray-200 dark:border-gray-700 lg:hidden">
+          <hr class="border-gray-200 dark:border-gray-700 my-6 lg:hidden">
 
           <!-- Gas Section -->
           <div class="flex-1 max-w-sm">
@@ -424,7 +424,7 @@
 
           return {
             trip: `${whoSaves} saves $${Math.abs(totalSavings).toFixed(2)} (${percentDiff.toFixed(1)}%)`,
-            perMile: `${whoSaves} saves $${Math.abs(savingsPerMile).toFixed(4)}/mi`
+            perMile: `$${Math.abs(savingsPerMile).toFixed(4)}/mi`
           };
         }
       }
