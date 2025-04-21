@@ -195,7 +195,7 @@
               <span class="text-2xl mr-2">🔌</span>
               <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-200">EV</h2>
             </div>
-            <div class="flex items-center mb-1">
+            <div class="flex items-center mb-2">
               <span class="text-xs text-green-700 dark:text-green-400 mr-1">Wh/mi</span>
               <div class="relative inline-block w-8 mx-1">
                 <input type="checkbox" x-model="evMode" @change="toggleEvMode()" value="mikwh" class="sr-only peer">
@@ -204,7 +204,17 @@
               </div>
               <span class="text-xs text-green-700 dark:text-green-400">mi/kWh</span>
             </div>
-            <input type="number" x-model="evEfficiency" @change="saveToStorage('evEfficiency', evEfficiency)" step="0.01" class="w-full px-3 py-2 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+            <div class="relative">
+              <input type="number" x-model="evEfficiency" @change="saveToStorage('evEfficiency', evEfficiency)" step="0.01" class="w-full px-3 py-2 pr-16 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <template x-if="evMode === 'whmi'">
+                  <span class="text-gray-500 dark:text-gray-400">Wh/mi</span>
+                </template>
+                <template x-if="evMode === 'mikwh'">
+                  <span class="text-gray-500 dark:text-gray-400">mi/kWh</span>
+                </template>
+              </div>
+            </div>
           </label>
         </div>
 
@@ -214,8 +224,12 @@
               <span class="text-2xl mr-2">⛽</span>
               <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-200">Gas</h2>
             </div>
-            <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1">(miles per gallon)</span>
-            <input type="number" x-model="mpg" @change="saveToStorage('mpg', mpg)" step="0.1" class="w-full px-3 py-2 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+            <div class="relative">
+              <input type="number" x-model="mpg" @change="saveToStorage('mpg', mpg)" step="0.1" class="w-full px-3 py-2 pr-12 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <span class="text-gray-500 dark:text-gray-400">mpg</span>
+              </div>
+            </div>
           </label>
         </div>
 
@@ -225,8 +239,13 @@
               <span class="text-2xl mr-2">📍</span>
               <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-200">Trip Distance</h2>
             </div>
-            <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1">(miles)</span>
             <input type="number" x-model="miles" @change="saveToStorage('miles', miles)" step="1" min="1" class="w-full px-3 py-2 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+            <div class="relative">
+              <input type="number" x-model="miles" @change="saveToStorage('miles', miles)" step="1" min="1" class="w-full px-3 py-2 pr-8 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <span class="text-gray-500 dark:text-gray-400">mi</span>
+              </div>
+            </div>
           </label>
         </div>
       </div>
