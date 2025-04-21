@@ -18,111 +18,182 @@
       darkMode: 'class',
     }
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#38bdf8" />
+  <style>
+    .sticky-results {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    body {
+      scroll-padding-top: 70px; /* Adjust based on the height of your sticky header */
+    }
+    
+    /* Add layout styles for different screen sizes */
+    @media (min-width: 1200px) {
+      .wide-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        align-items: start;
+      }
+      
+      /* Hide the fixed header on wide screens - we'll show results inline instead */
+      .results-header-fixed {
+        display: none;
+      }
+      
+      /* Keep the chart visible at all times in wide layout */
+      .wide-layout-results {
+        position: sticky;
+        top: 1rem;
+      }
+    }
+    
+    /* Show the fixed header only on smaller screens */
+    @media (max-width: 1199px) {
+      .results-header-fixed {
+        display: flex;
+      }
+      
+      .results-header-inline {
+        display: none;
+      }
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-sky-100 to-blue-200 dark:from-slate-800 dark:to-slate-900 min-h-screen flex flex-col items-center justify-between px-4 transition-colors duration-200">
-  <div class="w-full max-w-2xl bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-10 my-4">
-    <h1 class="text-4xl font-extrabold text-center text-blue-700 dark:text-blue-400 mb-10">Cost Per Mile</h1>
+<body class="bg-gradient-to-br from-sky-100 to-blue-200 dark:from-slate-800 dark:to-slate-900 min-h-screen flex flex-col items-center justify-between px-4 transition-colors duration-200 pt-1">
+  <!-- Fixed Results Header (visible only on mobile/smaller screens) -->
+  <div id="resultsHeader" class="results-header-fixed sticky-results w-full max-w-4xl bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm shadow-md rounded-lg mb-3 p-3 flex items-center justify-between transition-all duration-200 transform translate-y-0 opacity-100">
+    <div class="flex flex-col sm:flex-row sm:space-x-6">
+      <div id="fixedEvResult" class="text-lg font-bold text-green-600 dark:text-green-400"></div>
+      <div id="fixedGasResult" class="text-lg font-bold text-rose-600 dark:text-rose-400"></div>
+    </div>
+  </div>
 
-    <!-- Car Section -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-8">
-      <!-- EV Car -->
-      <div>
-        <div class="flex items-center mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600 dark:text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 16v3a2 2 0 01-2 2h-1a2 2 0 01-2-2v-1h-2v1a2 2 0 01-2 2H9a2 2 0 01-2-2v-3m11-3H6m0 0V5a2 2 0 012-2h8a2 2 0 012 2v8m-5 0h2" />
-          </svg>
-          <h2 class="text-2xl font-semibold text-green-600 dark:text-green-400">Electric Vehicle</h2>
+  <!-- Main content container with responsive layout -->
+  <div class="wide-layout w-full max-w-4xl my-4">
+    <!-- Left side: Results section -->
+    <div class="wide-layout-results">
+      <!-- Inline Results (visible only on wide screens) -->
+      <div class="results-header-inline bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 mb-4">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Cost Per Mile</h2>
+        <div class="flex flex-col space-y-3">
+          <div id="inlineEvResult" class="text-xl font-bold text-green-600 dark:text-green-400"></div>
+          <div id="inlineGasResult" class="text-xl font-bold text-rose-600 dark:text-rose-400"></div>
+          <div id="inlineSavingsResult" class="text-xl font-bold text-blue-600 dark:text-blue-400 mt-2"></div>
         </div>
-        <label class="block">
-          <div class="flex justify-between items-center mb-1">
-            <span id="evEfficiencyLabel" class="block text-lg font-medium text-gray-800 dark:text-gray-200">Efficiency (Wh per mile)</span>
-            <div class="flex items-center">
-              <span class="text-sm text-green-700 dark:text-green-400 mr-2">Wh/mi</span>
-              <div class="relative inline-block w-10 mr-2 align-middle select-none">
-                <input type="checkbox" id="evModeToggle" class="sr-only peer">
-                <div class="block h-6 w-10 rounded-full bg-gray-200 dark:bg-gray-600 peer-checked:bg-green-500"></div>
-                <div class="dot absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition peer-checked:translate-x-4"></div>
-              </div>
-              <span class="text-sm text-green-700 dark:text-green-400">mi/kWh</span>
-            </div>
+      </div>
+      
+      <!-- Chart Visualization Section -->
+      <div id="chartSection" class="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 mb-4 transform transition-all duration-300 opacity-0 -translate-y-10">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">Cost Over Distance</h2>
+        </div>
+        <div class="relative h-64">
+          <canvas id="costChart"></canvas>
+        </div>
+        <div class="text-center mt-4 text-sm text-gray-600 dark:text-gray-400" id="chartSummary"></div>
+      </div>
+    </div>
+    
+    <!-- Right side: Input section -->
+    <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-10">
+      <!-- Car Section -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-8">
+        <!-- EV Car -->
+        <div>
+          <div class="flex items-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600 dark:text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 16v3a2 2 0 01-2 2h-1a2 2 0 01-2-2v-1h-2v1a2 2 0 01-2 2H9a2 2 0 01-2-2v-3m11-3H6m0 0V5a2 2 0 012-2h8a2 2 0 012 2v8m-5 0h2" />
+            </svg>
+            <h2 class="text-2xl font-semibold text-green-600 dark:text-green-400">Electric Vehicle</h2>
           </div>
-          <input type="number" id="evEfficiency" step="0.01" class="w-full px-4 py-3 text-lg border border-green-200 dark:border-green-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-        </label>
+          <label class="block">
+            <div class="flex justify-between items-center mb-1">
+              <span id="evEfficiencyLabel" class="block text-lg font-medium text-gray-800 dark:text-gray-200">Efficiency (Wh per mile)</span>
+              <div class="flex items-center">
+                <span class="text-sm text-green-700 dark:text-green-400 mr-2">Wh/mi</span>
+                <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                  <input type="checkbox" id="evModeToggle" class="sr-only peer">
+                  <div class="block h-6 w-10 rounded-full bg-gray-200 dark:bg-gray-600 peer-checked:bg-green-500"></div>
+                  <div class="dot absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition peer-checked:translate-x-4"></div>
+                </div>
+                <span class="text-sm text-green-700 dark:text-green-400">mi/kWh</span>
+              </div>
+            </div>
+            <input type="number" id="evEfficiency" step="0.01" class="w-full px-4 py-3 text-lg border border-green-200 dark:border-green-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          </label>
+        </div>
+
+        <!-- Gas Car -->
+        <div>
+          <div class="flex items-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600 dark:text-red-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 16v3a2 2 0 01-2 2h-1a2 2 0 01-2-2v-1h-2v1a2 2 0 01-2 2H9a2 2 0 01-2-2v-3m11-3H6m0 0V5a2 2 0 012-2h8a2 2 0 012 2v8m-5 0h2" />
+            </svg>
+            <h2 class="text-2xl font-semibold text-red-600 dark:text-red-400">Gas Vehicle</h2>
+          </div>
+          <label class="block">
+            <span class="block text-lg font-medium mb-1 text-gray-800 dark:text-gray-200">Efficiency (miles per gallon)</span>
+            <input type="number" id="mpg" step="0.1" class="w-full px-4 py-3 text-lg border border-red-200 dark:border-red-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
+          </label>
+        </div>
       </div>
 
-      <!-- Gas Car -->
-      <div>
+      <!-- Price Section -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <!-- Electricity Price -->
+        <div>
+          <div class="flex items-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600 dark:text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <h2 class="text-2xl font-semibold text-green-600 dark:text-green-400">Electricity</h2>
+          </div>
+          <label class="block">
+            <span class="block text-lg font-medium mb-1 text-gray-800 dark:text-gray-200">Price ($/kWh)</span>
+            <input type="number" id="evPrice" step="0.01" class="w-full px-4 py-3 text-lg border border-green-200 dark:border-green-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          </label>
+        </div>
+
+        <!-- Gas Price -->
+        <div>
+          <div class="flex items-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600 dark:text-red-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14a3 3 0 100-6 3 3 0 000 6z" />
+            </svg>
+            <h2 class="text-2xl font-semibold text-red-600 dark:text-red-400">Gasoline</h2>
+          </div>
+          <label class="block">
+            <span class="block text-lg font-medium mb-1 text-gray-800 dark:text-gray-200">Price ($/gallon)</span>
+            <input type="number" id="gasPrice" step="0.01" class="w-full px-4 py-3 text-lg border border-red-200 dark:border-red-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
+          </label>
+        </div>
+      </div>
+   
+      <!-- Distance Input -->
+      <div class="mb-8 pt-6 border-t border-gray-200 dark:border-gray-700">
         <div class="flex items-center mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600 dark:text-red-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 16v3a2 2 0 01-2 2h-1a2 2 0 01-2-2v-1h-2v1a2 2 0 01-2 2H9a2 2 0 01-2-2v-3m11-3H6m0 0V5a2 2 0 012-2h8a2 2 0 012 2v8m-5 0h2" />
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-700 dark:text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-          <h2 class="text-2xl font-semibold text-red-600 dark:text-red-400">Gas Vehicle</h2>
+          <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-300">Trip Distance</h2>
         </div>
         <label class="block">
-          <span class="block text-lg font-medium mb-1 text-gray-800 dark:text-gray-200">Efficiency (miles per gallon)</span>
-          <input type="number" id="mpg" step="0.1" class="w-full px-4 py-3 text-lg border border-red-200 dark:border-red-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
+          <span class="block text-lg font-medium mb-1 text-gray-800 dark:text-gray-200">Number of miles</span>
+          <input type="number" id="miles" step="1" min="1" value="1" class="w-full px-4 py-3 text-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
         </label>
       </div>
-    </div>
-
-    <!-- Price Section -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-      <!-- Electricity Price -->
-      <div>
-        <div class="flex items-center mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600 dark:text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-          <h2 class="text-2xl font-semibold text-green-600 dark:text-green-400">Electricity</h2>
-        </div>
-        <label class="block">
-          <span class="block text-lg font-medium mb-1 text-gray-800 dark:text-gray-200">Price ($/kWh)</span>
-          <input type="number" id="evPrice" step="0.01" class="w-full px-4 py-3 text-lg border border-green-200 dark:border-green-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-        </label>
-      </div>
-
-      <!-- Gas Price -->
-      <div>
-        <div class="flex items-center mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600 dark:text-red-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14a3 3 0 100-6 3 3 0 000 6z" />
-          </svg>
-          <h2 class="text-2xl font-semibold text-red-600 dark:text-red-400">Gasoline</h2>
-        </div>
-        <label class="block">
-          <span class="block text-lg font-medium mb-1 text-gray-800 dark:text-gray-200">Price ($/gallon)</span>
-          <input type="number" id="gasPrice" step="0.01" class="w-full px-4 py-3 text-lg border border-red-200 dark:border-red-800 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
-        </label>
-      </div>
-    </div>
- 
-    <!-- Distance Input -->
-    <div class="mb-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-      <div class="flex items-center mb-4">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-700 dark:text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-        <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-300">Trip Distance</h2>
-      </div>
-      <label class="block">
-        <span class="block text-lg font-medium mb-1 text-gray-800 dark:text-gray-200">Number of miles</span>
-        <input type="number" id="miles" step="1" min="1" value="1" class="w-full px-4 py-3 text-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
-      </label>
-    </div>
-
-    <!-- Results -->
-    <div class="pt-6 border-t border-gray-200 dark:border-gray-700 text-center space-y-4">
-      <div id="evResult" class="text-2xl font-bold text-green-600 dark:text-green-400"></div>
-      <div id="gasResult" class="text-2xl font-bold text-rose-600 dark:text-rose-400"></div>
     </div>
   </div>
 
   <!-- Footer with Theme Toggle -->
-  <footer class="w-full max-w-2xl mb-6 mt-2 flex justify-center">
+  <footer class="w-full max-w-4xl mb-6 mt-2 flex justify-center">
     <div class="bg-white dark:bg-slate-800 rounded-full shadow-md px-4 py-2 flex items-center space-x-2">
       <div class="relative">
         <!-- Dropdown trigger button -->
@@ -169,6 +240,134 @@
   <script>
     // Track EV efficiency mode (false = Wh/mile, true = miles/kWh)
     let evEfficiencyMode = false;
+    // Chart reference
+    let costChart = null;
+    
+    // Initialize chart
+    function initChart() {
+      const ctx = document.getElementById('costChart').getContext('2d');
+      
+      // Line chart configuration
+      const chartConfig = {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: 'EV',
+              data: [],
+              borderColor: 'rgba(72, 187, 120, 1)',
+              backgroundColor: 'rgba(72, 187, 120, 0.1)',
+              fill: true,
+              tension: 0.1
+            },
+            {
+              label: 'Gas',
+              data: [],
+              borderColor: 'rgba(224, 36, 94, 1)',
+              backgroundColor: 'rgba(224, 36, 94, 0.1)',
+              fill: true,
+              tension: 0.1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return `$${context.raw.toFixed(2)}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Distance (miles)',
+                color: isDarkMode() ? '#e2e8f0' : '#4a5568'
+              }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return '$' + value.toFixed(2);
+                }
+              },
+              title: {
+                display: true,
+                text: 'Cost ($)',
+                color: isDarkMode() ? '#e2e8f0' : '#4a5568'
+              }
+            }
+          }
+        }
+      };
+      
+      costChart = new Chart(ctx, chartConfig);
+    }
+    
+    // Update chart with calculated costs
+    function updateChart(evCost, gasCost, miles) {
+      if (!costChart) {
+        initChart();
+      }
+      
+      // Show chart section
+      const chartSection = document.getElementById('chartSection');
+      chartSection.classList.remove('opacity-0', '-translate-y-10');
+      
+      // Line graph showing costs over distance
+      const distances = [];
+      const evCosts = [];
+      const gasCosts = [];
+      
+      // Generate data for various distances
+      const maxDistance = Math.max(miles * 2, 100);
+      const step = maxDistance / 10;
+      
+      for (let dist = 0; dist <= maxDistance; dist += step) {
+        distances.push(dist);
+        
+        const evCostPerMile = evCost / miles;
+        const gasCostPerMile = gasCost / miles;
+        
+        evCosts.push(evCostPerMile * dist);
+        gasCosts.push(gasCostPerMile * dist);
+      }
+      
+      costChart.data.labels = distances;
+      costChart.data.datasets[0].data = evCosts;
+      costChart.data.datasets[1].data = gasCosts;
+      
+      // Update chart summary for line chart
+      const evCostPerMile = evCost / miles;
+      const gasCostPerMile = gasCost / miles;
+      const breakEvenDistance = Math.abs(evCost - gasCost) / Math.abs(gasCostPerMile - evCostPerMile);
+      
+      const chartSummary = document.getElementById('chartSummary');
+      if (evCostPerMile < gasCostPerMile) {
+        chartSummary.textContent = `EV is cheaper at all distances. You save $${(gasCostPerMile - evCostPerMile).toFixed(3)} per mile.`;
+      } else if (evCostPerMile > gasCostPerMile) {
+        chartSummary.textContent = `Gas is cheaper at all distances. You save $${(evCostPerMile - gasCostPerMile).toFixed(3)} per mile.`;
+      } else {
+        chartSummary.textContent = `Both options cost the same per mile.`;
+      }
+      
+      costChart.update();
+    }
+    
+    // Helper function to check dark mode
+    function isDarkMode() {
+      return document.documentElement.classList.contains('dark');
+    }
 
     function calculate() {
       const evPrice = parseFloat(document.getElementById('evPrice').value);
@@ -176,9 +375,18 @@
       const gasPrice = parseFloat(document.getElementById('gasPrice').value);
       const mpg = parseFloat(document.getElementById('mpg').value);
       const miles = parseFloat(document.getElementById('miles').value) || 1;
-
-      const evResultEl = document.getElementById('evResult');
-      const gasResultEl = document.getElementById('gasResult');
+      
+      // Get all result elements
+      const fixedEvResultEl = document.getElementById('fixedEvResult');
+      const fixedGasResultEl = document.getElementById('fixedGasResult');
+      const inlineEvResultEl = document.getElementById('inlineEvResult');
+      const inlineGasResultEl = document.getElementById('inlineGasResult');
+      const inlineSavingsResultEl = document.getElementById('inlineSavingsResult');
+      
+      let evCost = 0;
+      let gasCost = 0;
+      let evCostPerMile = 0;
+      let gasCostPerMile = 0;
 
       if (!isNaN(evPrice) && !isNaN(evEfficiencyInput)) {
         // Convert between the two modes
@@ -192,19 +400,74 @@
         }
         
         // Convert Wh to kWh for calculation (divide by 1000)
-        const evCost = evPrice * (evEfficiencyWh / 1000) * miles;
-        const evCostPerMile = evPrice * (evEfficiencyWh / 1000);
-        evResultEl.textContent = `EV: $${evCost.toFixed(2)} total (${evCostPerMile.toFixed(3)} per mile)`;
+        evCost = evPrice * (evEfficiencyWh / 1000) * miles;
+        evCostPerMile = evPrice * (evEfficiencyWh / 1000);
+        
+        const evResultText = `EV: $${evCost.toFixed(2)} total ($${evCostPerMile.toFixed(3)}/mi)`;
+        fixedEvResultEl.textContent = evResultText;
+        inlineEvResultEl.textContent = evResultText;
       } else {
-        evResultEl.textContent = '';
+        fixedEvResultEl.textContent = '';
+        inlineEvResultEl.textContent = '';
       }
 
       if (!isNaN(gasPrice) && !isNaN(mpg)) {
-        const gasCost = (gasPrice / mpg) * miles;
-        const gasCostPerMile = gasPrice / mpg;
-        gasResultEl.textContent = `Gas: $${gasCost.toFixed(2)} total (${gasCostPerMile.toFixed(3)} per mile)`;
+        gasCost = (gasPrice / mpg) * miles;
+        gasCostPerMile = gasPrice / mpg;
+        
+        const gasResultText = `Gas: $${gasCost.toFixed(2)} total ($${gasCostPerMile.toFixed(3)}/mi)`;
+        fixedGasResultEl.textContent = gasResultText;
+        inlineGasResultEl.textContent = gasResultText;
       } else {
-        gasResultEl.textContent = '';
+        fixedGasResultEl.textContent = '';
+        inlineGasResultEl.textContent = '';
+      }
+      
+      // Calculate savings for the inline display (only on wide screens)
+      if (!isNaN(evCost) && !isNaN(gasCost)) {
+        const diff = gasCost - evCost;
+        const percentSavings = (diff / gasCost) * 100;
+        
+        if (diff > 0) {
+          inlineSavingsResultEl.textContent = `EV saves $${diff.toFixed(2)} (${percentSavings.toFixed(1)}%)`;
+        } else if (diff < 0) {
+          inlineSavingsResultEl.textContent = `Gas saves $${Math.abs(diff).toFixed(2)} (${Math.abs(percentSavings).toFixed(1)}%)`;
+        } else {
+          inlineSavingsResultEl.textContent = 'Both options cost the same';
+        }
+      } else {
+        inlineSavingsResultEl.textContent = '';
+      }
+      
+      // Check if we should show/hide the header based on results
+      const resultsHeader = document.getElementById('resultsHeader');
+      if (fixedEvResultEl.textContent === '' && fixedGasResultEl.textContent === '') {
+        resultsHeader.classList.add('opacity-0', '-translate-y-10');
+        
+        // Also hide chart section if no valid results
+        const chartSection = document.getElementById('chartSection');
+        chartSection.classList.add('opacity-0', '-translate-y-10');
+      } else {
+        resultsHeader.classList.remove('opacity-0', '-translate-y-10');
+        
+        // Update chart if both values are valid
+        if (!isNaN(evCost) && !isNaN(gasCost)) {
+          updateChart(evCost, gasCost, miles);
+        }
+      }
+    }
+
+    // Scroll handling for header appearance
+    function handleScroll() {
+      const scrollPos = window.scrollY;
+      const resultsHeader = document.getElementById('resultsHeader');
+      
+      if (scrollPos > 50) {
+        resultsHeader.classList.add('shadow-lg');
+        resultsHeader.classList.remove('shadow-md');
+      } else {
+        resultsHeader.classList.remove('shadow-lg');
+        resultsHeader.classList.add('shadow-md');
       }
     }
 
@@ -395,6 +658,9 @@
           calculate();
         });
       });
+      
+      // Set up scroll event listener for header appearance
+      window.addEventListener('scroll', handleScroll);
       
       calculate();
     });
