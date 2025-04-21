@@ -268,7 +268,7 @@
         },
 
         get evResult() {
-          if (!this.evCostPerMile) return '';
+          if (!this.evCostPerMile) return { trip: 'EV Trip: -', perMile: '-' };
           const tripCost = this.evCostPerMile * this.miles;
           return {
             trip: `EV Trip: $${tripCost.toFixed(4)}`,
@@ -277,7 +277,7 @@
         },
 
         get gasResult() {
-          if (!this.gasCostPerMile) return '';
+          if (!this.gasCostPerMile) return { trip: 'Gas Trip: -', perMile: '-' };
           const tripCost = this.gasCostPerMile * this.miles;
           return {
             trip: `Gas Trip: $${tripCost.toFixed(4)}`,
@@ -286,7 +286,7 @@
         },
 
         get savingsResult() {
-          if (!this.evCostPerMile || !this.gasCostPerMile) return '';
+          if (!this.evCostPerMile || !this.gasCostPerMile) return { trip: '-', perMile: '-' };
           const ev = this.evCostPerMile;
           const gas = this.gasCostPerMile;
 
