@@ -55,96 +55,105 @@
     </div>
 
     <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="flex flex-col gap-6 max-w-2xl mx-auto">
+        <!-- EV Section -->
         <div>
-          <div class="flex items-center mb-3">
+          <div class="flex items-center mb-4">
             <span class="text-2xl mr-2">⚡</span>
-            <h2 class="text-lg font-semibold text-green-600 dark:text-green-400">Electricity</h2>
+            <h2 class="text-lg font-semibold text-green-600 dark:text-green-400">Electric Vehicle</h2>
           </div>
-          <label class="block">
-            <div class="relative">
-              <input type="number" x-model="evPrice" step="0.01" min="0" class="w-full px-3 py-2 pr-16 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
-              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <span class="text-gray-500 dark:text-gray-400">$/kWh</span>
-              </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="max-w-[200px]">
+              <label class="block">
+                <span class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Price</span>
+                <div class="relative">
+                  <input type="number" x-model="evPrice" step="0.01" min="0" class="w-full px-3 py-2 pr-16 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <span class="text-gray-500 dark:text-gray-400">$/kWh</span>
+                  </div>
+                </div>
+              </label>
             </div>
-          </label>
+
+            <div class="max-w-[200px]">
+              <label class="block">
+                <span class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Efficiency</span>
+                <div class="relative">
+                  <input type="number" x-model="evEfficiencyDisplay" step="0.01" class="w-full px-3 py-2 pr-16 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <template x-if="evMode === 'whmi'">
+                      <span class="text-gray-500 dark:text-gray-400">Wh/mi</span>
+                    </template>
+                    <template x-if="evMode === 'mikwh'">
+                      <span class="text-gray-500 dark:text-gray-400">mi/kWh</span>
+                    </template>
+                  </div>
+                </div>
+                <div class="flex items-center justify-center mt-2">
+                  <span class="text-xs text-green-700 dark:text-green-400 mr-1">Wh/mi</span>
+                  <div class="relative inline-block w-8 mx-1">
+                    <input type="checkbox" x-model="isMiPerKwh" class="sr-only peer">
+                    <div class="block h-5 w-8 rounded-full bg-gray-200 dark:bg-gray-600 peer-checked:bg-green-500"></div>
+                    <div class="dot absolute left-1 top-1 h-3 w-3 rounded-full bg-white transition peer-checked:translate-x-3"></div>
+                  </div>
+                  <span class="text-xs text-green-700 dark:text-green-400">mi/kWh</span>
+                </div>
+              </label>
+            </div>
+          </div>
         </div>
 
+        <!-- Gas Section -->
         <div>
-          <div class="flex items-center mb-3">
-            <span class="text-2xl mr-2">💰</span>
+          <div class="flex items-center mb-4">
+            <span class="text-2xl mr-2">⛽</span>
             <h2 class="text-lg font-semibold text-red-600 dark:text-red-400">Gasoline</h2>
           </div>
-          <label class="block">
-            <div class="relative">
-              <input type="number" x-model="gasPrice" step="0.01" min="0" class="w-full px-3 py-2 pr-16 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
-              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <span class="text-gray-500 dark:text-gray-400">$/gallon</span>
-              </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="max-w-[200px]">
+              <label class="block">
+                <span class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Price</span>
+                <div class="relative">
+                  <input type="number" x-model="gasPrice" step="0.01" min="0" class="w-full px-3 py-2 pr-16 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <span class="text-gray-500 dark:text-gray-400">$/gallon</span>
+                  </div>
+                </div>
+              </label>
             </div>
-          </label>
-        </div>
-      </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t border-gray-200 dark:border-gray-700 mt-6">
-        <div class="flex flex-col max-w-xs">
-          <label class="block">
-            <div class="flex items-center mb-3">
-              <span class="text-2xl mr-2">🔌</span>
-              <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-200">EV</h2>
+            <div class="max-w-[200px]">
+              <label class="block">
+                <span class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Efficiency</span>
+                <div class="relative">
+                  <input type="number" x-model="mpg" step="0.1" class="w-full px-3 py-2 pr-12 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <span class="text-gray-500 dark:text-gray-400">mpg</span>
+                  </div>
+                </div>
+              </label>
             </div>
-            <div class="flex items-center mb-2">
-              <span class="text-xs text-green-700 dark:text-green-400 mr-1">Wh/mi</span>
-              <div class="relative inline-block w-8 mx-1">
-                <input type="checkbox" x-model="isMiPerKwh" class="sr-only peer">
-                <div class="block h-5 w-8 rounded-full bg-gray-200 dark:bg-gray-600 peer-checked:bg-green-500"></div>
-                <div class="dot absolute left-1 top-1 h-3 w-3 rounded-full bg-white transition peer-checked:translate-x-3"></div>
-              </div>
-              <span class="text-xs text-green-700 dark:text-green-400">mi/kWh</span>
-            </div>
-            <div class="relative">
-              <input type="number" x-model="evEfficiencyDisplay" step="0.01" class="w-full px-3 py-2 pr-16 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
-              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <template x-if="evMode === 'whmi'">
-                  <span class="text-gray-500 dark:text-gray-400">Wh/mi</span>
-                </template>
-                <template x-if="evMode === 'mikwh'">
-                  <span class="text-gray-500 dark:text-gray-400">mi/kWh</span>
-                </template>
-              </div>
-            </div>
-          </label>
+          </div>
         </div>
 
-        <div class="flex flex-col max-w-xs">
-          <label class="block">
-            <div class="flex items-center mb-3">
-              <span class="text-2xl mr-2">⛽</span>
-              <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-200">Gas</h2>
+        <!-- Trip Distance Section -->
+        <div>
+          <div class="flex items-center mb-4">
+            <span class="text-2xl mr-2">📍</span>
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Trip Distance</h2>
+          </div>
+          <div>
+            <div class="max-w-[200px]">
+              <label class="block">
+                <div class="relative">
+                  <input type="number" x-model="miles" step="1" min="1" class="w-full px-3 py-2 pr-8 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <span class="text-gray-500 dark:text-gray-400">mi</span>
+                  </div>
+                </div>
+              </label>
             </div>
-            <div class="relative">
-              <input type="number" x-model="mpg" step="0.1" class="w-full px-3 py-2 pr-12 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
-              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <span class="text-gray-500 dark:text-gray-400">mpg</span>
-              </div>
-            </div>
-          </label>
-        </div>
-
-        <div class="flex flex-col max-w-xs">
-          <label class="block">
-            <div class="flex items-center mb-3">
-              <span class="text-2xl mr-2">📍</span>
-              <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-200">Trip Distance</h2>
-            </div>
-            <div class="relative">
-              <input type="number" x-model="miles" step="1" min="1" class="w-full px-3 py-2 pr-8 text-base border rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700" />
-              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <span class="text-gray-500 dark:text-gray-400">mi</span>
-              </div>
-            </div>
-          </label>
+          </div>
         </div>
       </div>
     </div>
