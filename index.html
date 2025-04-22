@@ -502,6 +502,10 @@
             this.updateTheme();
             localStorage.setItem('theme', value);
           });
+          this.$watch('miles', value => {
+            localStorage.setItem('miles', value);
+            this.updateURL();
+          });
         },
 
         updateURL() {
