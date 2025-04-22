@@ -351,6 +351,16 @@
       };
 
       Alpine.data('app', () => ({
+        theme: localStorage.getItem('theme') || defaults.theme,
+        evPrice: parseFloat(localStorage.getItem('evPrice')) || defaults.evPrice,
+        gasPrice: parseFloat(localStorage.getItem('gasPrice')) || defaults.gasPrice,
+        evWhPerMile: parseFloat(localStorage.getItem('evWhPerMile')) || defaults.evWhPerMile,
+        isMiPerKwh: localStorage.getItem('evMode') === 'mikwh' || defaults.isMiPerKwh,
+        mpg: parseFloat(localStorage.getItem('mpg')) || defaults.mpg,
+        miles: parseFloat(localStorage.getItem('miles')) || defaults.miles,
+        isEvPriceLocked: localStorage.getItem('evLock') === 'true' || defaults.isEvPriceLocked,
+        isGasPriceLocked: localStorage.getItem('gasLock') === 'true' || defaults.isGasPriceLocked,
+
         init() {
           // First try to get values from URL
           const params = new URLSearchParams(window.location.search);
@@ -399,19 +409,14 @@
               this.isGasPriceLocked = urlValues.isGasPriceLocked;
               localStorage.setItem('gasLock', this.isGasPriceLocked);
             }
-          } else {
-            // Load from localStorage if no URL params
-            this.isEvPriceLocked = localStorage.getItem('evLock') === 'true';
-            this.isGasPriceLocked = localStorage.getItem('gasLock') === 'true';
           }
-
-          // Format initial gas price to 2 decimal places
-          this.gasPrice = parseFloat(this.gasPrice);
-
           // Update URL with initial values if no params were present
           if (!window.location.search) {
             this.updateURL();
           }
+
+          // Format initial gas price to 2 decimal places
+          this.gasPrice = parseFloat(this.gasPrice);
 
           this.updateTheme();
 
@@ -475,16 +480,6 @@
             this.updateURL();
           });
         },
-
-        theme: localStorage.getItem('theme') || defaults.theme,
-        evPrice: parseFloat(localStorage.getItem('evPrice')) || defaults.evPrice,
-        gasPrice: parseFloat(localStorage.getItem('gasPrice')) || defaults.gasPrice,
-        evWhPerMile: parseFloat(localStorage.getItem('evWhPerMile')) || defaults.evWhPerMile,
-        isMiPerKwh: localStorage.getItem('evMode') === 'mikwh' || defaults.isMiPerKwh,
-        mpg: parseFloat(localStorage.getItem('mpg')) || defaults.mpg,
-        miles: parseFloat(localStorage.getItem('miles')) || defaults.miles,
-        isEvPriceLocked: localStorage.getItem('evLock') === 'true' || defaults.isEvPriceLocked,
-        isGasPriceLocked: localStorage.getItem('gasLock') === 'true' || defaults.isGasPriceLocked,
 
         async share() {
           if (navigator.share) {
@@ -638,15 +633,15 @@
 
           if (totalSavings === 0) {
             return {
-              trip: `Costs are equal`,
+              trip: `No Savings`,
               perMile: `-`
             };
-          } else {
-            return {
-              trip: `${whoSaves} saves ${formatPrice(Math.abs(totalSavings))} (${percentDiff.toFixed(2)}%)`,
-              perMile: `${formatPrice(Math.abs(savingsPerMile), 4)}/mi`
-            };
           }
+
+          return {
+            trip: `${whoSaves} saves ${formatPrice(Math.abs(totalSavings))} (${percentDiff.toFixed(2)}%)`,
+            perMile: `${formatPrice(Math.abs(savingsPerMile), 4)}/mi`
+          };
         },
       }))
     });
