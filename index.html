@@ -44,6 +44,7 @@
 
   <!-- Alpine.js -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     /* Remove number input steppers */
@@ -247,8 +248,13 @@
     </div>
   </div>
 
-	<canvas id="costChart"></canvas>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <div class="w-full max-w-4xl mx-auto px-4 py-4">
+    <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm">
+      <div class="aspect-[4/3] w-full">
+        <canvas id="costChart"></canvas>
+      </div>
+    </div>
+  </div>
 
   <footer class="w-full flex justify-start px-4 py-4 mt-auto">
     <div class="bg-white dark:bg-slate-800 rounded-full px-2.5 py-1.5 flex items-center shadow-sm">
@@ -278,62 +284,6 @@
   </footer>
 
   <script>
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('src/sw.js')
-          .then(registration => {
-            console.log('ServiceWorker registration successful');
-          })
-          .catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
-      });
-    }
-
-    // PWA install prompt
-    let deferredPrompt;
-    const installButton = document.createElement('button');
-    installButton.className = 'fixed bottom-6 right-6 bg-green-600 text-white px-4 py-3 text-lg font-semibold rounded-full shadow-lg hover:bg-green-700 transition-colors';
-    installButton.textContent = 'Install App';
-    installButton.style.display = 'none';
-
-    // Only add the install button if we're not already in standalone mode
-    if (!window.matchMedia('(display-mode: standalone)').matches) {
-      document.body.appendChild(installButton);
-    }
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      // Store the event for later use
-      deferredPrompt = e;
-      // Show our custom install button
-      installButton.style.display = 'block';
-    });
-
-    installButton.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
-
-      // Show the install prompt
-      deferredPrompt.prompt();
-
-      // Wait for the user to respond to the prompt
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`User response to the install prompt: ${outcome}`);
-
-      // Clear the deferredPrompt
-      deferredPrompt = null;
-      // Hide our custom install button
-      installButton.style.display = 'none';
-    });
-
-    window.addEventListener('appinstalled', () => {
-      console.log('PWA was installed');
-      installButton.style.display = 'none';
-      deferredPrompt = null;
-    });
-  </script>
-
-  <script>
     document.addEventListener('alpine:init', () => {
       const defaults = {
         theme: 'system',
@@ -347,10 +297,27 @@
         isGasPriceLocked: false
       };
 
-      // Helper function for consistent price formatting
+      // Helpers
+
       const formatPrice = (price, decimals = 2) => {
         if (!price) return '-';
         return `$${parseFloat(price).toFixed(decimals)}`;
+      };
+
+      const evCostPerMile = (whPerMile, evPrice) => {
+        return (whPerMile / 1000) * evPrice;
+      };
+
+      const gasCostPerMile = (mpg, gasPrice) => {
+        return gasPrice / mpg;
+      };
+
+      const equivalentEvPrice = (gasCostPerMile, whPerMile) => {
+        return (gasCostPerMile * 1000) / whPerMile;
+      };
+
+      const equivalentGasPrice = (evCostPerMile, mpg) => {
+        return evCostPerMile * mpg;
       };
 
       Alpine.data('app', () => ({
@@ -365,125 +332,217 @@
         isGasPriceLocked: localStorage.getItem('gasLock') === 'true' || defaults.isGasPriceLocked,
 
         init() {
-          // First try to get values from URL
-          const params = new URLSearchParams(window.location.search);
-          const urlValues = {
-            evPrice: parseFloat(params.get('ev')) || null,
-            gasPrice: parseFloat(params.get('gas')) || null,
-            evWhPerMile: parseFloat(params.get('whmi')) || null,
-            isMiPerKwh: params.get('mikwh') === 'true',
-            mpg: parseFloat(params.get('mpg')) || null,
-            miles: parseFloat(params.get('mi')) || null,
-            isEvPriceLocked: params.get('evLock') === 'true',
-            isGasPriceLocked: params.get('gasLock') === 'true'
-          };
-
-          // If we have any valid URL params, update both the state and localStorage
-          if (Object.values(urlValues).some(v => v !== null)) {
-            if (urlValues.evPrice !== null) {
-              this.evPrice = urlValues.evPrice;
-              localStorage.setItem('evPrice', urlValues.evPrice);
-            }
-            if (urlValues.gasPrice !== null) {
-              this.gasPrice = parseFloat(urlValues.gasPrice);
-              localStorage.setItem('gasPrice', urlValues.gasPrice);
-            }
-            if (urlValues.evWhPerMile !== null) {
-              this.evWhPerMile = urlValues.evWhPerMile;
-              localStorage.setItem('evWhPerMile', urlValues.evWhPerMile);
-            }
-            if (params.has('mikwh')) {
-              this.isMiPerKwh = urlValues.isMiPerKwh;
-              localStorage.setItem('evMode', this.evMode);
-            }
-            if (urlValues.mpg !== null) {
-              this.mpg = urlValues.mpg;
-              localStorage.setItem('mpg', urlValues.mpg);
-            }
-            if (urlValues.miles !== null) {
-              this.miles = urlValues.miles;
-              localStorage.setItem('miles', urlValues.miles);
-            }
-            if (params.has('evLock')) {
-              this.isEvPriceLocked = urlValues.isEvPriceLocked;
-              localStorage.setItem('evLock', this.isEvPriceLocked);
-            }
-            if (params.has('gasLock')) {
-              this.isGasPriceLocked = urlValues.isGasPriceLocked;
-              localStorage.setItem('gasLock', this.isGasPriceLocked);
-            }
-          }
-          // Update URL with initial values if no params were present
-          if (!window.location.search) {
-            this.updateURL();
-          }
-
-          // Format initial gas price to 2 decimal places
-          this.gasPrice = parseFloat(this.gasPrice);
-
+          this.initializeStateFromUrl();
           this.updateTheme();
-
-          window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-            if (this.theme === 'system') this.updateTheme();
-          });
-
-          // Watch for changes and update both localStorage and URL
-          this.$watch('evPrice', value => {
-            localStorage.setItem('evPrice', value);
-            this.updateURL();
-            // Update gas price if EV is locked
-            if (this.isEvPriceLocked && this.equivalentGasPrice) {
-              this.gasPrice = parseFloat(this.equivalentGasPrice);
-            }
-          });
-          this.$watch('gasPrice', value => {
-            localStorage.setItem('gasPrice', value);
-            this.updateURL();
-            // Update EV price if gas is locked
-            if (this.isGasPriceLocked && this.equivalentEvPrice) {
-              this.evPrice = this.equivalentEvPrice;
-            }
-          });
-          this.$watch('mpg', value => {
-            localStorage.setItem('mpg', value);
-            this.updateURL();
-            // Update prices if either is locked
-            if (this.isEvPriceLocked && this.equivalentGasPrice) {
-              this.gasPrice = parseFloat(this.equivalentGasPrice);
-            } else if (this.isGasPriceLocked && this.equivalentEvPrice) {
-              this.evPrice = this.equivalentEvPrice;
-            }
-          });
-          this.$watch('evWhPerMile', value => {
-            localStorage.setItem('evWhPerMile', value);
-            this.updateURL();
-            // Update prices if either is locked
-            if (this.isEvPriceLocked && this.equivalentGasPrice) {
-              this.gasPrice = parseFloat(this.equivalentGasPrice);
-            } else if (this.isGasPriceLocked && this.equivalentEvPrice) {
-              this.evPrice = this.equivalentEvPrice;
-            }
-          });
-          this.$watch('isMiPerKwh', value => {
-            localStorage.setItem('evMode', this.evMode);
-            this.updateURL();
-            // Update prices if either is locked
-            if (this.isEvPriceLocked && this.equivalentGasPrice) {
-              this.gasPrice = parseFloat(this.equivalentGasPrice);
-            } else if (this.isGasPriceLocked && this.equivalentEvPrice) {
-              this.evPrice = this.equivalentEvPrice;
-            }
-          });
-          this.$watch('theme', value => {
-            this.updateTheme();
-            localStorage.setItem('theme', value);
-          });
-          this.$watch('miles', value => {
-            localStorage.setItem('miles', value);
-            this.updateURL();
-          });
-
+          this.setupWatchers();
           this.renderChart();
+        },
+
+        get evMode() {
+          return this.isMiPerKwh ? 'mikwh' : 'whmi';
+        },
+
+        get evEfficiencyDisplay() {
+          return this.evMode === 'whmi' ? parseFloat(this.evWhPerMile.toFixed(2)) : parseFloat((1000 / this.evWhPerMile).toFixed(2));
+        },
+        set evEfficiencyDisplay(val) {
+          const parsed = parseFloat(val);
+          if (!parsed || parsed <= 0) return;
+          this.evWhPerMile = this.evMode === 'whmi' ? parseFloat(parsed.toFixed(2)) : parseFloat((1000 / parsed).toFixed(2));
+        },
+
+        get whPerMile() {
+          return this.evWhPerMile;
+        },
+
+        get evCostPerMile() {
+          if (!this.whPerMile || !this.evPrice) return '';
+          return evCostPerMile(this.whPerMile, this.evPrice);
+        },
+
+        get gasCostPerMile() {
+          if (!this.mpg || !this.gasPrice) return '';
+          return gasCostPerMile(this.mpg, this.gasPrice);
+        },
+
+        get equivalentEvPrice() {
+          if (!this.gasCostPerMile || !this.whPerMile) return '';
+          return equivalentEvPrice(this.gasCostPerMile, this.whPerMile);
+        },
+
+        get equivalentGasPrice() {
+          if (!this.evCostPerMile || !this.mpg) return '';
+          return equivalentGasPrice(this.evCostPerMile, this.mpg);
+        },
+
+        get evResult() {
+          if (!this.evCostPerMile) return { trip: 'EV Trip: -', perMile: '-' };
+          const tripCost = this.evCostPerMile * this.miles;
+          return {
+            trip: `EV Trip: ${formatPrice(tripCost)}`,
+            perMile: `${formatPrice(this.evCostPerMile, 4)}/mi`
+          };
+        },
+
+        get gasResult() {
+          if (!this.gasCostPerMile) return { trip: 'Gas Trip: -', perMile: '-' };
+          const tripCost = this.gasCostPerMile * this.miles;
+          return {
+            trip: `Gas Trip: ${formatPrice(tripCost)}`,
+            perMile: `${formatPrice(this.gasCostPerMile, 4)}/mi`
+          };
+        },
+
+        get savingsResult() {
+          if (!this.evCostPerMile || !this.gasCostPerMile) return { trip: '-', perMile: '-' };
+
+          if (this.isEvPriceLocked || this.isGasPriceLocked) {
+            const lockedType = this.isEvPriceLocked ? '⛽️' : '🔋';
+            const price = this.isEvPriceLocked ? this.equivalentGasPrice : this.equivalentEvPrice;
+            return {
+              trip: `Equivalent ${lockedType} Price`,
+              perMile: `${formatPrice(price)}/${this.isEvPriceLocked ? 'gal' : 'kWh'}`
+            };
+          }
+
+          const ev = this.evCostPerMile;
+          const gas = this.gasCostPerMile;
+
+          const savingsPerMile = gas - ev;
+          const totalSavings = savingsPerMile * this.miles;
+          const percentDiff = Math.abs(savingsPerMile) / Math.max(ev, gas) * 100;
+          const whoSaves = savingsPerMile > 0 ? 'EV' : 'Gas';
+
+          if (totalSavings === 0) {
+            return {
+              trip: `No Savings`,
+              perMile: `-`
+            };
+          }
+
+          return {
+            trip: `${whoSaves} saves ${formatPrice(Math.abs(totalSavings))} (${percentDiff.toFixed(2)}%)`,
+            perMile: `${formatPrice(Math.abs(savingsPerMile), 4)}/mi`
+          };
+        },
+
+        generateChartData(efficiency, isEv = true) {
+          const pricePoints = [];
+          const costPerMilePoints = [];
+
+          // Generate price points from $0.00 to $1.50 in $0.05 increments
+          for (let price = 0; price <= 1.5; price += 0.05) {
+            pricePoints.push(price);
+
+            if (isEv) {
+              const costPerMile = parseFloat(evCostPerMile(efficiency, price));
+              costPerMilePoints.push(costPerMile);
+            } else {
+              const costPerMile = parseFloat(gasCostPerMile(efficiency, price));
+              costPerMilePoints.push(costPerMile);
+            }
+          }
+
+          return {
+            prices: pricePoints,
+            costsPerMile: costPerMilePoints
+          };
+        },
+
+        get evChartPrices() {
+          return this.generateChartData(this.whPerMile, true);
+        },
+
+        get gasChartPrices() {
+          return this.generateChartData(this.mpg, false);
+        },
+
+        renderChart() {
+          const ctx = document.getElementById('costChart');
+
+          const evData = this.evChartPrices;
+          const gasData = this.gasChartPrices;
+
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: evData.prices.map(price => `$${price.toFixed(2)}/kWh`),
+              datasets: [
+                {
+                  label: 'EV Cost per Mile',
+                  data: evData.costsPerMile,
+                  borderColor: '#16a34a', // green-600
+                  backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                  borderWidth: 2,
+                  tension: 0.1
+                },
+                {
+                  label: 'Gas Cost per Mile',
+                  data: gasData.costsPerMile,
+                  borderColor: '#e11d48', // rose-600
+                  backgroundColor: 'rgba(225, 29, 72, 0.1)',
+                  borderWidth: 2,
+                  tension: 0.1
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Cost per Mile vs Price per kWh',
+                  color: '#1f2937', // gray-800
+                  font: {
+                    size: 16
+                  }
+                },
+                legend: {
+                  position: 'top',
+                  labels: {
+                    color: '#1f2937' // gray-800
+                  }
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      const label = context.dataset.label;
+                      const value = context.raw;
+                      if (label === 'Gas Cost per Mile') {
+                        const equivalentPrice = equivalentGasPrice(value, this.mpg);
+                        return `${label}: $${value.toFixed(4)}/mi ($${equivalentPrice}/gal)`;
+                      }
+                      return `${label}: $${value.toFixed(4)}/mi`;
+                    }
+                  }
+                }
+              },
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Price per kWh ($)',
+                    color: '#1f2937' // gray-800
+                  },
+                  grid: {
+                    color: 'rgba(0, 0, 0, 0.1)'
+                  }
+                },
+                y: {
+                  title: {
+                    display: true,
+                    text: 'Cost per Mile ($)',
+                    color: '#1f2937' // gray-800
+                  },
+                  beginAtZero: true,
+                  grid: {
+                    color: 'rgba(0, 0, 0, 0.1)'
+                  }
+                }
+              }
+            }
+          });
         },
 
         async share() {
@@ -561,136 +620,178 @@
           this.updateURL();
         },
 
-        get evMode() {
-          return this.isMiPerKwh ? 'mikwh' : 'whmi';
-        },
-
-        get evEfficiencyDisplay() {
-          return this.evMode === 'whmi' ? parseFloat(this.evWhPerMile.toFixed(2)) : parseFloat((1000 / this.evWhPerMile).toFixed(2));
-        },
-        set evEfficiencyDisplay(val) {
-          const parsed = parseFloat(val);
-          if (!parsed || parsed <= 0) return;
-          this.evWhPerMile = this.evMode === 'whmi' ? parseFloat(parsed.toFixed(2)) : parseFloat((1000 / parsed).toFixed(2));
-        },
-
-        get whPerMile() {
-          return this.evWhPerMile;
-        },
-
-        get evCostPerMile() {
-          if (!this.whPerMile || !this.evPrice) return '';
-          return parseFloat(((this.whPerMile / 1000) * this.evPrice).toFixed(2));
-        },
-
-        get gasCostPerMile() {
-          if (!this.mpg || !this.gasPrice) return '';
-          return parseFloat((this.gasPrice / this.mpg).toFixed(2));
-        },
-
-        get equivalentEvPrice() {
-          if (!this.gasCostPerMile || !this.whPerMile) return '';
-          return parseFloat(((this.gasCostPerMile * 1000) / this.whPerMile).toFixed(2));
-        },
-
-        get equivalentGasPrice() {
-          if (!this.evCostPerMile || !this.mpg) return '';
-          return parseFloat((this.evCostPerMile * this.mpg).toFixed(2));
-        },
-
-        get evResult() {
-          if (!this.evCostPerMile) return { trip: 'EV Trip: -', perMile: '-' };
-          const tripCost = this.evCostPerMile * this.miles;
-          return {
-            trip: `EV Trip: ${formatPrice(tripCost)}`,
-            perMile: `${formatPrice(this.evCostPerMile, 4)}/mi`
+        initializeStateFromUrl() {
+          // First try to get values from URL
+          const params = new URLSearchParams(window.location.search);
+          const urlValues = {
+            evPrice: parseFloat(params.get('ev')) || null,
+            gasPrice: parseFloat(params.get('gas')) || null,
+            evWhPerMile: parseFloat(params.get('whmi')) || null,
+            isMiPerKwh: params.get('mikwh') === 'true',
+            mpg: parseFloat(params.get('mpg')) || null,
+            miles: parseFloat(params.get('mi')) || null,
+            isEvPriceLocked: params.get('evLock') === 'true',
+            isGasPriceLocked: params.get('gasLock') === 'true'
           };
-        },
 
-        get gasResult() {
-          if (!this.gasCostPerMile) return { trip: 'Gas Trip: -', perMile: '-' };
-          const tripCost = this.gasCostPerMile * this.miles;
-          return {
-            trip: `Gas Trip: ${formatPrice(tripCost)}`,
-            perMile: `${formatPrice(this.gasCostPerMile, 4)}/mi`
-          };
-        },
-
-        get savingsResult() {
-          if (!this.evCostPerMile || !this.gasCostPerMile) return { trip: '-', perMile: '-' };
-
-          if (this.isEvPriceLocked || this.isGasPriceLocked) {
-            const lockedType = this.isEvPriceLocked ? '⛽️' : '🔋';
-            const price = this.isEvPriceLocked ? this.equivalentGasPrice : this.equivalentEvPrice;
-            return {
-              trip: `Equivalent ${lockedType} Price`,
-              perMile: `${formatPrice(price)}/${this.isEvPriceLocked ? 'gal' : 'kWh'}`
-            };
-          }
-
-          const ev = this.evCostPerMile;
-          const gas = this.gasCostPerMile;
-
-          const savingsPerMile = gas - ev;
-          const totalSavings = savingsPerMile * this.miles;
-          const percentDiff = Math.abs(savingsPerMile) / Math.max(ev, gas) * 100;
-          const whoSaves = savingsPerMile > 0 ? 'EV' : 'Gas';
-
-          if (totalSavings === 0) {
-            return {
-              trip: `No Savings`,
-              perMile: `-`
-            };
-          }
-
-          return {
-            trip: `${whoSaves} saves ${formatPrice(Math.abs(totalSavings))} (${percentDiff.toFixed(2)}%)`,
-            perMile: `${formatPrice(Math.abs(savingsPerMile), 4)}/mi`
-          };
-        },
-
-        renderChart() {
-          const ctx = document.getElementById('costChart');
-
-          // let names = this.cities.map(c => c.label);
-
-          // let highestTemps = this.cities.map(c => {
-          //   return c.forecast.reduce((highest,f) => {
-          //     if(f.temperature > highest) return f.temperature;
-          //     return highest;
-          //   },0);
-          // });
-
-          // let lowestTemps = this.cities.map(c => {
-          //   return c.forecast.reduce((lowest,f) => {
-          //     if(f.temperature < lowest) return f.temperature;
-          //     return lowest;
-          //   },999);
-          // });
-
-
-
-          new Chart(ctx, {
-            type: 'line',
-            data: {
-              labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-              datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                borderWidth: 1
-              }]
-            },
-            options: {
-              scales: {
-                y: {
-                  beginAtZero: true
-                }
-              }
+          // If we have any valid URL params, update both the state and localStorage
+          if (Object.values(urlValues).some(v => v !== null)) {
+            if (urlValues.evPrice !== null) {
+              this.evPrice = urlValues.evPrice;
+              localStorage.setItem('evPrice', urlValues.evPrice);
             }
+            if (urlValues.gasPrice !== null) {
+              this.gasPrice = parseFloat(urlValues.gasPrice);
+              localStorage.setItem('gasPrice', urlValues.gasPrice);
+            }
+            if (urlValues.evWhPerMile !== null) {
+              this.evWhPerMile = urlValues.evWhPerMile;
+              localStorage.setItem('evWhPerMile', urlValues.evWhPerMile);
+            }
+            if (params.has('mikwh')) {
+              this.isMiPerKwh = urlValues.isMiPerKwh;
+              localStorage.setItem('evMode', this.evMode);
+            }
+            if (urlValues.mpg !== null) {
+              this.mpg = urlValues.mpg;
+              localStorage.setItem('mpg', urlValues.mpg);
+            }
+            if (urlValues.miles !== null) {
+              this.miles = urlValues.miles;
+              localStorage.setItem('miles', urlValues.miles);
+            }
+            if (params.has('evLock')) {
+              this.isEvPriceLocked = urlValues.isEvPriceLocked;
+              localStorage.setItem('evLock', this.isEvPriceLocked);
+            }
+            if (params.has('gasLock')) {
+              this.isGasPriceLocked = urlValues.isGasPriceLocked;
+              localStorage.setItem('gasLock', this.isGasPriceLocked);
+            }
+          }
+
+          // Update URL with initial values if no params were present
+          if (!window.location.search) {
+            this.updateURL();
+          }
+        },
+
+        setupWatchers() {
+          window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (this.theme === 'system') this.updateTheme();
           });
 
+          // Watch for changes and update both localStorage and URL
+          this.$watch('evPrice', value => {
+            localStorage.setItem('evPrice', value);
+            this.updateURL();
+            // Update gas price if EV is locked
+            if (this.isEvPriceLocked && this.equivalentGasPrice) {
+              this.gasPrice = parseFloat(this.equivalentGasPrice);
+            }
+          });
+          this.$watch('gasPrice', value => {
+            localStorage.setItem('gasPrice', value);
+            this.updateURL();
+            // Update EV price if gas is locked
+            if (this.isGasPriceLocked && this.equivalentEvPrice) {
+              this.evPrice = this.equivalentEvPrice;
+            }
+          });
+          this.$watch('mpg', value => {
+            localStorage.setItem('mpg', value);
+            this.updateURL();
+            // Update prices if either is locked
+            if (this.isEvPriceLocked && this.equivalentGasPrice) {
+              this.gasPrice = parseFloat(this.equivalentGasPrice);
+            } else if (this.isGasPriceLocked && this.equivalentEvPrice) {
+              this.evPrice = this.equivalentEvPrice;
+            }
+          });
+          this.$watch('evWhPerMile', value => {
+            localStorage.setItem('evWhPerMile', value);
+            this.updateURL();
+            // Update prices if either is locked
+            if (this.isEvPriceLocked && this.equivalentGasPrice) {
+              this.gasPrice = parseFloat(this.equivalentGasPrice);
+            } else if (this.isGasPriceLocked && this.equivalentEvPrice) {
+              this.evPrice = this.equivalentEvPrice;
+            }
+          });
+          this.$watch('isMiPerKwh', value => {
+            localStorage.setItem('evMode', this.evMode);
+            this.updateURL();
+            // Update prices if either is locked
+            if (this.isEvPriceLocked && this.equivalentGasPrice) {
+              this.gasPrice = parseFloat(this.equivalentGasPrice);
+            } else if (this.isGasPriceLocked && this.equivalentEvPrice) {
+              this.evPrice = this.equivalentEvPrice;
+            }
+          });
+          this.$watch('theme', value => {
+            this.updateTheme();
+            localStorage.setItem('theme', value);
+          });
+          this.$watch('miles', value => {
+            localStorage.setItem('miles', value);
+            this.updateURL();
+          });
         }
-      }))
+      }));
+    });
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('src/sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful');
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+
+    // PWA install prompt
+    let deferredPrompt;
+    const installButton = document.createElement('button');
+    installButton.className = 'fixed bottom-6 right-6 bg-green-600 text-white px-4 py-3 text-lg font-semibold rounded-full shadow-lg hover:bg-green-700 transition-colors';
+    installButton.textContent = 'Install App';
+    installButton.style.display = 'none';
+
+    // Only add the install button if we're not already in standalone mode
+    if (!window.matchMedia('(display-mode: standalone)').matches) {
+      document.body.appendChild(installButton);
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Store the event for later use
+      deferredPrompt = e;
+      // Show our custom install button
+      installButton.style.display = 'block';
+    });
+
+    installButton.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+
+      // Show the install prompt
+      deferredPrompt.prompt();
+
+      // Wait for the user to respond to the prompt
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User response to the install prompt: ${outcome}`);
+
+      // Clear the deferredPrompt
+      deferredPrompt = null;
+      // Hide our custom install button
+      installButton.style.display = 'none';
+    });
+
+    window.addEventListener('appinstalled', () => {
+      console.log('PWA was installed');
+      installButton.style.display = 'none';
+      deferredPrompt = null;
     });
   </script>
 </body>
