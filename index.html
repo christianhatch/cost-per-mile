@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" x-data="costPerMile()" x-init="init()" @click.capture="if (!$event.target.matches('input, button')) document.activeElement?.blur()">
+<html lang="en" @click.capture="if (!$event.target.matches('input, button')) document.activeElement?.blur()">
 <head>
   <meta charset="UTF-8" />
   <title>Cost Per Mile</title>
@@ -57,7 +57,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center bg-gray-100 dark:bg-slate-900">
+<body x-data="app" class="min-h-screen flex flex-col items-center bg-gray-100 dark:bg-slate-900">
   <div class="w-full max-w-4xl mx-auto px-4 py-8">
     <div class="wide-layout-results mb-6">
       <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm">
@@ -331,7 +331,7 @@
   </script>
 
   <script>
-    function costPerMile() {
+    document.addEventListener('alpine:init', () => {
       const defaults = {
         theme: 'system',
         evPrice: 0.25,
@@ -350,39 +350,7 @@
         return `$${parseFloat(price).toFixed(decimals)}`;
       };
 
-      return {
-        theme: localStorage.getItem('theme') || defaults.theme,
-        evPrice: parseFloat(localStorage.getItem('evPrice')) || defaults.evPrice,
-        gasPrice: parseFloat(localStorage.getItem('gasPrice')) || defaults.gasPrice,
-        evWhPerMile: parseFloat(localStorage.getItem('evWhPerMile')) || defaults.evWhPerMile,
-        isMiPerKwh: localStorage.getItem('evMode') === 'mikwh' || defaults.isMiPerKwh,
-        mpg: parseFloat(localStorage.getItem('mpg')) || defaults.mpg,
-        miles: parseFloat(localStorage.getItem('miles')) || defaults.miles,
-        isEvPriceLocked: localStorage.getItem('evLock') === 'true' || defaults.isEvPriceLocked,
-        isGasPriceLocked: localStorage.getItem('gasLock') === 'true' || defaults.isGasPriceLocked,
-
-        async share() {
-          if (navigator.share) {
-            try {
-              await navigator.share({
-                title: 'Cost Per Mile Comparison',
-                url: window.location.href
-              });
-            } catch {
-              // Fall back to clipboard if share is cancelled or fails
-              this.copyToClipboard();
-            }
-          } else {
-            this.copyToClipboard();
-          }
-        },
-
-        async copyToClipboard() {
-          await navigator.clipboard.writeText(window.location.href);
-          this.$refs.shareButton.textContent = 'Copied!';
-          setTimeout(() => this.$refs.shareButton.textContent = 'Share', 2000);
-        },
-
+      Alpine.data('app', () => ({
         init() {
           // First try to get values from URL
           const params = new URLSearchParams(window.location.search);
@@ -508,6 +476,38 @@
           });
         },
 
+        theme: localStorage.getItem('theme') || defaults.theme,
+        evPrice: parseFloat(localStorage.getItem('evPrice')) || defaults.evPrice,
+        gasPrice: parseFloat(localStorage.getItem('gasPrice')) || defaults.gasPrice,
+        evWhPerMile: parseFloat(localStorage.getItem('evWhPerMile')) || defaults.evWhPerMile,
+        isMiPerKwh: localStorage.getItem('evMode') === 'mikwh' || defaults.isMiPerKwh,
+        mpg: parseFloat(localStorage.getItem('mpg')) || defaults.mpg,
+        miles: parseFloat(localStorage.getItem('miles')) || defaults.miles,
+        isEvPriceLocked: localStorage.getItem('evLock') === 'true' || defaults.isEvPriceLocked,
+        isGasPriceLocked: localStorage.getItem('gasLock') === 'true' || defaults.isGasPriceLocked,
+
+        async share() {
+          if (navigator.share) {
+            try {
+              await navigator.share({
+                title: 'Cost Per Mile Comparison',
+                url: window.location.href
+              });
+            } catch {
+              // Fall back to clipboard if share is cancelled or fails
+              this.copyToClipboard();
+            }
+          } else {
+            this.copyToClipboard();
+          }
+        },
+
+        async copyToClipboard() {
+          await navigator.clipboard.writeText(window.location.href);
+          this.$refs.shareButton.textContent = 'Copied!';
+          setTimeout(() => this.$refs.shareButton.textContent = 'Share', 2000);
+        },
+
         updateURL() {
           const params = new URLSearchParams();
           if (this.evPrice) params.set('ev', this.evPrice);
@@ -527,6 +527,38 @@
         updateTheme() {
           const isDark = this.theme === 'dark' || (this.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
           document.documentElement.classList.toggle('dark', isDark);
+        },
+
+        toggleEvPriceLock() {
+          if (this.isEvPriceLocked) {
+            this.isEvPriceLocked = false;
+          } else {
+            this.isEvPriceLocked = true;
+            this.isGasPriceLocked = false;
+            // Update gas price to maintain equivalent cost per mile
+            if (this.equivalentGasPrice) {
+              this.gasPrice = parseFloat(this.equivalentGasPrice);
+            }
+          }
+          localStorage.setItem('evLock', this.isEvPriceLocked);
+          localStorage.setItem('gasLock', this.isGasPriceLocked);
+          this.updateURL();
+        },
+
+        toggleGasPriceLock() {
+          if (this.isGasPriceLocked) {
+            this.isGasPriceLocked = false;
+          } else {
+            this.isGasPriceLocked = true;
+            this.isEvPriceLocked = false;
+            // Update EV price to maintain equivalent cost per mile
+            if (this.equivalentEvPrice) {
+              this.evPrice = this.equivalentEvPrice;
+            }
+          }
+          localStorage.setItem('evLock', this.isEvPriceLocked);
+          localStorage.setItem('gasLock', this.isGasPriceLocked);
+          this.updateURL();
         },
 
         get evMode() {
@@ -604,45 +636,20 @@
           const percentDiff = Math.abs(savingsPerMile) / Math.max(ev, gas) * 100;
           const whoSaves = savingsPerMile > 0 ? 'EV' : 'Gas';
 
-          return {
-            trip: `${whoSaves} saves ${formatPrice(Math.abs(totalSavings))} (${percentDiff.toFixed(2)}%)`,
-            perMile: `${formatPrice(Math.abs(savingsPerMile), 4)}/mi`
-          };
-        },
-
-        toggleEvPriceLock() {
-          if (this.isEvPriceLocked) {
-            this.isEvPriceLocked = false;
+          if (totalSavings === 0) {
+            return {
+              trip: `Costs are equal`,
+              perMile: `-`
+            };
           } else {
-            this.isEvPriceLocked = true;
-            this.isGasPriceLocked = false;
-            // Update gas price to maintain equivalent cost per mile
-            if (this.equivalentGasPrice) {
-              this.gasPrice = parseFloat(this.equivalentGasPrice);
-            }
+            return {
+              trip: `${whoSaves} saves ${formatPrice(Math.abs(totalSavings))} (${percentDiff.toFixed(2)}%)`,
+              perMile: `${formatPrice(Math.abs(savingsPerMile), 4)}/mi`
+            };
           }
-          localStorage.setItem('evLock', this.isEvPriceLocked);
-          localStorage.setItem('gasLock', this.isGasPriceLocked);
-          this.updateURL();
         },
-
-        toggleGasPriceLock() {
-          if (this.isGasPriceLocked) {
-            this.isGasPriceLocked = false;
-          } else {
-            this.isGasPriceLocked = true;
-            this.isEvPriceLocked = false;
-            // Update EV price to maintain equivalent cost per mile
-            if (this.equivalentEvPrice) {
-              this.evPrice = this.equivalentEvPrice;
-            }
-          }
-          localStorage.setItem('evLock', this.isEvPriceLocked);
-          localStorage.setItem('gasLock', this.isGasPriceLocked);
-          this.updateURL();
-        }
-      }
-    }
+      }))
+    });
   </script>
 </body>
 </html>
