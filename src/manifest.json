@@ -1,36 +1,53 @@
 {
     "name": "Cost Per Mile",
-    "description": "Cost Per Mile Calculator",
     "short_name": "CPM",
-    "start_url": ".",
+    "description": "Compare electric vs gas vehicle costs per mile",
+    "start_url": "/",
     "display": "standalone",
-    "background_color": "#36647c",
-    "theme_color": "#36647c",
+    "background_color": "#0f172a",
+    "theme_color": "#0f172a",
+    "orientation": "portrait",
+    "scope": "/",
+    "categories": ["utilities", "productivity"],
+    "dir": "ltr",
+    "lang": "en-US",
+    "prefer_related_applications": false,
     "icons": [
       {
-        "src": "/android-chrome-192x192.png",
+        "src": "/src/assets/android-chrome-192x192.png",
         "sizes": "192x192",
-        "type": "image/png"
+        "type": "image/png",
+        "purpose": "any maskable"
       },
       {
-        "src": "/android-chrome-512x512.png",
+        "src": "/src/assets/android-chrome-512x512.png",
         "sizes": "512x512",
-        "type": "image/png"
+        "type": "image/png",
+        "purpose": "any maskable"
       },
       {
-        "src": "/apple-touch-icon.png",
+        "src": "/src/assets/apple-touch-icon.png",
         "sizes": "180x180",
         "type": "image/png"
       },
       {
-        "src": "/favicon-32x32.png",
+        "src": "/src/assets/favicon-32x32.png",
         "sizes": "32x32",
         "type": "image/png"
       },
       {
-        "src": "/favicon-16x16.png",
+        "src": "/src/assets/favicon-16x16.png",
         "sizes": "16x16",
         "type": "image/png"
+      }
+    ],
+    "screenshots": [
+      {
+        "src": "/src/assets/android-chrome-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "platform": "wide",
+        "label": "Cost Per Mile Calculator"
       }
     ]
 }

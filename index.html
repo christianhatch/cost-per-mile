@@ -3,6 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <title>Cost Per Mile</title>
+
+  <!-- PWA Meta Tags -->
+  <meta name="application-name" content="Cost Per Mile">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="CostPerMile">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="msapplication-TileColor" content="#36647c">
+  <meta name="msapplication-tap-highlight" content="no">
+  <meta name="theme-color" content="#36647c">
+
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/src/assets/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="/src/assets/favicon-32x32.png">
@@ -11,10 +23,6 @@
   <!-- Apple Touch Icon -->
   <link rel="apple-touch-icon" sizes="180x180" href="/src/assets/apple-touch-icon.png">
   <link rel="apple-touch-icon" href="/src/assets/apple-touch-icon.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="CostPerMile">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <!-- Android Chrome Icons -->
   <link rel="icon" type="image/png" sizes="192x192" href="/src/assets/android-chrome-192x192.png">
@@ -23,10 +31,8 @@
   <!-- Web App Manifest -->
   <link rel="manifest" href="/src/manifest.json" />
 
-  <!-- Viewport and Mobile Web App Meta Tags -->
+  <!-- Viewport -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#36647c" />
-  <meta name="msapplication-TileColor" content="#36647c">
 
   <!-- Tailwind and Alpine.js -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -260,28 +266,44 @@
     // Register service worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('src/sw.js');
+        navigator.serviceWorker.register('src/sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful');
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
       });
     }
 
-    // Prompt to install PWA
+    // Improved PWA install prompt
     let deferredPrompt;
+    const installButton = document.createElement('button');
+    installButton.className = 'fixed bottom-6 right-6 bg-green-600 text-white px-4 py-3 text-lg font-semibold rounded-full shadow-lg hover:bg-green-700 transition-colors';
+    installButton.textContent = 'Install App';
+    installButton.style.display = 'none';
+
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
+      installButton.style.display = 'block';
 
-      const installBtn = document.createElement('button');
-      installBtn.textContent = 'Install App';
-      installBtn.className = 'fixed bottom-6 right-6 bg-green-600 text-white px-4 py-3 text-lg font-semibold rounded-full';
-      installBtn.addEventListener('click', () => {
+      installButton.addEventListener('click', async () => {
+        installButton.style.display = 'none';
         deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(() => {
-          installBtn.remove();
-        });
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+        deferredPrompt = null;
       });
-
-      document.body.appendChild(installBtn);
     });
+
+    window.addEventListener('appinstalled', () => {
+      console.log('PWA was installed');
+      installButton.style.display = 'none';
+      deferredPrompt = null;
+    });
+
+    document.body.appendChild(installButton);
   </script>
 
   <script>
