@@ -253,6 +253,7 @@
     </div>
   </div>
 
+  <!-- Chart Section -->
   <div class="w-full max-w-4xl mx-auto px-4 py-4">
     <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm">
       <div class="aspect-[4/3] w-full">
@@ -261,6 +262,7 @@
     </div>
   </div>
 
+  <!-- Footer Section -->
   <footer class="w-full flex justify-start px-4 py-4 mt-auto">
     <div class="bg-white dark:bg-slate-800 rounded-full px-2.5 py-1.5 flex items-center shadow-sm">
       <div class="relative">
@@ -362,12 +364,15 @@
         miles: parseFloat(localStorage.getItem(stateDefaults.miles.storageKey)) || stateDefaults.miles.defaultValue,
         isElectricPriceLocked: localStorage.getItem(stateDefaults.isElectricPriceLocked.storageKey) === 'true' || stateDefaults.isElectricPriceLocked.defaultValue,
         isGasPriceLocked: localStorage.getItem(stateDefaults.isGasPriceLocked.storageKey) === 'true' || stateDefaults.isGasPriceLocked.defaultValue,
+        chart: null,
 
         init() {
           this.initializeStateFromUrl();
           this.updateTheme();
           this.setupWatchers();
-          this.renderChart();
+          this.$nextTick(() => {
+            this.renderChart();
+          });
         },
 
         get evEfficiencyDisplay() {
@@ -480,116 +485,132 @@
 
         renderChart() {
           const ctx = document.getElementById('costChart');
+          if (!ctx) return;
+
+          // Destroy existing chart if it exists
+          if (this.chart) {
+            try {
+              this.chart.destroy();
+            } catch (e) {
+              console.warn('Error destroying chart:', e);
+            }
+            this.chart = null;
+          }
 
           const data = this.generateChartData();
 
-          new Chart(ctx, {
-            type: 'line',
-            data: {
-              labels: data.costsPerMile.map(cost => `$${cost.toFixed(4)}/mi`),
-              datasets: [
-                {
-                  label: 'Electricity $/kWh',
-                  data: data.evPrices,
-                  borderColor: '#16a34a', // green-600
-                  backgroundColor: 'rgba(22, 163, 74, 0.1)',
-                  borderWidth: 2,
-                  tension: 0.1,
-                  yAxisID: 'y'
-                },
-                {
-                  label: 'Gas $/gal',
-                  data: data.gasPrices,
-                  borderColor: '#e11d48', // rose-600
-                  backgroundColor: 'rgba(225, 29, 72, 0.1)',
-                  borderWidth: 2,
-                  tension: 0.1,
-                  yAxisID: 'y1'
-                }
-              ]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                title: {
-                  display: true,
-                  text: 'Energy Price vs Cost per Mile',
-                  color: '#1f2937', // gray-800
-                  font: {
-                    size: 16
+          this.chart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: data.costsPerMile.map(cost => `$${cost.toFixed(4)}/mi`),
+                datasets: [
+                  {
+                    label: 'Electricity $/kWh',
+                    data: data.evPrices,
+                    borderColor: '#16a34a', // green-600
+                    backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.1,
+                    yAxisID: 'y'
+                  },
+                  {
+                    label: 'Gas $/gal',
+                    data: data.gasPrices,
+                    borderColor: '#e11d48', // rose-600
+                    backgroundColor: 'rgba(225, 29, 72, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.1,
+                    yAxisID: 'y1'
+                  }
+                ]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                plugins: {
+                  title: {
+                    display: true,
+                    text: 'Energy Price vs Cost per Mile',
+                    color: '#1f2937', // gray-800
+                    font: {
+                      size: 16
+                    }
+                  },
+                  legend: {
+                    position: 'top',
+                    labels: {
+                      color: '#1f2937' // gray-800
+                    }
+                  },
+                  tooltip: {
+                    callbacks: {
+                      label: function(context) {
+                        const label = context.dataset.label;
+                        const value = context.raw;
+                        const costPerMile = data.costsPerMile[context.dataIndex];
+                        const evPrice = data.evPrices[context.dataIndex];
+                        const gasPrice = data.gasPrices[context.dataIndex];
+
+                        const otherLabel = label.includes('Electricity')
+                          ? `Gas: $${gasPrice.toFixed(2)}/gal`
+                          : `Electricity: $${evPrice.toFixed(2)}/kWh`;
+
+                        return [
+                          `${label}: $${value.toFixed(2)}`,
+                          otherLabel
+                        ];
+                      }
+                    }
                   }
                 },
-                legend: {
-                  position: 'top',
-                  labels: {
-                    color: '#1f2937' // gray-800
-                  }
-                },
-                tooltip: {
-                  callbacks: {
-                    label: function(context) {
-                      const label = context.dataset.label;
-                      const value = context.raw;
-                      const costPerMile = data.costsPerMile[context.dataIndex];
-                      const evPrice = data.evPrices[context.dataIndex];
-                      const gasPrice = data.gasPrices[context.dataIndex];
-
-                      const otherLabel = label.includes('Electricity')
-                        ? `Gas: $${gasPrice.toFixed(2)}/gal`
-                        : `Electricity: $${evPrice.toFixed(2)}/kWh`;
-
-                      return [
-                        `${label}: $${value.toFixed(2)}`,
-                        otherLabel
-                      ];
+                scales: {
+                  x: {
+                    title: {
+                      display: true,
+                      text: 'Cost per Mile ($)',
+                      color: '#1f2937' // gray-800
+                    },
+                    grid: {
+                      color: 'rgba(0, 0, 0, 0.1)'
+                    }
+                  },
+                  y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: {
+                      display: true,
+                      text: 'Electricity ($/kWh)',
+                      color: '#16a34a' // green-600
+                    },
+                    beginAtZero: true,
+                    min: 0,
+                    max: 1.0,
+                    grid: {
+                      color: 'rgba(0, 0, 0, 0.1)'
+                    }
+                  },
+                  y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: {
+                      display: true,
+                      text: 'Gas ($/gal)',
+                      color: '#e11d48' // rose-600
+                    },
+                    beginAtZero: true,
+                    min: 0,
+                    max: 8.0,
+                    grid: {
+                      drawOnChartArea: false
                     }
                   }
                 }
-              },
-              scales: {
-                x: {
-                  title: {
-                    display: true,
-                    text: 'Cost per Mile ($)',
-                    color: '#1f2937' // gray-800
-                  },
-                  grid: {
-                    color: 'rgba(0, 0, 0, 0.1)'
-                  }
-                },
-                y: {
-                  type: 'linear',
-                  display: true,
-                  position: 'left',
-                  title: {
-                    display: true,
-                    text: 'Electricity ($/kWh)',
-                    color: '#16a34a' // green-600
-                  },
-                  beginAtZero: true,
-                  grid: {
-                    color: 'rgba(0, 0, 0, 0.1)'
-                  }
-                },
-                y1: {
-                  type: 'linear',
-                  display: true,
-                  position: 'right',
-                  title: {
-                    display: true,
-                    text: 'Gas ($/gal)',
-                    color: '#e11d48' // rose-600
-                  },
-                  beginAtZero: true,
-                  grid: {
-                    drawOnChartArea: false
-                  }
-                }
               }
-            }
-          });
-        },
+            });
+          },
 
         toggleEvPriceLock() {
           if (this.isElectricPriceLocked) {
@@ -735,26 +756,31 @@
             localStorage.setItem(stateDefaults.electricPrice.storageKey, value);
             this.updateURL();
             this.updateLockedPrices();
+            requestAnimationFrame(() => this.renderChart());
           });
           this.$watch('gasPrice', value => {
             localStorage.setItem(stateDefaults.gasPrice.storageKey, value);
             this.updateURL();
             this.updateLockedPrices();
+            requestAnimationFrame(() => this.renderChart());
           });
           this.$watch('mpg', value => {
             localStorage.setItem(stateDefaults.mpg.storageKey, value);
             this.updateURL();
             this.updateLockedPrices();
+            requestAnimationFrame(() => this.renderChart());
           });
           this.$watch('evWhPerMile', value => {
             localStorage.setItem(stateDefaults.evWhPerMile.storageKey, value);
             this.updateURL();
             this.updateLockedPrices();
+            requestAnimationFrame(() => this.renderChart());
           });
           this.$watch('isMiPerKwh', value => {
             localStorage.setItem(stateDefaults.isMiPerKwh.storageKey, this.isMiPerKwh);
             this.updateURL();
             this.updateLockedPrices();
+            requestAnimationFrame(() => this.renderChart());
           });
           this.$watch('miles', value => {
             localStorage.setItem(stateDefaults.miles.storageKey, value);
