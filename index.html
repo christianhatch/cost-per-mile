@@ -578,10 +578,7 @@
           } else {
             this.isElectricPriceLocked = true;
             this.isGasPriceLocked = false;
-            // Update gas price to maintain equivalent cost per mile
-            if (this.equivalentGasPrice) {
-              this.gasPrice = parseFloat(this.equivalentGasPrice);
-            }
+            this.updateLockedPrices();
           }
           localStorage.setItem(stateDefaults.isElectricPriceLocked.storageKey, this.isElectricPriceLocked);
           localStorage.setItem(stateDefaults.isGasPriceLocked.storageKey, this.isGasPriceLocked);
@@ -594,14 +591,20 @@
           } else {
             this.isGasPriceLocked = true;
             this.isElectricPriceLocked = false;
-            // Update EV price to maintain equivalent cost per mile
-            if (this.equivalentEvPrice) {
-              this.electricPrice = this.equivalentEvPrice;
-            }
+            this.updateLockedPrices();
           }
           localStorage.setItem(stateDefaults.isElectricPriceLocked.storageKey, this.isElectricPriceLocked);
           localStorage.setItem(stateDefaults.isGasPriceLocked.storageKey, this.isGasPriceLocked);
           this.updateURL();
+        },
+
+        updateLockedPrices() {
+          // Update other price if either is locked
+          if (this.isElectricPriceLocked && this.equivalentGasPrice) {
+            this.gasPrice = parseFloat(this.equivalentGasPrice);
+          } else if (this.isGasPriceLocked && this.equivalentEvPrice) {
+            this.electricPrice = this.equivalentEvPrice;
+          }
         },
 
         async share() {
@@ -645,15 +648,6 @@
         updateTheme() {
           const isDark = this.theme === 'dark' || (this.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
           document.documentElement.classList.toggle('dark', isDark);
-        },
-
-        updateLockedPrices() {
-          // Update other price if either is locked
-          if (this.isElectricPriceLocked && this.equivalentGasPrice) {
-            this.gasPrice = parseFloat(this.equivalentGasPrice);
-          } else if (this.isGasPriceLocked && this.equivalentEvPrice) {
-            this.electricPrice = this.equivalentEvPrice;
-          }
         },
 
         initializeStateFromUrl() {
