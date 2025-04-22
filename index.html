@@ -487,15 +487,17 @@
           const ctx = document.getElementById('costChart');
           if (!ctx) return;
 
-          // Destroy existing chart if it exists
           if (this.chart) {
             this.chart.destroy();
             this.chart = null;
           }
 
           const data = this.generateChartData();
+          this.chart = new Chart(ctx, this.chartConfig(data));
+        },
 
-          this.chart = new Chart(ctx, {
+        chartConfig(data) {
+          return {
               type: 'line',
               data: {
                 labels: data.costsPerMile.map(cost => `$${cost.toFixed(4)}/mi`),
@@ -603,9 +605,9 @@
                     }
                   }
                 }
-              }
-            });
-          },
+            }
+          }
+        },
 
         toggleEvPriceLock() {
           if (this.isElectricPriceLocked) {
