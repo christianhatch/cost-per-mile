@@ -62,7 +62,7 @@
     <div class="wide-layout-results mb-6">
       <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">Cost Per Mile</h2>
+          <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">Trip Cost</h2>
           <button
             @click="share"
             x-ref="shareButton"
@@ -94,7 +94,7 @@
           <!-- EV Section -->
           <div class="flex-1 max-w-sm lg:mb-0">
             <div class="flex items-center mb-4">
-              <span class="text-2xl mr-2">⚡</span>
+              <span class="text-2xl mr-2">🔋</span>
               <h2 class="text-lg font-semibold text-green-600 dark:text-green-400">Electric</h2>
             </div>
             <div class="grid grid-cols-2 gap-4">
@@ -561,7 +561,7 @@
           if (!this.evCostPerMile) return { trip: 'EV Trip: -', perMile: '-' };
           const tripCost = this.evCostPerMile * this.miles;
           return {
-            trip: `EV Trip: $${tripCost.toFixed(4)}`,
+            trip: `EV Trip: $${tripCost.toFixed(2)}`,
             perMile: `$${this.evCostPerMile.toFixed(4)}/mi`
           };
         },
@@ -570,7 +570,7 @@
           if (!this.gasCostPerMile) return { trip: 'Gas Trip: -', perMile: '-' };
           const tripCost = this.gasCostPerMile * this.miles;
           return {
-            trip: `Gas Trip: $${tripCost.toFixed(4)}`,
+            trip: `Gas Trip: $${tripCost.toFixed(2)}`,
             perMile: `$${this.gasCostPerMile.toFixed(4)}/mi`
           };
         },
@@ -584,6 +584,14 @@
           const totalSavings = savingsPerMile * this.miles;
           const percentDiff = Math.abs(savingsPerMile) / Math.max(ev, gas) * 100;
           const whoSaves = savingsPerMile > 0 ? 'EV' : 'Gas';
+
+          if (this.isEvPriceLocked || this.isGasPriceLocked) {
+            const lockedType = this.isEvPriceLocked ? '🔋' : '⛽️';
+            return {
+              trip: `Equivalent ${lockedType} Price`,
+              perMile: `$${this.isEvPriceLocked ? this.equivalentEvPrice.toFixed(3) : this.equivalentGasPrice.toFixed(2)}/${this.isEvPriceLocked ? 'kWh' : 'gal'}`
+            };
+          }
 
           return {
             trip: `${whoSaves} saves $${Math.abs(totalSavings).toFixed(2)} (${percentDiff.toFixed(1)}%)`,
