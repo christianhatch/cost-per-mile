@@ -450,26 +450,48 @@
           this.$watch('evPrice', value => {
             localStorage.setItem('evPrice', value);
             this.updateURL();
+            // Update gas price if EV is locked
+            if (this.isEvPriceLocked && this.equivalentGasPrice) {
+              this.gasPrice = parseFloat(this.equivalentGasPrice).toFixed(2);
+            }
           });
           this.$watch('gasPrice', value => {
             localStorage.setItem('gasPrice', value);
             this.updateURL();
+            // Update EV price if gas is locked
+            if (this.isGasPriceLocked && this.equivalentEvPrice) {
+              this.evPrice = this.equivalentEvPrice;
+            }
           });
           this.$watch('mpg', value => {
             localStorage.setItem('mpg', value);
             this.updateURL();
-          });
-          this.$watch('miles', value => {
-            localStorage.setItem('miles', value);
-            this.updateURL();
-          });
-          this.$watch('isMiPerKwh', value => {
-            localStorage.setItem('evMode', this.evMode);
-            this.updateURL();
+            // Update prices if either is locked
+            if (this.isEvPriceLocked && this.equivalentGasPrice) {
+              this.gasPrice = parseFloat(this.equivalentGasPrice).toFixed(2);
+            } else if (this.isGasPriceLocked && this.equivalentEvPrice) {
+              this.evPrice = this.equivalentEvPrice;
+            }
           });
           this.$watch('evWhPerMile', value => {
             localStorage.setItem('evWhPerMile', value);
             this.updateURL();
+            // Update prices if either is locked
+            if (this.isEvPriceLocked && this.equivalentGasPrice) {
+              this.gasPrice = parseFloat(this.equivalentGasPrice).toFixed(2);
+            } else if (this.isGasPriceLocked && this.equivalentEvPrice) {
+              this.evPrice = this.equivalentEvPrice;
+            }
+          });
+          this.$watch('isMiPerKwh', value => {
+            localStorage.setItem('evMode', this.evMode);
+            this.updateURL();
+            // Update prices if either is locked
+            if (this.isEvPriceLocked && this.equivalentGasPrice) {
+              this.gasPrice = parseFloat(this.equivalentGasPrice).toFixed(2);
+            } else if (this.isGasPriceLocked && this.equivalentEvPrice) {
+              this.evPrice = this.equivalentEvPrice;
+            }
           });
           this.$watch('theme', value => {
             this.updateTheme();
@@ -525,6 +547,16 @@
           return this.gasPrice / this.mpg;
         },
 
+        get equivalentEvPrice() {
+          if (!this.gasCostPerMile || !this.whPerMile) return '';
+          return (this.gasCostPerMile * 1000) / this.whPerMile;
+        },
+
+        get equivalentGasPrice() {
+          if (!this.evCostPerMile || !this.mpg) return '';
+          return this.evCostPerMile * this.mpg;
+        },
+
         get evResult() {
           if (!this.evCostPerMile) return { trip: 'EV Trip: -', perMile: '-' };
           const tripCost = this.evCostPerMile * this.miles;
@@ -565,6 +597,10 @@
           } else {
             this.isEvPriceLocked = true;
             this.isGasPriceLocked = false;
+            // Update gas price to maintain equivalent cost per mile
+            if (this.equivalentGasPrice) {
+              this.gasPrice = parseFloat(this.equivalentGasPrice).toFixed(2);
+            }
           }
           localStorage.setItem('evLock', this.isEvPriceLocked);
           localStorage.setItem('gasLock', this.isGasPriceLocked);
@@ -577,6 +613,10 @@
           } else {
             this.isGasPriceLocked = true;
             this.isEvPriceLocked = false;
+            // Update EV price to maintain equivalent cost per mile
+            if (this.equivalentEvPrice) {
+              this.evPrice = this.equivalentEvPrice;
+            }
           }
           localStorage.setItem('evLock', this.isEvPriceLocked);
           localStorage.setItem('gasLock', this.isGasPriceLocked);
