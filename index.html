@@ -178,7 +178,6 @@
                   <div class="relative">
                     <input type="number"
                       x-model="gasPrice"
-                      x-on:blur="gasPrice = parseFloat(gasPrice).toFixed(2)"
                       step="0.01"
                       min="0"
                       :disabled="isEvPriceLocked"
@@ -399,7 +398,7 @@
               localStorage.setItem('evPrice', urlValues.evPrice);
             }
             if (urlValues.gasPrice !== null) {
-              this.gasPrice = parseFloat(urlValues.gasPrice).toFixed(2);
+              this.gasPrice = parseFloat(urlValues.gasPrice);
               localStorage.setItem('gasPrice', urlValues.gasPrice);
             }
             if (urlValues.evWhPerMile !== null) {
@@ -433,7 +432,7 @@
           }
 
           // Format initial gas price to 2 decimal places
-          this.gasPrice = parseFloat(this.gasPrice).toFixed(2);
+          this.gasPrice = parseFloat(this.gasPrice);
 
           // Update URL with initial values if no params were present
           if (!window.location.search) {
@@ -452,7 +451,7 @@
             this.updateURL();
             // Update gas price if EV is locked
             if (this.isEvPriceLocked && this.equivalentGasPrice) {
-              this.gasPrice = parseFloat(this.equivalentGasPrice).toFixed(2);
+              this.gasPrice = parseFloat(this.equivalentGasPrice);
             }
           });
           this.$watch('gasPrice', value => {
@@ -468,7 +467,7 @@
             this.updateURL();
             // Update prices if either is locked
             if (this.isEvPriceLocked && this.equivalentGasPrice) {
-              this.gasPrice = parseFloat(this.equivalentGasPrice).toFixed(2);
+              this.gasPrice = parseFloat(this.equivalentGasPrice);
             } else if (this.isGasPriceLocked && this.equivalentEvPrice) {
               this.evPrice = this.equivalentEvPrice;
             }
@@ -478,7 +477,7 @@
             this.updateURL();
             // Update prices if either is locked
             if (this.isEvPriceLocked && this.equivalentGasPrice) {
-              this.gasPrice = parseFloat(this.equivalentGasPrice).toFixed(2);
+              this.gasPrice = parseFloat(this.equivalentGasPrice);
             } else if (this.isGasPriceLocked && this.equivalentEvPrice) {
               this.evPrice = this.equivalentEvPrice;
             }
@@ -488,7 +487,7 @@
             this.updateURL();
             // Update prices if either is locked
             if (this.isEvPriceLocked && this.equivalentGasPrice) {
-              this.gasPrice = parseFloat(this.equivalentGasPrice).toFixed(2);
+              this.gasPrice = parseFloat(this.equivalentGasPrice);
             } else if (this.isGasPriceLocked && this.equivalentEvPrice) {
               this.evPrice = this.equivalentEvPrice;
             }
@@ -577,6 +576,16 @@
 
         get savingsResult() {
           if (!this.evCostPerMile || !this.gasCostPerMile) return { trip: '-', perMile: '-' };
+
+          if (this.isEvPriceLocked || this.isGasPriceLocked) {
+            const lockedType = this.isEvPriceLocked ? '⛽️' : '🔋';
+            const price = this.isEvPriceLocked ? this.equivalentGasPrice : this.equivalentEvPrice;
+            return {
+              trip: `Equivalent ${lockedType} Price`,
+              perMile: `$${parseFloat(price).toFixed(2)}/${this.isEvPriceLocked ? 'gal' : 'kWh'}`
+            };
+          }
+
           const ev = this.evCostPerMile;
           const gas = this.gasCostPerMile;
 
@@ -585,16 +594,8 @@
           const percentDiff = Math.abs(savingsPerMile) / Math.max(ev, gas) * 100;
           const whoSaves = savingsPerMile > 0 ? 'EV' : 'Gas';
 
-          if (this.isEvPriceLocked || this.isGasPriceLocked) {
-            const lockedType = this.isEvPriceLocked ? '🔋' : '⛽️';
-            return {
-              trip: `Equivalent ${lockedType} Price`,
-              perMile: `$${this.isEvPriceLocked ? this.equivalentEvPrice.toFixed(3) : this.equivalentGasPrice.toFixed(2)}/${this.isEvPriceLocked ? 'kWh' : 'gal'}`
-            };
-          }
-
           return {
-            trip: `${whoSaves} saves $${Math.abs(totalSavings).toFixed(2)} (${percentDiff.toFixed(1)}%)`,
+            trip: `${whoSaves} saves $${Math.abs(totalSavings).toFixed(2)} (${percentDiff.toFixed(2)}%)`,
             perMile: `$${Math.abs(savingsPerMile).toFixed(4)}/mi`
           };
         },
@@ -607,7 +608,7 @@
             this.isGasPriceLocked = false;
             // Update gas price to maintain equivalent cost per mile
             if (this.equivalentGasPrice) {
-              this.gasPrice = parseFloat(this.equivalentGasPrice).toFixed(2);
+              this.gasPrice = parseFloat(this.equivalentGasPrice);
             }
           }
           localStorage.setItem('evLock', this.isEvPriceLocked);
