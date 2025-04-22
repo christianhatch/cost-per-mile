@@ -344,6 +344,12 @@
         isGasPriceLocked: false
       };
 
+      // Helper function for consistent price formatting
+      const formatPrice = (price, decimals = 2) => {
+        if (!price) return '-';
+        return `$${parseFloat(price).toFixed(decimals)}`;
+      };
+
       return {
         theme: localStorage.getItem('theme') || defaults.theme,
         evPrice: parseFloat(localStorage.getItem('evPrice')) || defaults.evPrice,
@@ -560,8 +566,8 @@
           if (!this.evCostPerMile) return { trip: 'EV Trip: -', perMile: '-' };
           const tripCost = this.evCostPerMile * this.miles;
           return {
-            trip: `EV Trip: $${tripCost.toFixed(2)}`,
-            perMile: `$${this.evCostPerMile.toFixed(4)}/mi`
+            trip: `EV Trip: ${formatPrice(tripCost)}`,
+            perMile: `${formatPrice(this.evCostPerMile, 4)}/mi`
           };
         },
 
@@ -569,8 +575,8 @@
           if (!this.gasCostPerMile) return { trip: 'Gas Trip: -', perMile: '-' };
           const tripCost = this.gasCostPerMile * this.miles;
           return {
-            trip: `Gas Trip: $${tripCost.toFixed(2)}`,
-            perMile: `$${this.gasCostPerMile.toFixed(4)}/mi`
+            trip: `Gas Trip: ${formatPrice(tripCost)}`,
+            perMile: `${formatPrice(this.gasCostPerMile, 4)}/mi`
           };
         },
 
@@ -582,7 +588,7 @@
             const price = this.isEvPriceLocked ? this.equivalentGasPrice : this.equivalentEvPrice;
             return {
               trip: `Equivalent ${lockedType} Price`,
-              perMile: `$${parseFloat(price).toFixed(2)}/${this.isEvPriceLocked ? 'gal' : 'kWh'}`
+              perMile: `${formatPrice(price)}/${this.isEvPriceLocked ? 'gal' : 'kWh'}`
             };
           }
 
@@ -595,8 +601,8 @@
           const whoSaves = savingsPerMile > 0 ? 'EV' : 'Gas';
 
           return {
-            trip: `${whoSaves} saves $${Math.abs(totalSavings).toFixed(2)} (${percentDiff.toFixed(2)}%)`,
-            perMile: `$${Math.abs(savingsPerMile).toFixed(4)}/mi`
+            trip: `${whoSaves} saves ${formatPrice(Math.abs(totalSavings))} (${percentDiff.toFixed(2)}%)`,
+            perMile: `${formatPrice(Math.abs(savingsPerMile), 4)}/mi`
           };
         },
 
