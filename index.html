@@ -323,14 +323,28 @@
 
   <script>
     function costPerMile() {
+      const defaults = {
+        theme: 'system',
+        evPrice: 0.25,
+        gasPrice: 2.83,
+        evWhPerMile: 250,
+        isMiPerKwh: false,
+        mpg: 28,
+        miles: 10,
+        isEvPriceLocked: false,
+        isGasPriceLocked: false
+      };
+
       return {
-        theme: localStorage.getItem('theme') || 'system',
-        evPrice: parseFloat(localStorage.getItem('evPrice')) || 0.25,
-        gasPrice: parseFloat(localStorage.getItem('gasPrice')) || 2.83,
-        evWhPerMile: parseFloat(localStorage.getItem('evWhPerMile')) || 250,
-        isMiPerKwh: localStorage.getItem('evMode') === 'mikwh',
-        mpg: parseFloat(localStorage.getItem('mpg')) || 28,
-        miles: parseFloat(localStorage.getItem('miles')) || 10,
+        theme: localStorage.getItem('theme') || defaults.theme,
+        evPrice: parseFloat(localStorage.getItem('evPrice')) || defaults.evPrice,
+        gasPrice: parseFloat(localStorage.getItem('gasPrice')) || defaults.gasPrice,
+        evWhPerMile: parseFloat(localStorage.getItem('evWhPerMile')) || defaults.evWhPerMile,
+        isMiPerKwh: localStorage.getItem('evMode') === 'mikwh' || defaults.isMiPerKwh,
+        mpg: parseFloat(localStorage.getItem('mpg')) || defaults.mpg,
+        miles: parseFloat(localStorage.getItem('miles')) || defaults.miles,
+        isEvPriceLocked: localStorage.getItem('evLock') === 'true' || defaults.isEvPriceLocked,
+        isGasPriceLocked: localStorage.getItem('gasLock') === 'true' || defaults.isGasPriceLocked,
 
         async share() {
           if (navigator.share) {
