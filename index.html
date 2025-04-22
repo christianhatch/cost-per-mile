@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" @click.capture="if (!$event.target.matches('input, button')) document.activeElement?.blur()">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Cost Per Mile</title>
@@ -57,7 +57,7 @@
     }
   </style>
 </head>
-<body x-data="app" class="min-h-screen flex flex-col items-center bg-gray-100 dark:bg-slate-900">
+<body x-data="app" @click.capture="if (!$event.target.matches('input, button')) document.activeElement?.blur()" class="min-h-screen flex flex-col items-center bg-gray-100 dark:bg-slate-900">
   <div class="w-full max-w-4xl mx-auto px-4 py-8">
     <div class="wide-layout-results mb-6">
       <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm">
@@ -246,6 +246,9 @@
       </div>
     </div>
   </div>
+
+	<canvas id="costChart"></canvas>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <footer class="w-full flex justify-start px-4 py-4 mt-auto">
     <div class="bg-white dark:bg-slate-800 rounded-full px-2.5 py-1.5 flex items-center shadow-sm">
@@ -479,6 +482,8 @@
             localStorage.setItem('miles', value);
             this.updateURL();
           });
+
+          this.renderChart();
         },
 
         async share() {
@@ -643,6 +648,48 @@
             perMile: `${formatPrice(Math.abs(savingsPerMile), 4)}/mi`
           };
         },
+
+        renderChart() {
+          const ctx = document.getElementById('costChart');
+
+          // let names = this.cities.map(c => c.label);
+
+          // let highestTemps = this.cities.map(c => {
+          //   return c.forecast.reduce((highest,f) => {
+          //     if(f.temperature > highest) return f.temperature;
+          //     return highest;
+          //   },0);
+          // });
+
+          // let lowestTemps = this.cities.map(c => {
+          //   return c.forecast.reduce((lowest,f) => {
+          //     if(f.temperature < lowest) return f.temperature;
+          //     return lowest;
+          //   },999);
+          // });
+
+
+
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+              datasets: [{
+                label: '# of Votes',
+                data: [12, 19, 3, 5, 2, 3],
+                borderWidth: 1
+              }]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+
+        }
       }))
     });
   </script>
