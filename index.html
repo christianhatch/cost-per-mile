@@ -463,8 +463,8 @@
           const evPrices = [];
           const gasPrices = [];
 
-          // Generate cost per mile points from $0.00 to $0.20 in $0.005 increments
-          for (let costPerMile = 0; costPerMile <= 0.2; costPerMile += 0.005) {
+          // Generate cost per mile points from $0.00 to $0.25 in $0.001 increments
+          for (let costPerMile = 0; costPerMile <= 0.25; costPerMile += 0.001) {
             costPerMilePoints.push(costPerMile);
 
             // Calculate equivalent electricity price for this cost per mile
@@ -489,11 +489,7 @@
 
           // Destroy existing chart if it exists
           if (this.chart) {
-            try {
-              this.chart.destroy();
-            } catch (e) {
-              console.warn('Error destroying chart:', e);
-            }
+            this.chart.destroy();
             this.chart = null;
           }
 
@@ -552,14 +548,13 @@
                         const evPrice = data.evPrices[context.dataIndex];
                         const gasPrice = data.gasPrices[context.dataIndex];
 
-                        const otherLabel = label.includes('Electricity')
-                          ? `Gas: $${gasPrice.toFixed(2)}/gal`
-                          : `Electricity: $${evPrice.toFixed(2)}/kWh`;
-
-                        return [
-                          `${label}: $${value.toFixed(2)}`,
-                          otherLabel
+                        const isElectric = label.includes('Electricity');
+                        const labels = [
+                          `Electricity: $${evPrice.toFixed(2)}/kWh`,
+                          `Gas: $${gasPrice.toFixed(2)}/gal`,
                         ];
+
+                        return isElectric ? labels : labels.reverse();
                       }
                     }
                   }
@@ -756,31 +751,31 @@
             localStorage.setItem(stateDefaults.electricPrice.storageKey, value);
             this.updateURL();
             this.updateLockedPrices();
-            requestAnimationFrame(() => this.renderChart());
+            this.renderChart();
           });
           this.$watch('gasPrice', value => {
             localStorage.setItem(stateDefaults.gasPrice.storageKey, value);
             this.updateURL();
             this.updateLockedPrices();
-            requestAnimationFrame(() => this.renderChart());
+            this.renderChart();
           });
           this.$watch('mpg', value => {
             localStorage.setItem(stateDefaults.mpg.storageKey, value);
             this.updateURL();
             this.updateLockedPrices();
-            requestAnimationFrame(() => this.renderChart());
+            this.renderChart();
           });
           this.$watch('evWhPerMile', value => {
             localStorage.setItem(stateDefaults.evWhPerMile.storageKey, value);
             this.updateURL();
             this.updateLockedPrices();
-            requestAnimationFrame(() => this.renderChart());
+            this.renderChart();
           });
           this.$watch('isMiPerKwh', value => {
             localStorage.setItem(stateDefaults.isMiPerKwh.storageKey, this.isMiPerKwh);
             this.updateURL();
             this.updateLockedPrices();
-            requestAnimationFrame(() => this.renderChart());
+            this.renderChart();
           });
           this.$watch('miles', value => {
             localStorage.setItem(stateDefaults.miles.storageKey, value);
