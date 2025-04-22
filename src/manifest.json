@@ -1,6 +1,6 @@
 {
     "name": "Cost Per Mile",
-    "short_name": "CPM",
+    "short_name": "CostPerMile",
     "description": "Compare electric vs gas vehicle costs per mile",
     "start_url": "/",
     "display": "standalone",
