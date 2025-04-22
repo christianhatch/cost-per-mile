@@ -61,6 +61,15 @@
   <!-- Header Section -->
   <div class="flex w-full max-w-4xl justify-between items-center bg-white dark:bg-slate-800 rounded-xl p-4 md:p-6 shadow-md">
     <h2 class="text-md md:text-xl font-bold text-gray-800 dark:text-gray-200">Trip Cost Calculator</h2>
+    <!-- Breakpoint Indicator (Debug) -->
+    <span x-show="debugMode" class="ml-4 px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs font-mono">
+      <span class="sm:hidden">xs</span>
+      <span class="hidden sm:inline md:hidden">sm</span>
+      <span class="hidden md:inline lg:hidden">md</span>
+      <span class="hidden lg:inline xl:hidden">lg</span>
+      <span class="hidden xl:inline 2xl:hidden">xl</span>
+      <span class="hidden 2xl:inline">2xl</span>
+    </span>
     <!-- Share Button -->
     <button
       @click="share"
@@ -369,6 +378,7 @@
       };
 
       Alpine.data('app', () => ({
+        debugMode: window.location.hostname === 'localhost',
         theme: localStorage.getItem(stateDefaults.theme.storageKey) || stateDefaults.theme.defaultValue,
         electricPrice: parseFloat(localStorage.getItem(stateDefaults.electricPrice.storageKey)) || stateDefaults.electricPrice.defaultValue,
         gasPrice: parseFloat(localStorage.getItem(stateDefaults.gasPrice.storageKey)) || stateDefaults.gasPrice.defaultValue,
