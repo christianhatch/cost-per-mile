@@ -10,7 +10,6 @@ const FILES_TO_CACHE = [
   '/src/assets/apple-touch-icon.png',
   '/src/assets/android-chrome-192x192.png',
   '/src/assets/android-chrome-512x512.png',
-  'https://cdn.tailwindcss.com',
   'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js'
 ];
 

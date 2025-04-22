@@ -35,27 +35,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com/3.3.5"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class'
-    }
-  </script>
+  <link rel="stylesheet" href="/src/_main.css">
 
   <!-- Alpine.js -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-  <style>
-    /* Remove number input steppers */
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-    input[type="number"] {
-      -moz-appearance: textfield;
-    }
-  </style>
 </head>
 <body class="min-h-screen flex flex-col items-center bg-gray-100 dark:bg-slate-900">
   <div class="w-full max-w-4xl mx-auto px-4 py-8">
