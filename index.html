@@ -453,63 +453,58 @@
           };
         },
 
-        generateChartData(efficiency, isEv = true) {
-          const pricePoints = [];
+        generateChartData() {
           const costPerMilePoints = [];
+          const evPrices = [];
+          const gasPrices = [];
 
-          // Generate price points from $0.00 to $1.50 in $0.05 increments
-          for (let price = 0; price <= 1.5; price += 0.05) {
-            pricePoints.push(price);
+          // Generate cost per mile points from $0.00 to $0.20 in $0.005 increments
+          for (let costPerMile = 0; costPerMile <= 0.2; costPerMile += 0.005) {
+            costPerMilePoints.push(costPerMile);
 
-            if (isEv) {
-              const costPerMile = parseFloat(evCostPerMile(efficiency, price));
-              costPerMilePoints.push(costPerMile);
-            } else {
-              const costPerMile = parseFloat(gasCostPerMile(efficiency, price));
-              costPerMilePoints.push(costPerMile);
-            }
+            // Calculate equivalent electricity price for this cost per mile
+            const evPrice = equivalentEvPrice(costPerMile, this.evWhPerMile);
+            evPrices.push(evPrice);
+
+            // Calculate equivalent gas price for this cost per mile
+            const gasPrice = equivalentGasPrice(costPerMile, this.mpg);
+            gasPrices.push(gasPrice);
           }
 
           return {
-            prices: pricePoints,
-            costsPerMile: costPerMilePoints
+            costsPerMile: costPerMilePoints,
+            evPrices: evPrices,
+            gasPrices: gasPrices
           };
-        },
-
-        get evChartPrices() {
-          return this.generateChartData(this.evWhPerMile, true);
-        },
-
-        get gasChartPrices() {
-          return this.generateChartData(this.mpg, false);
         },
 
         renderChart() {
           const ctx = document.getElementById('costChart');
 
-          const evData = this.evChartPrices;
-          const gasData = this.gasChartPrices;
+          const data = this.generateChartData();
 
           new Chart(ctx, {
             type: 'line',
             data: {
-              labels: evData.prices.map(price => `$${price.toFixed(2)}/kWh`),
+              labels: data.costsPerMile.map(cost => `$${cost.toFixed(4)}/mi`),
               datasets: [
                 {
-                  label: 'EV Cost per Mile',
-                  data: evData.costsPerMile,
+                  label: 'Electricity $/kWh',
+                  data: data.evPrices,
                   borderColor: '#16a34a', // green-600
                   backgroundColor: 'rgba(22, 163, 74, 0.1)',
                   borderWidth: 2,
-                  tension: 0.1
+                  tension: 0.1,
+                  yAxisID: 'y'
                 },
                 {
-                  label: 'Gas Cost per Mile',
-                  data: gasData.costsPerMile,
+                  label: 'Gas $/gal',
+                  data: data.gasPrices,
                   borderColor: '#e11d48', // rose-600
                   backgroundColor: 'rgba(225, 29, 72, 0.1)',
                   borderWidth: 2,
-                  tension: 0.1
+                  tension: 0.1,
+                  yAxisID: 'y1'
                 }
               ]
             },
@@ -519,7 +514,7 @@
               plugins: {
                 title: {
                   display: true,
-                  text: 'Cost per Mile vs Price per kWh',
+                  text: 'Energy Price vs Cost per Mile',
                   color: '#1f2937', // gray-800
                   font: {
                     size: 16
@@ -536,11 +531,18 @@
                     label: function(context) {
                       const label = context.dataset.label;
                       const value = context.raw;
-                      if (label === 'Gas Cost per Mile') {
-                        const equivalentPrice = equivalentGasPrice(value, this.mpg);
-                        return `${label}: $${value.toFixed(4)}/mi ($${equivalentPrice}/gal)`;
-                      }
-                      return `${label}: $${value.toFixed(4)}/mi`;
+                      const costPerMile = data.costsPerMile[context.dataIndex];
+                      const evPrice = data.evPrices[context.dataIndex];
+                      const gasPrice = data.gasPrices[context.dataIndex];
+
+                      const otherLabel = label.includes('Electricity')
+                        ? `Gas: $${gasPrice.toFixed(2)}/gal`
+                        : `Electricity: $${evPrice.toFixed(2)}/kWh`;
+
+                      return [
+                        `${label}: $${value.toFixed(2)}`,
+                        otherLabel
+                      ];
                     }
                   }
                 }
@@ -549,7 +551,7 @@
                 x: {
                   title: {
                     display: true,
-                    text: 'Price per kWh ($)',
+                    text: 'Cost per Mile ($)',
                     color: '#1f2937' // gray-800
                   },
                   grid: {
@@ -557,14 +559,31 @@
                   }
                 },
                 y: {
+                  type: 'linear',
+                  display: true,
+                  position: 'left',
                   title: {
                     display: true,
-                    text: 'Cost per Mile ($)',
-                    color: '#1f2937' // gray-800
+                    text: 'Electricity ($/kWh)',
+                    color: '#16a34a' // green-600
                   },
                   beginAtZero: true,
                   grid: {
                     color: 'rgba(0, 0, 0, 0.1)'
+                  }
+                },
+                y1: {
+                  type: 'linear',
+                  display: true,
+                  position: 'right',
+                  title: {
+                    display: true,
+                    text: 'Gas ($/gal)',
+                    color: '#e11d48' // rose-600
+                  },
+                  beginAtZero: true,
+                  grid: {
+                    drawOnChartArea: false
                   }
                 }
               }
