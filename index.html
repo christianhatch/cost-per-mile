@@ -534,12 +534,12 @@
         },
 
         get evEfficiencyDisplay() {
-          return this.evMode === 'whmi' ? this.evWhPerMile : 1000 / this.evWhPerMile;
+          return this.evMode === 'whmi' ? parseFloat(this.evWhPerMile.toFixed(2)) : parseFloat((1000 / this.evWhPerMile).toFixed(2));
         },
         set evEfficiencyDisplay(val) {
           const parsed = parseFloat(val);
           if (!parsed || parsed <= 0) return;
-          this.evWhPerMile = this.evMode === 'whmi' ? parsed : 1000 / parsed;
+          this.evWhPerMile = this.evMode === 'whmi' ? parseFloat(parsed.toFixed(2)) : parseFloat((1000 / parsed).toFixed(2));
         },
 
         get whPerMile() {
@@ -548,22 +548,22 @@
 
         get evCostPerMile() {
           if (!this.whPerMile || !this.evPrice) return '';
-          return (this.whPerMile / 1000) * this.evPrice;
+          return parseFloat(((this.whPerMile / 1000) * this.evPrice).toFixed(2));
         },
 
         get gasCostPerMile() {
           if (!this.mpg || !this.gasPrice) return '';
-          return this.gasPrice / this.mpg;
+          return parseFloat((this.gasPrice / this.mpg).toFixed(2));
         },
 
         get equivalentEvPrice() {
           if (!this.gasCostPerMile || !this.whPerMile) return '';
-          return (this.gasCostPerMile * 1000) / this.whPerMile;
+          return parseFloat(((this.gasCostPerMile * 1000) / this.whPerMile).toFixed(2));
         },
 
         get equivalentGasPrice() {
           if (!this.evCostPerMile || !this.mpg) return '';
-          return this.evCostPerMile * this.mpg;
+          return parseFloat((this.evCostPerMile * this.mpg).toFixed(2));
         },
 
         get evResult() {
