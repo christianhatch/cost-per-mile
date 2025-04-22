@@ -132,10 +132,10 @@
                       focus:border-green-500 dark:focus:border-green-600 focus:ring-1 focus:ring-green-500 dark:focus:ring-green-600
                       outline-none transition-colors" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <template x-if="evMode === 'whmi'">
+                      <template x-if="!isMiPerKwh">
                         <span class="text-gray-500 dark:text-gray-400">Wh/mi</span>
                       </template>
-                      <template x-if="evMode === 'mikwh'">
+                      <template x-if="isMiPerKwh">
                         <span class="text-gray-500 dark:text-gray-400">mi/kWh</span>
                       </template>
                     </div>
@@ -352,7 +352,7 @@
         electricPrice: parseFloat(localStorage.getItem(stateDefaults.electricPrice.storageKey)) || stateDefaults.electricPrice.defaultValue,
         gasPrice: parseFloat(localStorage.getItem(stateDefaults.gasPrice.storageKey)) || stateDefaults.gasPrice.defaultValue,
         evWhPerMile: parseFloat(localStorage.getItem(stateDefaults.evWhPerMile.storageKey)) || stateDefaults.evWhPerMile.defaultValue,
-        isMiPerKwh: localStorage.getItem(stateDefaults.isMiPerKwh.storageKey) === 'mikwh' || stateDefaults.isMiPerKwh.defaultValue,
+        isMiPerKwh: localStorage.getItem(stateDefaults.isMiPerKwh.storageKey) === 'true' || stateDefaults.isMiPerKwh.defaultValue,
         mpg: parseFloat(localStorage.getItem(stateDefaults.mpg.storageKey)) || stateDefaults.mpg.defaultValue,
         miles: parseFloat(localStorage.getItem(stateDefaults.miles.storageKey)) || stateDefaults.miles.defaultValue,
         isElectricPriceLocked: localStorage.getItem(stateDefaults.isElectricPriceLocked.storageKey) === 'true' || stateDefaults.isElectricPriceLocked.defaultValue,
@@ -365,26 +365,18 @@
           this.renderChart();
         },
 
-        get evMode() {
-          return this.isMiPerKwh ? 'mikwh' : 'whmi';
-        },
-
         get evEfficiencyDisplay() {
-          return this.evMode === 'whmi' ? parseFloat(this.evWhPerMile.toFixed(2)) : parseFloat((1000 / this.evWhPerMile).toFixed(2));
+          return this.isMiPerKwh ? parseFloat((1000 / this.evWhPerMile).toFixed(2)) : parseFloat(this.evWhPerMile.toFixed(2));
         },
         set evEfficiencyDisplay(val) {
           const parsed = parseFloat(val);
           if (!parsed || parsed <= 0) return;
-          this.evWhPerMile = this.evMode === 'whmi' ? parseFloat(parsed.toFixed(2)) : parseFloat((1000 / parsed).toFixed(2));
-        },
-
-        get whPerMile() {
-          return this.evWhPerMile;
+          this.evWhPerMile = this.isMiPerKwh ? parseFloat((1000 / parsed).toFixed(2)) : parseFloat(parsed.toFixed(2));
         },
 
         get evCostPerMile() {
-          if (!this.whPerMile || !this.electricPrice) return '';
-          return evCostPerMile(this.whPerMile, this.electricPrice);
+          if (!this.evWhPerMile || !this.electricPrice) return '';
+          return evCostPerMile(this.evWhPerMile, this.electricPrice);
         },
 
         get gasCostPerMile() {
@@ -393,8 +385,8 @@
         },
 
         get equivalentEvPrice() {
-          if (!this.gasCostPerMile || !this.whPerMile) return '';
-          return equivalentEvPrice(this.gasCostPerMile, this.whPerMile);
+          if (!this.gasCostPerMile || !this.evWhPerMile) return '';
+          return equivalentEvPrice(this.gasCostPerMile, this.evWhPerMile);
         },
 
         get equivalentGasPrice() {
@@ -477,7 +469,7 @@
         },
 
         get evChartPrices() {
-          return this.generateChartData(this.whPerMile, true);
+          return this.generateChartData(this.evWhPerMile, true);
         },
 
         get gasChartPrices() {
@@ -677,7 +669,7 @@
             }
             if (params.has(stateDefaults.isMiPerKwh.storageKey)) {
               this.isMiPerKwh = urlValues.isMiPerKwh;
-              localStorage.setItem(stateDefaults.isMiPerKwh.storageKey, this.evMode);
+              localStorage.setItem(stateDefaults.isMiPerKwh.storageKey, this.isMiPerKwh);
             }
             if (urlValues.mpg !== null) {
               this.mpg = urlValues.mpg;
@@ -746,7 +738,7 @@
             }
           });
           this.$watch('isMiPerKwh', value => {
-            localStorage.setItem(stateDefaults.isMiPerKwh.storageKey, this.evMode);
+            localStorage.setItem(stateDefaults.isMiPerKwh.storageKey, this.isMiPerKwh);
             this.updateURL();
             // Update prices if either is locked
             if (this.isElectricPriceLocked && this.equivalentGasPrice) {
