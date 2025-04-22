@@ -11,7 +11,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="format-detection" content="telephone=no">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="msapplication-TileColor" content="#36647c">
+  <meta name="msapplication-TileColor" content="#0f172a">
   <meta name="msapplication-tap-highlight" content="no">
   <meta name="theme-color" content="#0f172a">
 
@@ -34,14 +34,26 @@
   <!-- Viewport -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <!-- Tailwind and Alpine.js -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com/3.3.5"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            slate: {
+              900: '#0f172a',
+            }
+          }
+        }
+      }
     }
   </script>
+
+  <!-- Alpine.js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
   <style>
     /* Remove number input steppers */
     input[type="number"]::-webkit-outer-spin-button,
@@ -276,25 +288,39 @@
       });
     }
 
-    // Improved PWA install prompt
+    // PWA install prompt
     let deferredPrompt;
     const installButton = document.createElement('button');
     installButton.className = 'fixed bottom-6 right-6 bg-green-600 text-white px-4 py-3 text-lg font-semibold rounded-full shadow-lg hover:bg-green-700 transition-colors';
     installButton.textContent = 'Install App';
     installButton.style.display = 'none';
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installButton.style.display = 'block';
+    // Only add the install button if we're not already in standalone mode
+    if (!window.matchMedia('(display-mode: standalone)').matches) {
+      document.body.appendChild(installButton);
+    }
 
-      installButton.addEventListener('click', async () => {
-        installButton.style.display = 'none';
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log(`User response to the install prompt: ${outcome}`);
-        deferredPrompt = null;
-      });
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Store the event for later use
+      deferredPrompt = e;
+      // Show our custom install button
+      installButton.style.display = 'block';
+    });
+
+    installButton.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+
+      // Show the install prompt
+      deferredPrompt.prompt();
+
+      // Wait for the user to respond to the prompt
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User response to the install prompt: ${outcome}`);
+
+      // Clear the deferredPrompt
+      deferredPrompt = null;
+      // Hide our custom install button
+      installButton.style.display = 'none';
     });
 
     window.addEventListener('appinstalled', () => {
@@ -302,8 +328,6 @@
       installButton.style.display = 'none';
       deferredPrompt = null;
     });
-
-    document.body.appendChild(installButton);
   </script>
 
   <script>
