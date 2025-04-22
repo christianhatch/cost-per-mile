@@ -62,7 +62,7 @@
 </head>
 <body class="min-h-screen flex flex-col items-center gap-2 md:gap-6 p-2 bg-gray-100 dark:bg-slate-900" x-data="app" @click.capture="if (!$event.target.matches('input, button')) document.activeElement?.blur()">
   <!-- Header Section -->
-  <div class="flex w-full max-w-4xl justify-between items-center bg-white dark:bg-slate-800 rounded-xl p-2 md:p-4 shadow-sm">
+  <div class="flex w-full max-w-4xl justify-between items-center bg-white dark:bg-slate-800 rounded-xl p-4 md:p-6 shadow-md">
     <h2 class="text-md md:text-xl font-bold text-gray-800 dark:text-gray-200">Trip Cost Calculator</h2>
     <!-- Share Button -->
     <button
@@ -74,19 +74,21 @@
   </div>
 
   <!-- Results Section -->
-  <div class="w-full max-w-4xl">
-    <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm">
+  <div class="w-full max-w-4xl sticky top-2 z-50">
+    <div class="bg-white dark:bg-slate-800 rounded-xl p-4 md:p-6 shadow-md">
       <!-- Results Section -->
       <div class="flex flex-col md:flex-row md:space-x-8 space-y-4 md:space-y-0">
-        <!-- EV Result -->
-        <div class="flex flex-col flex-1">
-          <div x-text="evResult.trip" class="text-lg font-bold text-green-600 dark:text-green-400"></div>
-          <div x-text="evResult.perMile" class="text-sm text-green-600 dark:text-green-400"></div>
-        </div>
-        <!-- Gas Result -->
-        <div class="flex flex-col flex-1">
-          <div x-text="gasResult.trip" class="text-lg font-bold text-rose-600 dark:text-rose-400"></div>
-          <div x-text="gasResult.perMile" class="text-sm text-rose-600 dark:text-rose-400"></div>
+        <div class="flex flex-row flex-1">
+          <!-- EV Result -->
+          <div class="flex flex-col flex-1">
+            <div x-text="evResult.trip" class="text-lg font-bold text-green-600 dark:text-green-400"></div>
+            <div x-text="evResult.perMile" class="text-sm text-green-600 dark:text-green-400"></div>
+          </div>
+          <!-- Gas Result -->
+          <div class="flex flex-col flex-1">
+            <div x-text="gasResult.trip" class="text-lg font-bold text-rose-600 dark:text-rose-400"></div>
+            <div x-text="gasResult.perMile" class="text-sm text-rose-600 dark:text-rose-400"></div>
+          </div>
         </div>
         <!-- Savings Result -->
         <div class="flex flex-col flex-1 pt-2 md:pt-0 border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-700 md:pl-8">
@@ -99,11 +101,11 @@
 
   <!-- Inputs Section -->
   <div class="w-full max-w-4xl">
-    <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm">
+    <div class="bg-white dark:bg-slate-800 rounded-xl p-4 md:p-6 shadow-md">
       <div class="flex flex-col gap-6 max-w-4xl mx-auto">
-        <div class="flex flex-col lg:flex-row lg:gap-12 lg:justify-center">
+        <div class="flex flex-col md:flex-row md:gap-12 md:justify-center">
           <!-- EV Input Section -->
-          <div class="flex-1 max-w-sm lg:mb-0">
+          <div class="flex-1 max-w-sm md:mb-0">
             <!-- EV Header -->
             <div class="flex items-center mb-4">
               <span class="text-2xl mr-2">🔋</span>
@@ -111,7 +113,7 @@
             </div>
             <!-- EV Price Input -->
             <div class="grid grid-cols-2 gap-4">
-              <div class="max-w-[200px]">
+              <div class="w-full">
                 <label class="block">
                   <span class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Price</span>
                   <div class="relative">
@@ -136,7 +138,7 @@
               </div>
 
               <!-- EV Efficiency Input -->
-              <div class="max-w-[200px]">
+              <div class="w-full">
                 <label class="block">
                   <span class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Efficiency</span>
                   <div class="relative">
@@ -159,13 +161,13 @@
                     <div class="inline-flex rounded-lg p-0.5 bg-gray-100 dark:bg-slate-700">
                       <button
                         @click="isMiPerKwh = false"
-                        :class="{'bg-white dark:bg-slate-600 shadow-sm text-green-600 dark:text-green-400': !isMiPerKwh, 'text-gray-600 dark:text-gray-400': isMiPerKwh}"
+                        :class="{'bg-white dark:bg-slate-600 shadow-md text-green-600 dark:text-green-400': !isMiPerKwh, 'text-gray-600 dark:text-gray-400': isMiPerKwh}"
                         class="px-3 py-1 text-sm rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
                         Wh/mi
                       </button>
                       <button
                         @click="isMiPerKwh = true"
-                        :class="{'bg-white dark:bg-slate-600 shadow-sm text-green-600 dark:text-green-400': isMiPerKwh, 'text-gray-600 dark:text-gray-400': !isMiPerKwh}"
+                        :class="{'bg-white dark:bg-slate-600 shadow-md text-green-600 dark:text-green-400': isMiPerKwh, 'text-gray-600 dark:text-gray-400': !isMiPerKwh}"
                         class="px-3 py-1 text-sm rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
                         mi/kWh
                       </button>
@@ -190,7 +192,7 @@
             </div>
             <!-- Gas Price Input -->
             <div class="grid grid-cols-2 gap-4">
-              <div class="max-w-[200px]">
+              <div class="w-full">
                 <label class="block">
                   <span class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Price</span>
                   <div class="relative">
@@ -215,7 +217,7 @@
               </div>
 
               <!-- Gas Efficiency Input -->
-              <div class="max-w-[200px]">
+              <div class="w-full">
                 <label class="block">
                   <span class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Efficiency</span>
                   <div class="relative">
@@ -238,13 +240,13 @@
         <hr class="border-gray-200 dark:border-gray-700">
 
         <!-- Trip Distance Section -->
-        <div class="lg:max-w-xs">
+        <div class="w-full sm:w-1/2 md:w-1/3">
           <div class="flex items-center mb-4">
             <span class="text-2xl mr-2">🧭</span>
             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Trip Distance</h2>
           </div>
           <div>
-            <div class="max-w-[200px]">
+            <div class="w-full">
               <label class="block">
                 <div class="relative">
                   <input type="number" x-model="miles" step="1" min="1"
@@ -267,7 +269,7 @@
 
   <!-- Chart Section -->
   <div class="w-full max-w-4xl">
-    <div class="bg-white dark:bg-slate-800 rounded-xl p-0 md:p-6 shadow-sm">
+    <div class="bg-white dark:bg-slate-800 rounded-xl p-2 md:p-6 shadow-md">
       <div class="aspect-[4/3] w-full">
         <canvas id="costChart"></canvas>
       </div>
@@ -279,7 +281,7 @@
     <div class="text-sm text-gray-500 dark:text-gray-400">
       © 2025 Cost Per Mile Calculator
     </div>
-    <div class="bg-white dark:bg-slate-800 rounded-full px-2.5 py-1.5 flex items-center shadow-sm">
+    <div class="bg-white dark:bg-slate-800 rounded-full px-2.5 py-1.5 flex items-center shadow-md">
       <div class="relative">
         <button @click="$refs.themeDropdown.classList.toggle('hidden')" class="flex items-center space-x-1.5 px-2 py-0.5 rounded-full text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700">
           <span x-text="theme === 'light' ? '☀️' : theme === 'dark' ? '🌙' : '💻'" class="text-base"></span>
