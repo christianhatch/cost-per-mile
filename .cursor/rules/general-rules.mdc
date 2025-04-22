@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Your rule content
+
+- Use canonical Alpine.js as much as possible
+- Use Tailwindcss for all styling
+- Keep logic simple, straightforward, and cleanly organized
+- Reduce duplication where possible and remove unused code when possible
