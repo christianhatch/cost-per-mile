@@ -10,3 +10,4 @@ alwaysApply: true
 - Use Tailwindcss for all styling
 - Keep logic simple, straightforward, and cleanly organized
 - Reduce duplication where possible and remove unused code when possible
+- Logically organize methods and functionality to be near each other in the file
