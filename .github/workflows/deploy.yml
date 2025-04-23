@@ -36,6 +36,12 @@ jobs:
         run: npm ci
       - name: Compile Tailwind CSS
         run: npx tailwindcss -i ./src/main.css -o ./src/_main.css --minify
+      - name: Debug - List files after Tailwind compilation
+        run: |
+          echo "Contents of src directory:"
+          ls -la src/
+          echo "Contents of src/assets directory:"
+          ls -la src/assets/
       - name: Prepare deployment files
         run: |
           mkdir -p dist
@@ -44,6 +50,12 @@ jobs:
           cp src/_main.css dist/
           cp src/manifest.json dist/
           cp src/sw.js dist/
+      - name: Debug - List files in dist directory
+        run: |
+          echo "Contents of dist directory:"
+          ls -la dist/
+          echo "Contents of dist/assets directory:"
+          ls -la dist/assets/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
