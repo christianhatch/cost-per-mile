@@ -20,6 +20,11 @@ const FILES_TO_CACHE = [
 const STATIC_CACHE = 'static-cache-v1';
 
 self.addEventListener('install', event => {
+  // Skip caching if running on localhost
+  if (self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1') {
+    return;
+  }
+
   event.waitUntil(
     Promise.all([
       caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE)),
