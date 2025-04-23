@@ -538,18 +538,15 @@
           return {
             electricity: {
               background: darkMode ? green400 : green600,
-              border: darkMode ? green600 : green600,
+              border: darkMode ? green400 : green600,
               text: darkMode ? green400 : green600,
             },
             gas: {
               background: darkMode ? rose400 : rose600,
-              border: darkMode ? rose600 : rose600,
+              border: darkMode ? rose400 : rose600,
               text: darkMode ? rose400 : rose600,
             },
             title: {
-              text: darkMode ? gray400 : gray600,
-            },
-            subtitle: {
               text: darkMode ? gray400 : gray600,
             },
             grid: {
@@ -593,29 +590,36 @@
               plugins: {
                 title: {
                   display: true,
-                  text: 'Gas vs EV Price Equivalents',
+                  text: 'MPG vs kWh Price',
                   color: colors.title.text,
                   font: {
                     size: 16
                   }
                 },
-
                 legend: {
                   display: false,
                 },
                 tooltip: {
+                  displayColors: false,
+                  backgroundColor: 'rgba(1, 1, 1, 0.8)',
+                  titleFont: {
+                    size: 14,
+                    weight: 'bold',
+                  },
+                  bodyFont: {
+                    size: 14,
+                    weight: 'bold',
+                  },
                   callbacks: {
                     label: function(context) {
                       const label = context.dataset.label;
-                      const value = context.raw;
-                      const costPerMile = data.costsPerMile[context.dataIndex];
-                      const evPrice = data.evPrices[context.dataIndex];
-                      const gasPrice = data.gasPrices[context.dataIndex];
-
                       const isElectric = label.includes('Electricity');
+                      const evPrice = `${formatPrice(data.evPrices[context.dataIndex])}/kWh`;
+                      const gasPrice = `${formatPrice(data.gasPrices[context.dataIndex])}/gal`;
+
                       const labels = [
-                        `Electricity: $${evPrice.toFixed(2)}/kWh`,
-                        `Gas: $${gasPrice.toFixed(2)}/gal`,
+                        `🔋${evPrice}`,
+                        `⛽️${gasPrice}`,
                       ];
 
                       return isElectric ? labels : labels.reverse();
@@ -630,6 +634,15 @@
                     text: 'Cost per Mile ($)',
                     color: colors.title.text
                   },
+                  ticks: {
+                    callback: function(value, index, ticks) {
+                      return '$' + (parseFloat(value)/1000).toFixed(2) + '/mi';
+                    },
+                    color: colors.title.text,
+                    font: {
+                      size: 10
+                    }
+                  },
                   grid: {
                     color: colors.grid.line
                   }
@@ -642,6 +655,15 @@
                     display: true,
                     text: 'Electricity ($/kWh)',
                     color: colors.electricity.text
+                  },
+                  ticks: {
+                    callback: function(value, index, ticks) {
+                      return formatPrice(value);
+                    },
+                    color: colors.title.text,
+                    font: {
+                      size: 10
+                    }
                   },
                   beginAtZero: true,
                   min: 0,
@@ -658,6 +680,15 @@
                     display: true,
                     text: 'Gas ($/gal)',
                     color: colors.gas.text
+                  },
+                  ticks: {
+                    callback: function(value, index, ticks) {
+                      return formatPrice(value);
+                    },
+                    color: colors.title.text,
+                    font: {
+                      size: 10
+                    }
                   },
                   beginAtZero: true,
                   min: 0,
