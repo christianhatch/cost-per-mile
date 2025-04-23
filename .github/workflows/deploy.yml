@@ -43,7 +43,7 @@ jobs:
           cp -r assets dist/
           cp main.css dist/
           cp manifest.json dist/
-          cp sw.js dist/
+          cp service-worker.js dist/
       - name: Debug - List files in dist directory
         run: |
           echo "Contents of dist directory:"

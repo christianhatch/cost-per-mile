@@ -1,4 +1,4 @@
-// sw.js
+// service-worker.js
 const CACHE_NAME = 'cost-per-mile-v1';
 const FILES_TO_CACHE = [
   '/',
@@ -22,6 +22,7 @@ const STATIC_CACHE = 'static-cache-v1';
 self.addEventListener('install', event => {
   // Skip caching if running on localhost
   if (self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1') {
+    console.log('Skipping caching on localhost');
     return;
   }
 
