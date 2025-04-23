@@ -36,10 +36,18 @@ jobs:
         run: npm ci
       - name: Compile Tailwind CSS
         run: npx tailwindcss -i ./src/main.css -o ./src/_main.css --minify
+      - name: Prepare deployment files
+        run: |
+          mkdir -p dist
+          cp index.html dist/
+          cp -r src/assets dist/
+          cp src/_main.css dist/
+          cp src/manifest.json dist/
+          cp src/sw.js dist/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: 'dist'
 
   # Deployment job
   deploy:
