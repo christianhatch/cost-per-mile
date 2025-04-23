@@ -434,6 +434,7 @@
           this.$nextTick(() => {
             this.renderChart();
           });
+          this.registerPwaPrompt();
         },
 
         get darkMode() {
@@ -903,16 +904,6 @@
         },
 
         setupWatchers() {
-          window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            this.deferredPrompt = e;
-          });
-
-          window.addEventListener('appinstalled', () => {
-            this.isStandalone = true;
-            this.deferredPrompt = null;
-          });
-
           window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
             if (this.theme === 'system') this.updateTheme();
           });
@@ -958,14 +949,33 @@
           });
         },
 
+        registerPwaPrompt() {
+          window.addEventListener('beforeinstallprompt', (e) => {
+            // Store the event for later use
+            this.deferredPrompt = e;
+            // Show the install button
+            this.$refs.installButton?.classList.remove('hidden');
+          });
+
+          window.addEventListener('appinstalled', () => {
+            this.isStandalone = true;
+            this.deferredPrompt = null;
+            // Hide the install button after installation
+            this.$refs.installButton?.classList.add('hidden');
+          });
+        },
+
         async installApp() {
           if (!this.deferredPrompt) return;
 
+          // Show the install prompt
           this.deferredPrompt.prompt();
 
+          // Wait for the user to respond to the prompt
           const { outcome } = await this.deferredPrompt.userChoice;
           console.log(`User response to the install prompt: ${outcome}`);
 
+          // Clear the deferredPrompt
           this.deferredPrompt = null;
         }
       }));
