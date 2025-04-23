@@ -35,13 +35,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Compile Tailwind CSS
-        run: npx tailwindcss -i ./main.css -o ./_main.css --minify
+        run: npx tailwindcss -i ./input.css -o ./main.css --minify
       - name: Prepare deployment files
         run: |
           mkdir -p dist
           cp index.html dist/
           cp -r assets dist/
-          cp _main.css dist/
+          cp main.css dist/
           cp manifest.json dist/
           cp sw.js dist/
       - name: Debug - List files in dist directory
