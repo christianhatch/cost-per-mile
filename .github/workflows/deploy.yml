@@ -38,6 +38,8 @@ jobs:
         run: npx tailwindcss -i ./src/main.css -o ./dist/_main.css --minify
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
 
   # Deployment job
   deploy:
@@ -50,6 +52,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          # Upload entire repository
-          path: '.'
