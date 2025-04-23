@@ -285,7 +285,7 @@
   <!-- Footer Section -->
   <footer class="w-full max-w-4xl flex justify-between items-center px-2 md:px-4 py-2 md:py-6">
     <div class="text-sm text-gray-500 dark:text-gray-400">
-      © 2025 Cost Per Mile Calculator
+      © <span x-text="new Date().getFullYear()"></span> Cost Per Mile Calculator
     </div>
     <div class="bg-white dark:bg-slate-800 rounded-full px-2.5 py-1.5 flex items-center shadow-md">
       <div class="relative">
@@ -397,6 +397,10 @@
           this.$nextTick(() => {
             this.renderChart();
           });
+        },
+
+        get darkMode() {
+          return this.theme === 'dark' || (this.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
         },
 
         get evEfficiencyDisplay() {
@@ -520,112 +524,149 @@
           this.chart = new Chart(ctx, this.chartConfig(data));
         },
 
-        chartConfig(data) {
+        chartColors() {
+          const gray200 = '#e5e7eb'
+          const gray400 = '#9ca3af'
+          const gray600 = '#4b5563'
+          const gray700 = '#374151'
+          const rose400 = '#fb7186'
+          const rose600 = '#e11d48'
+          const green400 = '#4ade80'
+          const green600 = '#16a34a'
+          const darkMode = this.darkMode;
+
           return {
-              type: 'line',
-              data: {
-                labels: data.costsPerMile.map(cost => `$${cost.toFixed(4)}/mi`),
-                datasets: [
-                  {
-                    label: 'Electricity $/kWh',
-                    data: data.evPrices,
-                    borderColor: '#16a34a', // green-600
-                    backgroundColor: 'rgba(22, 163, 74, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.1,
-                    yAxisID: 'y'
-                  },
-                  {
-                    label: 'Gas $/gal',
-                    data: data.gasPrices,
-                    borderColor: '#e11d48', // rose-600
-                    backgroundColor: 'rgba(225, 29, 72, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.1,
-                    yAxisID: 'y1'
-                  }
-                ]
+            electricity: {
+              background: darkMode ? green400 : green600,
+              border: darkMode ? green600 : green600,
+              text: darkMode ? green400 : green600,
+            },
+            gas: {
+              background: darkMode ? rose400 : rose600,
+              border: darkMode ? rose600 : rose600,
+              text: darkMode ? rose400 : rose600,
+            },
+            title: {
+              text: darkMode ? gray400 : gray600,
+            },
+            subtitle: {
+              text: darkMode ? gray400 : gray600,
+            },
+            grid: {
+              line: darkMode ? gray700 : gray200,
+            },
+          }
+        },
+
+        chartConfig(data) {
+          const colors = this.chartColors();
+
+          return {
+            type: 'line',
+            data: {
+              labels: data.costsPerMile.map(cost => `$${cost.toFixed(4)}/mi`),
+              datasets: [
+              {
+                label: 'Electricity $/kWh',
+                data: data.evPrices,
+                borderColor: colors.electricity.border,
+                backgroundColor: colors.electricity.background,
+                borderWidth: 2,
+                tension: 0.1,
+                yAxisID: 'y'
               },
-              options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: false,
-                plugins: {
-                  title: {
-                    display: false,
-                    text: 'Energy Price vs Cost per Mile',
-                    color: '#1f2937', // gray-800
-                    font: {
-                      size: 16
-                    }
-                  },
-                  legend: {
-                    display: false,
-                  },
-                  tooltip: {
-                    callbacks: {
-                      label: function(context) {
-                        const label = context.dataset.label;
-                        const value = context.raw;
-                        const costPerMile = data.costsPerMile[context.dataIndex];
-                        const evPrice = data.evPrices[context.dataIndex];
-                        const gasPrice = data.gasPrices[context.dataIndex];
-
-                        const isElectric = label.includes('Electricity');
-                        const labels = [
-                          `Electricity: $${evPrice.toFixed(2)}/kWh`,
-                          `Gas: $${gasPrice.toFixed(2)}/gal`,
-                        ];
-
-                        return isElectric ? labels : labels.reverse();
-                      }
-                    }
+              {
+                label: 'Gas $/gal',
+                data: data.gasPrices,
+                borderColor: colors.gas.border,
+                backgroundColor: colors.gas.background,
+                borderWidth: 2,
+                tension: 0.1,
+                yAxisID: 'y1'
+              }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              animation: false,
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Gas vs EV Price Equivalents',
+                  color: colors.title.text,
+                  font: {
+                    size: 16
                   }
                 },
-                scales: {
-                  x: {
-                    title: {
-                      display: true,
-                      text: 'Cost per Mile ($)',
-                      color: '#1f2937' // gray-800
-                    },
-                    grid: {
-                      color: 'rgba(0, 0, 0, 0.1)'
-                    }
-                  },
-                  y: {
-                    type: 'linear',
-                    display: true,
-                    position: 'left',
-                    title: {
-                      display: true,
-                      text: 'Electricity ($/kWh)',
-                      color: '#16a34a' // green-600
-                    },
-                    beginAtZero: true,
-                    min: 0,
-                    max: 1.0,
-                    grid: {
-                      color: 'rgba(0, 0, 0, 0.1)'
-                    }
-                  },
-                  y1: {
-                    type: 'linear',
-                    display: true,
-                    position: 'right',
-                    title: {
-                      display: true,
-                      text: 'Gas ($/gal)',
-                      color: '#e11d48' // rose-600
-                    },
-                    beginAtZero: true,
-                    min: 0,
-                    max: 8.0,
-                    grid: {
-                      drawOnChartArea: false
+
+                legend: {
+                  display: false,
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      const label = context.dataset.label;
+                      const value = context.raw;
+                      const costPerMile = data.costsPerMile[context.dataIndex];
+                      const evPrice = data.evPrices[context.dataIndex];
+                      const gasPrice = data.gasPrices[context.dataIndex];
+
+                      const isElectric = label.includes('Electricity');
+                      const labels = [
+                        `Electricity: $${evPrice.toFixed(2)}/kWh`,
+                        `Gas: $${gasPrice.toFixed(2)}/gal`,
+                      ];
+
+                      return isElectric ? labels : labels.reverse();
                     }
                   }
                 }
+              },
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Cost per Mile ($)',
+                    color: colors.title.text
+                  },
+                  grid: {
+                    color: colors.grid.line
+                  }
+                },
+                y: {
+                  type: 'linear',
+                  display: true,
+                  position: 'left',
+                  title: {
+                    display: true,
+                    text: 'Electricity ($/kWh)',
+                    color: colors.electricity.text
+                  },
+                  beginAtZero: true,
+                  min: 0,
+                  max: 1.0,
+                  grid: {
+                    color: colors.grid.line
+                  }
+                },
+                y1: {
+                  type: 'linear',
+                  display: true,
+                  position: 'right',
+                  title: {
+                    display: true,
+                    text: 'Gas ($/gal)',
+                    color: colors.gas.text
+                  },
+                  beginAtZero: true,
+                  min: 0,
+                  max: 8.0,
+                  grid: {
+                    drawOnChartArea: false
+                  }
+                }
+              }
             }
           }
         },
@@ -704,8 +745,8 @@
         },
 
         updateTheme() {
-          const isDark = this.theme === 'dark' || (this.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-          document.documentElement.classList.toggle('dark', isDark);
+          document.documentElement.classList.toggle('dark', this.darkMode);
+          this.renderChart();
         },
 
         initializeStateFromUrl() {
