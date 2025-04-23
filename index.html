@@ -48,24 +48,30 @@
 <body class="min-h-screen flex flex-col items-center gap-2 md:gap-6 px-2 pt-0 pb-2 bg-gray-100 dark:bg-slate-900" x-data="app" @click.capture="if (!$event.target.matches('input, button')) document.activeElement?.blur()">
   <!-- Header Section -->
   <header class="flex w-full max-w-4xl justify-between items-center bg-white dark:bg-slate-800 rounded-xl p-4 md:p-6 mt-2 md:mt-6 shadow-md" role="banner">
-    <h1 class="text-md md:text-xl font-bold text-gray-800 dark:text-gray-200">Trip Cost Calculator</h1>
-    <!-- Breakpoint Indicator (Debug) -->
-    <span x-show="debugMode" class="ml-4 px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs font-mono">
-      <span class="sm:hidden">xs</span>
-      <span class="hidden sm:inline md:hidden">sm</span>
-      <span class="hidden md:inline lg:hidden">md</span>
-      <span class="hidden lg:inline xl:hidden">lg</span>
-      <span class="hidden xl:inline 2xl:hidden">xl</span>
-      <span class="hidden 2xl:inline">2xl</span>
-    </span>
-    <!-- Share Button -->
-    <button
-      @click="share"
-      x-ref="shareButton"
-      aria-label="Share calculator"
-      class="px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors">
-      Share
-    </button>
+    <!-- Left section: Title and Debug -->
+    <div class="flex items-center gap-2">
+      <h1 class="text-md md:text-xl font-bold text-gray-800 dark:text-gray-200">Trip Cost Calculator</h1>
+      <!-- Install Button -->
+      <button
+        x-show="!isStandalone && !isSafari"
+        @click="installApp"
+        x-ref="installButton"
+        class="px-2 py-1.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors flex items-center gap-2">
+        <span class="text-lg">📱</span>
+        <span>Install App</span>
+      </button>
+    </div>
+    <!-- Right section: Share buttons -->
+    <div class="flex items-center gap-2">
+      <!-- Share Button -->
+      <button
+        @click="share"
+        x-ref="shareButton"
+        aria-label="Share calculator"
+        class="px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors">
+        Share
+      </button>
+    </div>
   </header>
 
   <!-- Results Section -->
@@ -407,7 +413,6 @@
   <script>
     document.addEventListener('alpine:init', () => {
       Alpine.data('app', () => ({
-        debugMode: window.location.hostname === 'localhost',
         theme: localStorage.getItem(stateDefaults.theme.storageKey) || stateDefaults.theme.defaultValue,
         electricPrice: parseFloat(localStorage.getItem(stateDefaults.electricPrice.storageKey)) || stateDefaults.electricPrice.defaultValue,
         gasPrice: parseFloat(localStorage.getItem(stateDefaults.gasPrice.storageKey)) || stateDefaults.gasPrice.defaultValue,
@@ -418,6 +423,9 @@
         syncPrices: localStorage.getItem(stateDefaults.syncPrices.storageKey) === 'true' || stateDefaults.syncPrices.defaultValue,
         focusedField: null,
         chart: null,
+        deferredPrompt: null,
+        isStandalone: window.matchMedia('(display-mode: standalone)').matches,
+        isSafari: /^((?!chrome|android).)*safari/i.test(navigator.userAgent),
 
         init() {
           this.initializeStateFromUrl();
@@ -520,13 +528,15 @@
           // Generate cost per mile points from $0.00 to $0.25 in $0.001 increments
           for (let costPerMile = 0; costPerMile <= 0.25; costPerMile += 0.001) {
             costPerMilePoints.push(costPerMile);
+            const roundedCostPerMile = parseFloat(costPerMile.toFixed(4));
+            costPerMilePoints.push(roundedCostPerMile);
 
             // Calculate equivalent electricity price for this cost per mile
-            const evPrice = Utils.equivalentEvPrice(costPerMile, this.evWhPerMile);
+            const evPrice = Utils.equivalentEvPrice(roundedCostPerMile, this.evWhPerMile);
             evPrices.push(evPrice);
 
             // Calculate equivalent gas price for this cost per mile
-            const gasPrice = Utils.equivalentGasPrice(costPerMile, this.mpg);
+            const gasPrice = Utils.equivalentGasPrice(roundedCostPerMile, this.mpg);
             gasPrices.push(gasPrice);
           }
 
@@ -841,7 +851,6 @@
         },
 
         initializeStateFromUrl() {
-          // First try to get values from URL
           const params = new URLSearchParams(window.location.search);
           const urlValues = {
             electricPrice: parseFloat(params.get(stateDefaults.electricPrice.storageKey)) || null,
@@ -853,7 +862,6 @@
             syncPrices: params.get(stateDefaults.syncPrices.storageKey) === 'true'
           };
 
-          // If we have any valid URL params, update both the state and localStorage
           if (Object.values(urlValues).some(v => v !== null)) {
             if (urlValues.electricPrice !== null) {
               this.electricPrice = urlValues.electricPrice;
@@ -892,6 +900,16 @@
         },
 
         setupWatchers() {
+          window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            this.deferredPrompt = e;
+          });
+
+          window.addEventListener('appinstalled', () => {
+            this.isStandalone = true;
+            this.deferredPrompt = null;
+          });
+
           window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
             if (this.theme === 'system') this.updateTheme();
           });
@@ -935,6 +953,17 @@
             this.updateTheme();
             localStorage.setItem(stateDefaults.theme.storageKey, value);
           });
+        },
+
+        async installApp() {
+          if (!this.deferredPrompt) return;
+
+          this.deferredPrompt.prompt();
+
+          const { outcome } = await this.deferredPrompt.userChoice;
+          console.log(`User response to the install prompt: ${outcome}`);
+
+          this.deferredPrompt = null;
         }
       }));
     });
@@ -951,47 +980,6 @@
           });
       });
     }
-
-    // PWA install prompt
-    let deferredPrompt;
-    const installButton = document.createElement('button');
-    installButton.className = 'fixed bottom-6 right-6 bg-green-600 text-white px-4 py-3 text-lg font-semibold rounded-full shadow-lg hover:bg-green-700 transition-colors';
-    installButton.textContent = 'Install App';
-    installButton.style.display = 'none';
-
-    // Only add the install button if we're not already in standalone mode
-    if (!window.matchMedia('(display-mode: standalone)').matches) {
-      document.body.appendChild(installButton);
-    }
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      // Store the event for later use
-      deferredPrompt = e;
-      // Show our custom install button
-      installButton.style.display = 'block';
-    });
-
-    installButton.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
-
-      // Show the install prompt
-      deferredPrompt.prompt();
-
-      // Wait for the user to respond to the prompt
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`User response to the install prompt: ${outcome}`);
-
-      // Clear the deferredPrompt
-      deferredPrompt = null;
-      // Hide our custom install button
-      installButton.style.display = 'none';
-    });
-
-    window.addEventListener('appinstalled', () => {
-      console.log('PWA was installed');
-      installButton.style.display = 'none';
-      deferredPrompt = null;
-    });
   </script>
 </body>
 </html>
