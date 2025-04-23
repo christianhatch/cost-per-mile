@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Compile Tailwind CSS
-        run: npx tailwindcss -i ./src/main.css -o ./dist/_main.css --minify
+        run: npx tailwindcss -i ./src/main.css -o ./src/_main.css --minify
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
