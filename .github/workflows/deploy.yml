@@ -35,21 +35,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Compile Tailwind CSS
-        run: npx tailwindcss -i ./src/main.css -o ./src/_main.css --minify
-      - name: Debug - List files after Tailwind compilation
-        run: |
-          echo "Contents of src directory:"
-          ls -la src/
-          echo "Contents of src/assets directory:"
-          ls -la src/assets/
+        run: npx tailwindcss -i ./main.css -o ./_main.css --minify
       - name: Prepare deployment files
         run: |
           mkdir -p dist
           cp index.html dist/
-          cp -r src/assets dist/
-          cp src/_main.css dist/
-          cp src/manifest.json dist/
-          cp src/sw.js dist/
+          cp -r assets dist/
+          cp _main.css dist/
+          cp manifest.json dist/
+          cp sw.js dist/
       - name: Debug - List files in dist directory
         run: |
           echo "Contents of dist directory:"

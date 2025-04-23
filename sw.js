@@ -3,14 +3,17 @@ const CACHE_NAME = 'cost-per-mile-v1';
 const FILES_TO_CACHE = [
   '/',
   '/index.html',
-  '/src/manifest.json',
-  '/src/assets/favicon.ico',
-  '/src/assets/favicon-16x16.png',
-  '/src/assets/favicon-32x32.png',
-  '/src/assets/apple-touch-icon.png',
-  '/src/assets/android-chrome-192x192.png',
-  '/src/assets/android-chrome-512x512.png',
-  'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js'
+  '/manifest.json',
+  '/assets/favicon.ico',
+  '/assets/favicon-16x16.png',
+  '/assets/favicon-32x32.png',
+  '/assets/apple-touch-icon.png',
+  '/assets/android-chrome-192x192.png',
+  '/assets/android-chrome-512x512.png',
+  'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js',
+  'https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js',
+  'https://cdn.jsdelivr.net/npm/chart.js',
+  'https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0/dist/chartjs-plugin-annotation.min.js'
 ];
 
 // Cache-first strategy for static assets
