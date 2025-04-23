@@ -56,6 +56,8 @@
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Chart.js Annotation Plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0/dist/chartjs-plugin-annotation.min.js"></script>
 </head>
 <body class="min-h-screen flex flex-col items-center gap-2 md:gap-6 px-2 pt-0 pb-2 bg-gray-100 dark:bg-slate-900" x-data="app" @click.capture="if (!$event.target.matches('input, button')) document.activeElement?.blur()">
   <!-- Header Section -->
@@ -599,6 +601,11 @@
               ]
             },
             options: {
+              interaction: {
+                mode: 'index',
+                axis: 'x',
+                intersect: false,
+              },
               responsive: true,
               maintainAspectRatio: false,
               animation: false,
@@ -629,6 +636,9 @@
                     label: function(context) {
                       const label = context.dataset.label;
                       const isElectric = label.includes('Electricity');
+                      if (isElectric) {
+                        return ''
+                      }
                       const evPrice = `${formatPrice(data.evPrices[context.dataIndex])}/kWh`;
                       const gasPrice = `${formatPrice(data.gasPrices[context.dataIndex])}/gal`;
 
@@ -638,6 +648,46 @@
                       ];
 
                       return isElectric ? labels : labels.reverse();
+                    }
+                  }
+                },
+                annotation: {
+                  annotations: {
+                    evLine: {
+                      type: 'line',
+                      xMin: this.evCostPerMile,
+                      xMax: this.evCostPerMile,
+                      borderColor: colors.electricity.border,
+                      borderWidth: 2,
+                      borderDash: [5, 5],
+                      label: {
+                        display: true,
+                        content: '🔋',
+                        position: 'start',
+                        backgroundColor: colors.electricity.background,
+                        color: 'white',
+                        font: {
+                          size: 14
+                        }
+                      }
+                    },
+                    gasLine: {
+                      type: 'line',
+                      xMin: this.gasCostPerMile,
+                      xMax: this.gasCostPerMile,
+                      borderColor: colors.gas.border,
+                      borderWidth: 2,
+                      borderDash: [5, 5],
+                      label: {
+                        display: true,
+                        content: '⛽️',
+                        position: 'start',
+                        backgroundColor: colors.gas.background,
+                        color: 'white',
+                        font: {
+                          size: 14
+                        }
+                      }
                     }
                   }
                 }
