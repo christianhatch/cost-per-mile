@@ -655,6 +655,9 @@
                   callbacks: {
                     title: function(context) {
                       const pricePerMile = context[0].dataset.data[context[0].dataIndex];
+                      console.log('pricePerMile', pricePerMile);
+                      console.log('this.evCostPerMile', this.evCostPerMile);
+                      console.log('this.gasCostPerMile', this.gasCostPerMile);
                       return Utils.formatPricePerMile(pricePerMile);
                     },
                     label: function(context) {
@@ -675,46 +678,46 @@
                     }
                   }
                 },
-                // annotation: {
-                //   annotations: {
-                //     evLine: {
-                //       type: 'line',
-                //       xMin: Utils.formatPricePerMile(this.evCostPerMile),
-                //       xMax: Utils.formatPricePerMile(this.evCostPerMile),
-                //       borderColor: colors.electricity.border,
-                //       borderWidth: 2,
-                //       borderDash: [5, 5],
-                //       label: {
-                //         display: true,
-                //         content: '🔋',
-                //         position: 'start',
-                //         backgroundColor: colors.electricity.background,
-                //         color: 'white',
-                //         font: {
-                //           size: 14
-                //         }
-                //       }
-                //     },
-                //     gasLine: {
-                //       type: 'line',
-                //       xMin: Utils.formatPricePerMile(this.gasCostPerMile),
-                //       xMax: Utils.formatPricePerMile(this.gasCostPerMile),
-                //       borderColor: colors.gas.border,
-                //       borderWidth: 2,
-                //       borderDash: [5, 5],
-                //       label: {
-                //         display: true,
-                //         content: '⛽️',
-                //         position: 'start',
-                //         backgroundColor: colors.gas.background,
-                //         color: 'white',
-                //         font: {
-                //           size: 14
-                //         }
-                //       }
-                //     }
-                //   }
-                // }
+                annotation: {
+                  annotations: {
+                    evLine: {
+                      type: 'line',
+                      xMin: Utils.formatPricePerMile(this.evCostPerMile),
+                      xMax: Utils.formatPricePerMile(this.evCostPerMile),
+                      borderColor: colors.electricity.border,
+                      borderWidth: 2,
+                      borderDash: [5, 5],
+                      label: {
+                        display: true,
+                        content: '🔋',
+                        position: 'start',
+                        backgroundColor: colors.electricity.background,
+                        color: 'white',
+                        font: {
+                          size: 14
+                        }
+                      }
+                    },
+                    gasLine: {
+                      type: 'line',
+                      xMin: Utils.formatPricePerMile(this.gasCostPerMile),
+                      xMax: Utils.formatPricePerMile(this.gasCostPerMile),
+                      borderColor: colors.gas.border,
+                      borderWidth: 2,
+                      borderDash: [5, 5],
+                      label: {
+                        display: true,
+                        content: '⛽️',
+                        position: 'start',
+                        backgroundColor: colors.gas.background,
+                        color: 'white',
+                        font: {
+                          size: 14
+                        }
+                      }
+                    }
+                  }
+                }
               },
               scales: {
                 x: {
@@ -972,9 +975,6 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
-          .then(registration => {
-            console.log('ServiceWorker registration successful');
-          })
           .catch(err => {
             console.log('ServiceWorker registration failed: ', err);
           });
