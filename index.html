@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="description" content="Compare the cost per mile between electric and gas vehicles. Calculate savings, visualize price relationships, and make informed decisions about your vehicle choice." />
   <title>Cost Per Mile</title>
 
   <!-- PWA Meta Tags -->
@@ -17,7 +18,7 @@
   <!-- Web App Manifest -->
   <link rel="manifest" href="/manifest.json" />
   <!-- Viewport -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Icons -->
   <!-- Favicon -->
@@ -40,14 +41,14 @@
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
   <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Chart.js Annotation Plugin -->
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0/dist/chartjs-plugin-annotation.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0/dist/chartjs-plugin-annotation.min.js"></script>
 </head>
 <body class="min-h-screen flex flex-col items-center gap-2 md:gap-6 px-2 pt-0 pb-2 bg-gray-100 dark:bg-slate-900" x-data="app" @click.capture="if (!$event.target.matches('input, button')) document.activeElement?.blur()">
   <!-- Header Section -->
-  <div class="flex w-full max-w-4xl justify-between items-center bg-white dark:bg-slate-800 rounded-xl p-4 md:p-6 mt-2 md:mt-6 shadow-md">
-    <h2 class="text-md md:text-xl font-bold text-gray-800 dark:text-gray-200">Trip Cost Calculator</h2>
+  <header class="flex w-full max-w-4xl justify-between items-center bg-white dark:bg-slate-800 rounded-xl p-4 md:p-6 mt-2 md:mt-6 shadow-md" role="banner">
+    <h1 class="text-md md:text-xl font-bold text-gray-800 dark:text-gray-200">Trip Cost Calculator</h1>
     <!-- Breakpoint Indicator (Debug) -->
     <span x-show="debugMode" class="ml-4 px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs font-mono">
       <span class="sm:hidden">xs</span>
@@ -61,76 +62,77 @@
     <button
       @click="share"
       x-ref="shareButton"
+      aria-label="Share calculator"
       class="px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors">
       Share
     </button>
-  </div>
+  </header>
 
   <!-- Results Section -->
-  <div class="w-full max-w-4xl sticky top-0 z-50">
+  <section aria-label="Cost Results" class="w-full max-w-4xl sticky top-0 z-50">
     <div class="bg-white dark:bg-slate-800 rounded-xl p-4 md:p-6 shadow-md">
-      <!-- Results Section -->
       <div class="flex flex-col md:flex-row md:space-x-8 space-y-4 md:space-y-0">
         <div class="flex flex-row flex-1">
           <!-- EV Result -->
-          <div class="flex flex-col flex-1">
-            <div x-text="evResult.trip" class="text-lg font-bold text-green-600 dark:text-green-400"></div>
-            <div x-text="evResult.perMile" class="text-sm text-green-600 dark:text-green-400"></div>
+          <div class="flex flex-col flex-1" role="region" aria-label="Electric Vehicle Cost">
+            <div x-text="evResult.trip" class="text-lg font-bold text-green-700 dark:text-green-300"></div>
+            <div x-text="evResult.perMile" class="text-sm text-green-700 dark:text-green-300"></div>
           </div>
           <!-- Gas Result -->
-          <div class="flex flex-col flex-1">
-            <div x-text="gasResult.trip" class="text-lg font-bold text-rose-600 dark:text-rose-400"></div>
-            <div x-text="gasResult.perMile" class="text-sm text-rose-600 dark:text-rose-400"></div>
+          <div class="flex flex-col flex-1" role="region" aria-label="Gas Vehicle Cost">
+            <div x-text="gasResult.trip" class="text-lg font-bold text-rose-700 dark:text-rose-300"></div>
+            <div x-text="gasResult.perMile" class="text-sm text-rose-700 dark:text-rose-300"></div>
           </div>
         </div>
         <!-- Savings Result -->
-        <div class="flex flex-col flex-1 pt-2 md:pt-0 border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-700 md:pl-8">
-          <div x-text="savingsResult.trip" class="text-lg font-bold text-blue-600 dark:text-blue-400"></div>
-          <div x-text="savingsResult.perMile" class="text-sm text-blue-600 dark:text-blue-400"></div>
+        <div class="flex flex-col flex-1 pt-2 md:pt-0 border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-700 md:pl-8" role="region" aria-label="Cost Savings">
+          <div x-text="savingsResult.trip" class="text-lg font-bold text-blue-700 dark:text-blue-300"></div>
+          <div x-text="savingsResult.perMile" class="text-sm text-blue-700 dark:text-blue-300"></div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- Chart Section -->
-  <div class="w-full max-w-4xl">
+  <section aria-label="Cost Comparison Chart" class="w-full max-w-4xl">
     <div class="bg-white dark:bg-slate-800 rounded-xl p-2 md:p-6 shadow-md">
       <div class="aspect-[4/3] w-full">
-        <canvas id="costChart"></canvas>
+        <canvas id="costChart" role="img" aria-label="Graph comparing electric and gas costs per mile"></canvas>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- Inputs Section -->
-  <div class="w-full max-w-4xl">
+  <main class="w-full max-w-4xl">
     <div class="bg-white dark:bg-slate-800 rounded-xl p-4 md:p-6 shadow-md">
-      <div class="flex flex-col gap-6 max-w-4xl mx-auto">
+      <form class="flex flex-col gap-6 max-w-4xl mx-auto" @submit.prevent>
         <div class="flex flex-col md:flex-row md:gap-12 md:justify-center">
           <!-- EV Input Section -->
-          <div class="flex-1 max-w-sm md:mb-0">
-            <!-- EV Header -->
-            <div class="flex items-center mb-4">
-              <span class="text-2xl mr-2">🔋</span>
-              <h2 class="text-lg font-semibold text-green-600 dark:text-green-400">Electric</h2>
-            </div>
+          <fieldset class="flex-1 max-w-sm md:mb-0">
+            <legend class="flex items-center mb-4">
+              <span class="text-2xl mr-2" role="img" aria-label="Electric vehicle">🔋</span>
+              <h2 class="text-lg font-semibold text-green-700 dark:text-green-300">Electric</h2>
+            </legend>
             <!-- EV Price Input -->
             <div class="grid grid-cols-2 gap-4">
               <div class="w-full">
                 <label class="block">
-                  <span class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Price</span>
+                  <span class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" id="ev-price-label">Price</span>
                   <div class="relative">
                     <input
                       x-model="electricPrice"
                       x-mask:dynamic="$money($input, '.', ',', 4)"
                       @focus="focusedField = 'electric'"
                       @blur="focusedField = null"
+                      type="text"
+                      aria-labelledby="ev-price-label"
                       class="w-full px-3 py-2 pr-16 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
-                      border border-green-200 dark:border-green-900
-                      hover:border-green-300 dark:hover:border-green-800
-                      focus:border-green-500 dark:focus:border-green-600 focus:ring-1 focus:ring-green-500 dark:focus:ring-green-600
+                      border border-green-300 dark:border-green-700
+                      hover:border-green-400 dark:hover:border-green-600
+                      focus:border-green-600 dark:focus:border-green-500 focus:ring-1 focus:ring-green-600 dark:focus:ring-green-500
                       outline-none transition-colors" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <span class="text-gray-500 dark:text-gray-400">$/kWh</span>
+                      <span class="text-gray-700 dark:text-gray-300" aria-hidden="true">$/kWh</span>
                     </div>
                   </div>
                 </label>
@@ -139,35 +141,44 @@
               <!-- EV Efficiency Input -->
               <div class="w-full">
                 <label class="block">
-                  <span class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Efficiency</span>
+                  <span class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" id="ev-efficiency-label">Efficiency</span>
                   <div class="relative">
-                    <input type="number" x-model="evEfficiencyDisplay" step="0.01"
+                    <input type="number"
+                      x-model="evEfficiencyDisplay"
+                      step="0.01"
+                      aria-labelledby="ev-efficiency-label"
                       class="w-full px-3 py-2 pr-16 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
-                      border border-green-200 dark:border-green-900
-                      hover:border-green-300 dark:hover:border-green-800
-                      focus:border-green-500 dark:focus:border-green-600 focus:ring-1 focus:ring-green-500 dark:focus:ring-green-600
+                      border border-green-300 dark:border-green-700
+                      hover:border-green-400 dark:hover:border-green-600
+                      focus:border-green-600 dark:focus:border-green-500 focus:ring-1 focus:ring-green-600 dark:focus:ring-green-500
                       outline-none transition-colors" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                       <template x-if="!isMiPerKwh">
-                        <span class="text-gray-500 dark:text-gray-400">Wh/mi</span>
+                        <span class="text-gray-700 dark:text-gray-300" aria-hidden="true">Wh/mi</span>
                       </template>
                       <template x-if="isMiPerKwh">
-                        <span class="text-gray-500 dark:text-gray-400">mi/kWh</span>
+                        <span class="text-gray-700 dark:text-gray-300" aria-hidden="true">mi/kWh</span>
                       </template>
                     </div>
                   </div>
                   <div class="flex justify-end mt-2">
-                    <div class="inline-flex rounded-lg p-0.5 bg-gray-100 dark:bg-slate-700">
+                    <div class="inline-flex rounded-lg p-0.5 bg-gray-100 dark:bg-slate-700" role="radiogroup" aria-label="Efficiency unit">
                       <button
                         @click="isMiPerKwh = false"
-                        :class="{'bg-white dark:bg-slate-600 shadow-md text-green-600 dark:text-green-400': !isMiPerKwh, 'text-gray-600 dark:text-gray-400': isMiPerKwh}"
-                        class="px-3 py-1 text-sm rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                        :class="{'bg-white dark:bg-slate-600 shadow-md text-green-700 dark:text-green-300': !isMiPerKwh, 'text-gray-700 dark:text-gray-300': isMiPerKwh}"
+                        class="px-3 py-1 text-sm rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                        role="radio"
+                        :aria-checked="!isMiPerKwh"
+                        aria-label="Watt-hours per mile">
                         Wh/mi
                       </button>
                       <button
                         @click="isMiPerKwh = true"
-                        :class="{'bg-white dark:bg-slate-600 shadow-md text-green-600 dark:text-green-400': isMiPerKwh, 'text-gray-600 dark:text-gray-400': !isMiPerKwh}"
-                        class="px-3 py-1 text-sm rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                        :class="{'bg-white dark:bg-slate-600 shadow-md text-green-700 dark:text-green-300': isMiPerKwh, 'text-gray-700 dark:text-gray-300': !isMiPerKwh}"
+                        class="px-3 py-1 text-sm rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                        role="radio"
+                        :aria-checked="isMiPerKwh"
+                        aria-label="Miles per kilowatt-hour">
                         mi/kWh
                       </button>
                     </div>
@@ -175,7 +186,7 @@
                 </label>
               </div>
             </div>
-          </div>
+          </fieldset>
 
           <!-- Divider -->
           <hr class="border-gray-200 dark:border-gray-700 my-6 lg:hidden">
@@ -183,30 +194,31 @@
           <div class="hidden lg:block border-l border-gray-200 dark:border-gray-700"></div>
 
           <!-- Gas Input Section -->
-          <div class="flex-1 max-w-sm">
-            <!-- Gas Header -->
-            <div class="flex items-center mb-4">
-              <span class="text-2xl mr-2">⛽</span>
-              <h2 class="text-lg font-semibold text-rose-600 dark:text-rose-400">Gasoline</h2>
-            </div>
+          <fieldset class="flex-1 max-w-sm">
+            <legend class="flex items-center mb-4">
+              <span class="text-2xl mr-2" role="img" aria-label="Gas vehicle">⛽</span>
+              <h2 class="text-lg font-semibold text-rose-700 dark:text-rose-300">Gasoline</h2>
+            </legend>
             <!-- Gas Price Input -->
             <div class="grid grid-cols-2 gap-4">
               <div class="w-full">
                 <label class="block">
-                  <span class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Price</span>
+                  <span class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" id="gas-price-label">Price</span>
                   <div class="relative">
                     <input
                       x-model="gasPrice"
                       x-mask:dynamic="$money($input, '.', ',', 4)"
                       @focus="focusedField = 'gas'"
                       @blur="focusedField = null"
+                      type="text"
+                      aria-labelledby="gas-price-label"
                       class="w-full px-3 py-2 pr-16 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
-                      border border-red-200 dark:border-red-900
-                      hover:border-red-300 dark:hover:border-red-800
-                      focus:border-red-500 dark:focus:border-red-600 focus:ring-1 focus:ring-red-500 dark:focus:ring-red-600
+                      border border-red-300 dark:border-red-700
+                      hover:border-red-400 dark:hover:border-red-600
+                      focus:border-red-600 dark:focus:border-red-500 focus:ring-1 focus:ring-red-600 dark:focus:ring-red-500
                       outline-none transition-colors" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <span class="text-gray-500 dark:text-gray-400">$/gallon</span>
+                      <span class="text-gray-700 dark:text-gray-300" aria-hidden="true">$/gallon</span>
                     </div>
                   </div>
                 </label>
@@ -215,46 +227,52 @@
               <!-- Gas Efficiency Input -->
               <div class="w-full">
                 <label class="block">
-                  <span class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Efficiency</span>
+                  <span class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" id="gas-efficiency-label">Efficiency</span>
                   <div class="relative">
-                    <input type="number" x-model="mpg" step="0.1"
+                    <input type="number"
+                      x-model="mpg"
+                      step="0.1"
+                      aria-labelledby="gas-efficiency-label"
                       class="w-full px-3 py-2 pr-12 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
-                      border border-red-200 dark:border-red-900
-                      hover:border-red-300 dark:hover:border-red-800
-                      focus:border-red-500 dark:focus:border-red-600 focus:ring-1 focus:ring-red-500 dark:focus:ring-red-600
+                      border border-red-300 dark:border-red-700
+                      hover:border-red-400 dark:hover:border-red-600
+                      focus:border-red-600 dark:focus:border-red-500 focus:ring-1 focus:ring-red-600 dark:focus:ring-red-500
                       outline-none transition-colors" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <span class="text-gray-500 dark:text-gray-400">mpg</span>
+                      <span class="text-gray-700 dark:text-gray-300" aria-hidden="true">mpg</span>
                     </div>
                   </div>
                 </label>
               </div>
             </div>
-          </div>
+          </fieldset>
         </div>
 
         <hr class="border-gray-200 dark:border-gray-700">
 
         <!-- Trip Distance Section -->
-        <div class="flex flex-col md:flex-row md:gap-12 md:justify-center">
-          <!-- Trip Distance Input -->
+        <fieldset class="flex flex-col md:flex-row md:gap-12">
           <div class="flex-1 max-w-sm">
-            <div class="flex items-center mb-4">
-              <span class="text-2xl mr-2">🧭</span>
+            <legend class="flex items-center mb-4">
+              <span class="text-2xl mr-2" role="img" aria-label="Distance">🧭</span>
               <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Trip Distance</h2>
-            </div>
+            </legend>
             <div>
               <div class="w-full">
                 <label class="block">
                   <div class="relative">
-                    <input type="number" x-model="miles" step="1" min="1"
+                    <input type="number"
+                      x-model="miles"
+                      step="1"
+                      min="1"
+                      aria-label="Trip distance in miles"
                       class="w-full px-3 py-2 pr-8 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
                       border border-gray-200 dark:border-gray-700
                       hover:border-gray-300 dark:hover:border-gray-600
                       focus:border-gray-400 dark:focus:border-gray-500 focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-500
                       outline-none transition-colors" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <span class="text-gray-500 dark:text-gray-400">mi</span>
+                      <span class="text-gray-700 dark:text-gray-300" aria-hidden="true">mi</span>
                     </div>
                   </div>
                 </label>
@@ -279,19 +297,19 @@
                 outline-none transition-colors flex items-center justify-center gap-2">
                 <span x-text="syncPrices ? '🔗' : '🔓'" class="text-lg"></span>
                 <span x-text="syncPrices ? 'Syncing Prices' : 'Sync Prices'"
-                      :class="syncPrices ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'"
+                      :class="syncPrices ? 'text-green-700 dark:text-green-300' : 'text-gray-700 dark:text-gray-300'"
                       class="text-sm transition-colors"></span>
               </button>
             </div>
           </div>
-        </div>
-      </div>
+        </fieldset>
+      </form>
     </div>
-  </div>
+  </main>
 
   <!-- Footer Section -->
-  <footer class="w-full max-w-4xl flex justify-between items-center px-2 md:px-4 py-2 md:py-6">
-    <div class="text-sm text-gray-500 dark:text-gray-400">
+  <footer class="w-full max-w-4xl flex justify-between items-center px-2 md:px-4 py-2 md:py-6" role="contentinfo">
+    <div class="text-sm text-gray-700 dark:text-gray-300">
       © <span x-text="new Date().getFullYear()"></span> Cost Per Mile Calculator
     </div>
     <div class="relative z-0 inline-grid grid-cols-3 gap-0.5 rounded-full bg-gray-950/5 p-0.75 text-gray-950 dark:bg-white/10 dark:text-white">
