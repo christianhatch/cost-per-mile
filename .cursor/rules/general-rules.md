@@ -20,6 +20,11 @@
   - Use for all data visualization needs
   - Follow Chart.js best practices for performance
   - Implement responsive charts
+- Chart.js Annotations Plugin
+  - Use for all data visualization needs
+  - Follow Chart.js best practices for performance
+  - Implement responsive charts
+
 
 ## Code Organization
 - Keep logic simple and straightforward
@@ -64,7 +69,8 @@
 - Review and remove unused dependencies
 
 ## Learning Resources
-- Alpine.js: https://alpinejs.dev/
+- Alpine.js: https://alpinejs.dev/start-here
 - Tailwind CSS: https://tailwindcss.com/docs
 - Chart.js: https://www.chartjs.org/docs/
+- Chart.js Annotations: https://www.chartjs.org/chartjs-plugin-annotation/latest/guide/
 - WCAG Guidelines: https://www.w3.org/WAI/standards-guidelines/wcag/
