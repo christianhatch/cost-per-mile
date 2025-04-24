@@ -810,26 +810,22 @@
                   padding: 10,
                   titleMarginBottom: 10,
                   footerMarginTop: 10,
+                  filter: function(context) {
+                    return context.dataset.label.includes('Electricity');
+                  },
                   callbacks: {
                     title: function(context) {
                       const pricePerMile = context[0].dataset.data[context[0].dataIndex];
                       return `Cost Per Mile: ${Utils.formatPricePerMile(pricePerMile)}`;
                     },
                     label: function(context) {
-                      const label = context.dataset.label;
-                      // todo: is there a more elegant way in chart.js to only show tooltips for one dataset?
-                      const isElectric = label.includes('Electricity');
-                      if (!isElectric) return '';
-
                       const evPrice = `${Utils.formatPrice(data.evPrices[context.dataIndex])}/kWh`;
                       const gasPrice = `${Utils.formatPrice(data.gasPrices[context.dataIndex])}/gal`;
 
-                      const labels = [
+                      return [
                         `EV Cost:🔋${evPrice}`,
                         `Equivalent Cost: ⛽️${gasPrice}`,
                       ];
-
-                      return labels
                     }
                   }
                 },
@@ -844,7 +840,7 @@
                       borderWidth: 2,
                       borderDash: [5, 5],
                       label: {
-                        display: true,
+                        display: false,
                         content: [
                           `🔋${Utils.formatPrice(data.electricPrice)}/kWh`,
                           `⛽️${Utils.formatPrice(data.gasPrice)}/gal`,
@@ -867,7 +863,7 @@
                       scaleID: 'y1',
                       drawTime: 'beforeDatasetsDraw',
                       label: {
-                        display: true,
+                        display: false,
                         content: [
                           `⛽️${Utils.formatPrice(data.gasPrice)}/gal`,
                           `🔋${Utils.formatPrice(data.electricPrice)}/kWh`,
