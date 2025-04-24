@@ -670,6 +670,11 @@
           const darkMode = this.darkMode;
 
           return {
+            equivalentPrice: {
+              background: darkMode ? getColor('--color-blue-300') : getColor('--color-blue-700'),
+              border: darkMode ? getColor('--color-blue-300') : getColor('--color-blue-700'),
+              text: darkMode ? getColor('--color-blue-300') : getColor('--color-blue-700'),
+            },
             electricity: {
               background: darkMode ? getColor('--color-green-400') : getColor('--color-green-600'),
               border: darkMode ? getColor('--color-green-400') : getColor('--color-green-600'),
