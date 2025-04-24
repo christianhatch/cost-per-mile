@@ -88,23 +88,33 @@
   <!-- Results Section -->
   <section aria-label="Cost Results" class="w-full max-w-4xl sticky top-0 z-50">
     <div class="bg-white dark:bg-slate-800 rounded-xl p-4 md:p-6 shadow-md">
-      <div class="flex flex-col md:flex-row md:space-x-8 space-y-4 md:space-y-0">
-        <div class="flex flex-row flex-1">
+      <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-700">
+        <!-- Trip Costs -->
+        <div class="flex flex-row md:pr-8 pb-4 md:pb-0">
           <!-- EV Result -->
-          <div class="flex flex-col flex-1" role="region" aria-label="Electric Vehicle Cost">
+          <div class="flex flex-col flex-1 justify-center" role="region" aria-label="Electric Vehicle Cost">
             <div x-text="evResult.trip" class="text-lg font-bold text-green-700 dark:text-green-300"></div>
             <div x-text="evResult.perMile" class="text-sm text-green-700 dark:text-green-300"></div>
           </div>
           <!-- Gas Result -->
-          <div class="flex flex-col flex-1" role="region" aria-label="Gas Vehicle Cost">
+          <div class="flex flex-col flex-1 justify-center" role="region" aria-label="Gas Vehicle Cost">
             <div x-text="gasResult.trip" class="text-lg font-bold text-rose-700 dark:text-rose-300"></div>
             <div x-text="gasResult.perMile" class="text-sm text-rose-700 dark:text-rose-300"></div>
           </div>
         </div>
-        <!-- Savings Result -->
-        <div class="flex flex-col flex-1 pt-2 md:pt-0 border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-700 md:pl-8" role="region" aria-label="Cost Savings">
-          <div x-text="savingsResult.trip" class="text-lg font-bold text-blue-700 dark:text-blue-300"></div>
-          <div x-text="savingsResult.perMile" class="text-sm text-blue-700 dark:text-blue-300"></div>
+
+        <!-- Savings & Prices -->
+        <div class="flex flex-row md:pl-8 pt-4 md:pt-0">
+          <!-- Savings Result -->
+          <div class="flex flex-col flex-1 justify-center" role="region" aria-label="Cost Savings">
+            <div x-text="savingsResult.trip" class="text-lg font-bold text-blue-700 dark:text-blue-300"></div>
+            <div x-text="savingsResult.perMile" class="text-sm text-blue-700 dark:text-blue-300"></div>
+          </div>
+          <!-- Prices -->
+          <div class="flex flex-col flex-1 justify-center" role="region" aria-label="Cost Prices">
+            <div x-text="`🔋 ${formattedElectricPrice}`" class="text-lg font-bold text-green-700 dark:text-green-300"></div>
+            <div x-text="`⛽️ ${formattedGasPrice}`" class="text-lg font-bold text-rose-700 dark:text-rose-300"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -121,48 +131,51 @@
 
   <!-- Vehicle Presets Section -->
   <section class="w-full max-w-4xl">
-    <div class="bg-white dark:bg-slate-800 rounded-xl p-4 md:p-6 shadow-md">
-      <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Vehicles</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-white dark:bg-slate-800 rounded-xl p-3 md:p-4 shadow-md">
+      <legend class="flex items-center mb-4">
+        <span class="text-2xl mr-2" role="img" aria-label="Vehicles">🚗</span>
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">Vehicles</h2>
+      </legend>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <!-- EV Presets -->
-        <div class="space-y-6">
-          <template x-for="(vehicles, manufacturer) in evVehicles" :key="manufacturer">
-            <div class="space-y-2">
-              <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300" x-text="manufacturer"></h4>
-              <div class="flex flex-wrap gap-2">
+        <div class="border-r border-gray-100 dark:border-gray-700">
+          <div class="flex flex-wrap gap-2">
+            <template x-for="(vehicles, manufacturer) in Utils.vehiclesByManufacturer('ev')" :key="manufacturer">
+              <div class="flex flex-wrap items-start gap-1 mr-2">
+                <span class="text-[10px] font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded-sm" x-text="manufacturer"></span>
                 <template x-for="vehicle in vehicles" :key="vehicle.model">
                   <button
                     @click="evWhPerMile = vehicle.efficiency; isMiPerKwh = vehicle.isMiPerKwh"
-                    class="group relative px-3 py-1.5 text-sm font-medium text-green-700 dark:text-green-300 bg-green-100/50 dark:bg-green-900/20 rounded-lg hover:bg-green-200/50 dark:hover:bg-green-900/40 transition-all duration-200 hover:shadow-md border border-green-200 dark:border-green-800">
-                    <div class="flex items-center gap-1.5">
-                      <span class="text-lg">🚗</span>
+                    class="group px-1.5 py-0.5 text-[11px] font-medium text-green-700 dark:text-green-300 bg-green-100/50 dark:bg-green-900/20 rounded hover:bg-green-200/50 dark:hover:bg-green-900/40 transition-all duration-200 hover:shadow-sm border border-green-200 dark:border-green-800">
+                    <div class="flex items-center gap-1">
+                      <span class="text-xs">🚗</span>
                       <span x-text="vehicle.model"></span>
                     </div>
                   </button>
                 </template>
               </div>
-            </div>
-          </template>
+            </template>
+          </div>
         </div>
         <!-- Gas Presets -->
-        <div class="space-y-6">
-          <template x-for="(vehicles, manufacturer) in gasVehicles" :key="manufacturer">
-            <div class="space-y-2">
-              <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300" x-text="manufacturer"></h4>
-              <div class="flex flex-wrap gap-2">
+        <div>
+          <div class="flex flex-wrap gap-2">
+            <template x-for="(vehicles, manufacturer) in Utils.vehiclesByManufacturer('gas')" :key="manufacturer">
+              <div class="flex flex-wrap items-start gap-1 mr-2">
+                <span class="text-[10px] font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded-sm" x-text="manufacturer"></span>
                 <template x-for="vehicle in vehicles" :key="vehicle.model">
                   <button
                     @click="mpg = vehicle.efficiency"
-                    class="group relative px-3 py-1.5 text-sm font-medium text-rose-700 dark:text-rose-300 bg-rose-100/50 dark:bg-rose-900/20 rounded-lg hover:bg-rose-200/50 dark:hover:bg-rose-900/40 transition-all duration-200 hover:shadow-md border border-rose-200 dark:border-rose-800">
-                    <div class="flex items-center gap-1.5">
-                      <span class="text-lg">🚙</span>
+                    class="group px-1.5 py-0.5 text-[11px] font-medium text-rose-700 dark:text-rose-300 bg-rose-100/50 dark:bg-rose-900/20 rounded hover:bg-rose-200/50 dark:hover:bg-rose-900/40 transition-all duration-200 hover:shadow-sm border border-rose-200 dark:border-rose-800">
+                    <div class="flex items-center gap-1">
+                      <span class="text-xs">🚙</span>
                       <span x-text="vehicle.model"></span>
                     </div>
                   </button>
                 </template>
               </div>
-            </div>
-          </template>
+            </template>
+          </div>
         </div>
       </div>
     </div>
@@ -574,6 +587,18 @@
       static equivalentGasPrice(evCostPerMile, mpg) {
         return evCostPerMile * mpg;
       }
+
+      static vehiclesByManufacturer(kind) {
+          return vehiclePresets
+            .filter(vehicle => vehicle.kind === kind)
+            .reduce((acc, vehicle) => {
+              if (!acc[vehicle.manufacturer]) {
+                acc[vehicle.manufacturer] = [];
+              }
+              acc[vehicle.manufacturer].push(vehicle);
+              return acc;
+            }, {});
+        }
     }
   </script>
 
@@ -604,32 +629,16 @@
           this.registerPwaPrompt();
         },
 
-        get evVehicles() {
-          return vehiclePresets
-            .filter(vehicle => vehicle.kind === 'ev')
-            .reduce((acc, vehicle) => {
-              if (!acc[vehicle.manufacturer]) {
-                acc[vehicle.manufacturer] = [];
-              }
-              acc[vehicle.manufacturer].push(vehicle);
-              return acc;
-            }, {});
-        },
-
-        get gasVehicles() {
-          return vehiclePresets
-            .filter(vehicle => vehicle.kind === 'gas')
-            .reduce((acc, vehicle) => {
-              if (!acc[vehicle.manufacturer]) {
-                acc[vehicle.manufacturer] = [];
-              }
-              acc[vehicle.manufacturer].push(vehicle);
-              return acc;
-            }, {});
-        },
-
         get darkMode() {
           return this.theme === 'dark' || (this.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        },
+
+        get formattedElectricPrice() {
+          return `${Utils.formatPrice(this.electricPrice)}/kWh`;
+        },
+
+        get formattedGasPrice() {
+          return `${Utils.formatPrice(this.gasPrice)}/gal`;
         },
 
         get evEfficiencyDisplay() {
@@ -915,7 +924,7 @@
                       borderWidth: 2,
                       borderDash: [5, 5],
                       label: {
-                        display: true,
+                        display: false,
                         content: [
                           `🔋${Utils.formatPrice(data.electricPrice)}/kWh`,
                           `⛽️${Utils.formatPrice(data.gasPrice)}/gal`,
@@ -937,7 +946,7 @@
                       borderWidth: 2,
                       borderDash: [5, 5],
                       label: {
-                        display: true,
+                        display: false,
                         content: [
                           `⛽️${Utils.formatPrice(data.gasPrice)}/gal`,
                           `🔋${Utils.formatPrice(data.electricPrice)}/kWh`,
