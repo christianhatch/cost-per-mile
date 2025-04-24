@@ -125,34 +125,44 @@
       <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Vehicles</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- EV Presets -->
-        <div class="space-y-3">
-          <div class="flex flex-wrap gap-3">
-            <template x-for="vehicle in vehiclePresets.ev" :key="vehicle.name">
-              <button
-                @click="evWhPerMile = vehicle.efficiency; isMiPerKwh = vehicle.isMiPerKwh"
-                class="group relative px-4 py-2.5 text-sm font-medium text-green-700 dark:text-green-300 bg-green-100/50 dark:bg-green-900/20 rounded-lg hover:bg-green-200/50 dark:hover:bg-green-900/40 transition-all duration-200 hover:shadow-md border border-green-200 dark:border-green-800">
-                <div class="flex items-center gap-2">
-                  <span class="text-lg">🚗</span>
-                  <span x-text="vehicle.name"></span>
-                </div>
-              </button>
-            </template>
-          </div>
+        <div class="space-y-6">
+          <template x-for="(vehicles, manufacturer) in evVehicles" :key="manufacturer">
+            <div class="space-y-2">
+              <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300" x-text="manufacturer"></h4>
+              <div class="flex flex-wrap gap-2">
+                <template x-for="vehicle in vehicles" :key="vehicle.model">
+                  <button
+                    @click="evWhPerMile = vehicle.efficiency; isMiPerKwh = vehicle.isMiPerKwh"
+                    class="group relative px-3 py-1.5 text-sm font-medium text-green-700 dark:text-green-300 bg-green-100/50 dark:bg-green-900/20 rounded-lg hover:bg-green-200/50 dark:hover:bg-green-900/40 transition-all duration-200 hover:shadow-md border border-green-200 dark:border-green-800">
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-lg">🚗</span>
+                      <span x-text="vehicle.model"></span>
+                    </div>
+                  </button>
+                </template>
+              </div>
+            </div>
+          </template>
         </div>
         <!-- Gas Presets -->
-        <div class="space-y-3">
-          <div class="flex flex-wrap gap-3">
-            <template x-for="vehicle in vehiclePresets.gas" :key="vehicle.name">
-              <button
-                @click="mpg = vehicle.efficiency"
-                class="group relative px-4 py-2.5 text-sm font-medium text-rose-700 dark:text-rose-300 bg-rose-100/50 dark:bg-rose-900/20 rounded-lg hover:bg-rose-200/50 dark:hover:bg-rose-900/40 transition-all duration-200 hover:shadow-md border border-rose-200 dark:border-rose-800">
-                <div class="flex items-center gap-2">
-                  <span class="text-lg">🚙</span>
-                  <span x-text="vehicle.name"></span>
-                </div>
-              </button>
-            </template>
-          </div>
+        <div class="space-y-6">
+          <template x-for="(vehicles, manufacturer) in gasVehicles" :key="manufacturer">
+            <div class="space-y-2">
+              <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300" x-text="manufacturer"></h4>
+              <div class="flex flex-wrap gap-2">
+                <template x-for="vehicle in vehicles" :key="vehicle.model">
+                  <button
+                    @click="mpg = vehicle.efficiency"
+                    class="group relative px-3 py-1.5 text-sm font-medium text-rose-700 dark:text-rose-300 bg-rose-100/50 dark:bg-rose-900/20 rounded-lg hover:bg-rose-200/50 dark:hover:bg-rose-900/40 transition-all duration-200 hover:shadow-md border border-rose-200 dark:border-rose-800">
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-lg">🚙</span>
+                      <span x-text="vehicle.model"></span>
+                    </div>
+                  </button>
+                </template>
+              </div>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -493,52 +503,48 @@
         storageKey: 'syncPrices'
       }
     };
-    const vehiclePresets = {
-      ev: [
-        { name: 'Tesla Model Y', efficiency: 240, isMiPerKwh: false }, // 4.17 mi/kWh
-        { name: 'Tesla Model 3', efficiency: 262, isMiPerKwh: false }, // 3.82 mi/kWh
-        { name: 'Ford Mustang Mach-E', efficiency: 318, isMiPerKwh: false }, // 2.70–3.14 mi/kWh
-        { name: 'Hyundai Ioniq 5', efficiency: 256, isMiPerKwh: false }, // 3.24–3.91 mi/kWh
-        { name: 'Tesla Cybertruck', efficiency: 259, isMiPerKwh: false }, // 3.70–3.86 mi/kWh
-        { name: 'Ford F-150 Lightning', efficiency: 450, isMiPerKwh: false }, // 2.00–2.22 mi/kWh
-        { name: 'Honda Prologue', efficiency: 300, isMiPerKwh: false }, // Estimated
-        { name: 'Chevrolet Equinox EV', efficiency: 300, isMiPerKwh: false }, // Estimated
-        { name: 'Cadillac Lyriq', efficiency: 310, isMiPerKwh: false }, // 3.13–3.33 mi/kWh
-        { name: 'Rivian R1S', efficiency: 406, isMiPerKwh: false }, // 2.46 mi/kWh
-        { name: 'Lucid Air Pure RWD', efficiency: 246, isMiPerKwh: false }, // 4.07 mi/kWh
-        { name: 'Lexus RZ 300e', efficiency: 270, isMiPerKwh: false }, // 3.70 mi/kWh
-        { name: 'BMW i4 eDrive35', efficiency: 280, isMiPerKwh: false }, // ~3.57 mi/kWh
-        { name: 'Chevrolet Bolt EV', efficiency: 300, isMiPerKwh: false }, // ~3.33 mi/kWh
-        { name: 'Toyota bZ4X', efficiency: 340, isMiPerKwh: false }, // ~2.94 mi/kWh
-        { name: 'Kia EV6', efficiency: 290, isMiPerKwh: false }, // ~3.45 mi/kWh
-        { name: 'Hyundai Kona Electric', efficiency: 280, isMiPerKwh: false }, // ~3.57 mi/kWh
-        { name: 'Polestar 2 Long Range', efficiency: 300, isMiPerKwh: false }, // ~3.33 mi/kWh
-        { name: 'Kia Niro EV', efficiency: 290, isMiPerKwh: false }, // ~3.45 mi/kWh
-        { name: 'Volkswagen ID.4', efficiency: 310, isMiPerKwh: false } // ~3.23 mi/kWh
-      ],
-      gas: [
-        { name: 'Toyota Camry', efficiency: 40, isMiPerKwh: false }, // 34–52 mpg
-        { name: 'Honda Accord', efficiency: 41, isMiPerKwh: false }, // 34–48 mpg
-        { name: 'Toyota Corolla', efficiency: 42, isMiPerKwh: false }, // 35–50 mpg
-        { name: 'Honda Civic', efficiency: 37, isMiPerKwh: false }, // 32–42 mpg
-        { name: 'Nissan Altima', efficiency: 35, isMiPerKwh: false }, // 32–39 mpg
-        { name: 'Hyundai Elantra', efficiency: 44, isMiPerKwh: false }, // 33–54 mpg
-        { name: 'Kia Forte', efficiency: 37, isMiPerKwh: false }, // 33–41 mpg
-        { name: 'Chevrolet Malibu', efficiency: 33, isMiPerKwh: false }, // 29–36 mpg
-        { name: 'Subaru Impreza', efficiency: 32, isMiPerKwh: false }, // 28–36 mpg
-        { name: 'Mazda3', efficiency: 32, isMiPerKwh: false }, // 28–36 mpg
-        { name: 'Mitsubishi Mirage', efficiency: 39, isMiPerKwh: false }, // 39 mpg
-        { name: 'Nissan Versa', efficiency: 35, isMiPerKwh: false }, // 35 mpg
-        { name: 'Hyundai Sonata', efficiency: 37, isMiPerKwh: false }, // 27–47 mpg
-        { name: 'Kia Rio', efficiency: 36, isMiPerKwh: false }, // 36 mpg
-        { name: 'Volkswagen Jetta', efficiency: 33, isMiPerKwh: false }, // 33 mpg
-        { name: 'Ford Fusion', efficiency: 29, isMiPerKwh: false }, // 23–34 mpg
-        { name: 'Chevrolet Cruze', efficiency: 34, isMiPerKwh: false }, // 28–39 mpg
-        { name: 'Dodge Charger', efficiency: 25, isMiPerKwh: false }, // 19–30 mpg
-        { name: 'Chrysler 300', efficiency: 25, isMiPerKwh: false }, // 19–30 mpg
-        { name: 'Nissan Sentra', efficiency: 34, isMiPerKwh: false } // 29–39 mpg
-      ]
-    };
+    const vehiclePresets = [
+      { manufacturer: 'Tesla', model: 'Model Y', efficiency: 240, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Tesla', model: 'Model 3', efficiency: 262, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Ford', model: 'Mustang Mach-E', efficiency: 318, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Hyundai', model: 'Ioniq 5', efficiency: 256, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Tesla', model: 'Cybertruck', efficiency: 259, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Ford', model: 'F-150 Lightning', efficiency: 450, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Honda', model: 'Prologue', efficiency: 300, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Chevrolet', model: 'Equinox EV', efficiency: 300, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Cadillac', model: 'Lyriq', efficiency: 310, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Rivian', model: 'R1S', efficiency: 406, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Lucid', model: 'Air Pure RWD', efficiency: 246, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Lexus', model: 'RZ 300e', efficiency: 270, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'BMW', model: 'i4 eDrive35', efficiency: 280, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Chevrolet', model: 'Bolt EV', efficiency: 300, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Toyota', model: 'bZ4X', efficiency: 340, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Kia', model: 'EV6', efficiency: 290, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Hyundai', model: 'Kona Electric', efficiency: 280, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Polestar', model: '2 Long Range', efficiency: 300, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Kia', model: 'Niro EV', efficiency: 290, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Volkswagen', model: 'ID.4', efficiency: 310, isMiPerKwh: false, kind: 'ev' },
+      { manufacturer: 'Toyota', model: 'Camry', efficiency: 40, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Honda', model: 'Accord', efficiency: 41, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Toyota', model: 'Corolla', efficiency: 42, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Honda', model: 'Civic', efficiency: 37, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Nissan', model: 'Altima', efficiency: 35, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Hyundai', model: 'Elantra', efficiency: 44, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Kia', model: 'Forte', efficiency: 37, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Chevrolet', model: 'Malibu', efficiency: 33, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Subaru', model: 'Impreza', efficiency: 32, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Mazda', model: 'Mazda3', efficiency: 32, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Mitsubishi', model: 'Mirage', efficiency: 39, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Nissan', model: 'Versa', efficiency: 35, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Hyundai', model: 'Sonata', efficiency: 37, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Kia', model: 'Rio', efficiency: 36, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Volkswagen', model: 'Jetta', efficiency: 33, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Ford', model: 'Fusion', efficiency: 29, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Chevrolet', model: 'Cruze', efficiency: 34, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Dodge', model: 'Charger', efficiency: 25, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Chrysler', model: '300', efficiency: 25, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Nissan', model: 'Sentra', efficiency: 34, isMiPerKwh: false, kind: 'gas' }
+    ];
 
     // Helpers
 
@@ -596,6 +602,30 @@
             this.renderChart();
           });
           this.registerPwaPrompt();
+        },
+
+        get evVehicles() {
+          return vehiclePresets
+            .filter(vehicle => vehicle.kind === 'ev')
+            .reduce((acc, vehicle) => {
+              if (!acc[vehicle.manufacturer]) {
+                acc[vehicle.manufacturer] = [];
+              }
+              acc[vehicle.manufacturer].push(vehicle);
+              return acc;
+            }, {});
+        },
+
+        get gasVehicles() {
+          return vehiclePresets
+            .filter(vehicle => vehicle.kind === 'gas')
+            .reduce((acc, vehicle) => {
+              if (!acc[vehicle.manufacturer]) {
+                acc[vehicle.manufacturer] = [];
+              }
+              acc[vehicle.manufacturer].push(vehicle);
+              return acc;
+            }, {});
         },
 
         get darkMode() {
