@@ -334,7 +334,7 @@
 
       <!-- Vehicle Presets Section -->
       <div class="">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Vehicle Presets</h3>
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Vehicles</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- EV Presets -->
           <div class="space-y-3">
@@ -676,14 +676,14 @@
               text: darkMode ? getColor('--color-blue-300') : getColor('--color-blue-700'),
             },
             electricity: {
-              background: darkMode ? getColor('--color-green-400') : getColor('--color-green-600'),
-              border: darkMode ? getColor('--color-green-400') : getColor('--color-green-600'),
-              text: darkMode ? getColor('--color-green-400') : getColor('--color-green-600'),
+              background: darkMode ? getColor('--color-green-700') : getColor('--color-green-700'),
+              border: darkMode ? getColor('--color-green-300') : getColor('--color-green-700'),
+              text: darkMode ? getColor('--color-green-300') : getColor('--color-green-700'),
             },
             gas: {
-              background: darkMode ? getColor('--color-rose-400') : getColor('--color-rose-600'),
-              border: darkMode ? getColor('--color-rose-400') : getColor('--color-rose-600'),
-              text: darkMode ? getColor('--color-rose-400') : getColor('--color-rose-600'),
+              background: darkMode ? getColor('--color-rose-700') : getColor('--color-rose-300'),
+              border: darkMode ? getColor('--color-rose-300') : getColor('--color-rose-700'),
+              text: darkMode ? getColor('--color-rose-300') : getColor('--color-rose-700'),
             },
             title: {
               text: darkMode ? getColor('--color-gray-400') : getColor('--color-gray-600'),
@@ -721,6 +721,8 @@
             // to match the values in the chart, we need to multiply by 1000
             evCostPerMile: parseFloat((this.evCostPerMile * 1000).toFixed(4)),
             gasCostPerMile: parseFloat((this.gasCostPerMile * 1000).toFixed(4)),
+            electricPrice: this.electricPrice,
+            gasPrice: this.gasPrice,
           };
         },
 
@@ -734,6 +736,8 @@
           }
 
           const data = this.generateChartData();
+          console.log('data.electricPrice', data.electricPrice);
+          console.log('data.gasPrice', data.gasPrice);
           this.chart = new Chart(ctx, this.chartConfig(data));
         },
 
@@ -781,13 +785,16 @@
                   displayColors: false,
                   backgroundColor: '#010101E6',
                   titleFont: {
-                    size: 14,
+                    size: 16,
                     weight: 'bold',
                   },
                   bodyFont: {
                     size: 14,
                     weight: 'bold',
                   },
+                  padding: 10,
+                  titleMarginBottom: 10,
+                  footerMarginTop: 10,
                   callbacks: {
                     title: function(context) {
                       const pricePerMile = context[0].dataset.data[context[0].dataIndex];
@@ -804,7 +811,7 @@
 
                       const labels = [
                         `EV Cost:🔋${evPrice}`,
-                        `Equivalent gas: ⛽️${gasPrice}`,
+                        `Equivalent Cost: ⛽️${gasPrice}`,
                       ];
 
                       return labels
@@ -813,6 +820,52 @@
                 },
                 annotation: {
                   annotations: {
+                    evPriceLine: {
+                      type: 'line',
+                      yMin: data.electricPrice,
+                      yMax: data.electricPrice,
+                      borderColor: colors.electricity.border,
+                      borderWidth: 2,
+                      borderDash: [5, 5],
+                      scaleID: 'y',
+                      label: {
+                        display: true,
+                        content: [
+                          `🔋${Utils.formatPrice(data.electricPrice)}/kWh`,
+                          `⛽️${Utils.formatPrice(data.gasPrice)}/gal`,
+                        ],
+                        textAlign: 'start',
+                        position: 'start',
+                        backgroundColor: colors.electricity.background,
+                        color: 'white',
+                        font: {
+                          size: 14
+                        }
+                      }
+                    },
+                    gasPriceLine: {
+                      type: 'line',
+                      yMin: data.gasPrice,
+                      yMax: data.gasPrice,
+                      borderColor: colors.gas.border,
+                      borderWidth: 2,
+                      borderDash: [5, 5],
+                      scaleID: 'y1',
+                      label: {
+                        display: true,
+                        content: [
+                          `⛽️${Utils.formatPrice(data.gasPrice)}/gal`,
+                          `🔋${Utils.formatPrice(data.electricPrice)}/kWh`,
+                        ],
+                        textAlign: 'start',
+                        position: 'center',
+                        backgroundColor: colors.gas.background,
+                        color: 'white',
+                        font: {
+                          size: 14
+                        }
+                      }
+                    },
                     evLine: {
                       type: 'line',
                       xMin: data.evCostPerMile,
@@ -820,16 +873,20 @@
                       borderColor: colors.electricity.border,
                       borderWidth: 2,
                       borderDash: [5, 5],
-                      // label: {
-                      //   display: true,
-                      //   content: '🔋',
-                      //   position: 'start',
-                      //   backgroundColor: colors.electricity.background,
-                      //   color: 'white',
-                      //   font: {
-                      //     size: 14
-                      //   }
-                      // }
+                      label: {
+                        display: true,
+                        content: [
+                          `🔋${Utils.formatPrice(data.electricPrice)}/kWh`,
+                          `⛽️${Utils.formatPrice(data.gasPrice)}/gal`,
+                        ],
+                        textAlign: 'start',
+                        position: 'start',
+                        backgroundColor: colors.electricity.background,
+                        color: 'white',
+                        font: {
+                          size: 14
+                        }
+                      }
                     },
                     gasLine: {
                       type: 'line',
@@ -838,16 +895,20 @@
                       borderColor: colors.gas.border,
                       borderWidth: 2,
                       borderDash: [5, 5],
-                      // label: {
-                      //   display: true,
-                      //   content: '⛽️',
-                      //   position: 'start',
-                      //   backgroundColor: colors.gas.background,
-                      //   color: 'white',
-                      //   font: {
-                      //     size: 14
-                      //   }
-                      // }
+                      label: {
+                        display: true,
+                        content: [
+                          `⛽️${Utils.formatPrice(data.gasPrice)}/gal`,
+                          `🔋${Utils.formatPrice(data.electricPrice)}/kWh`,
+                        ],
+                        textAlign: 'start',
+                        position: 'center',
+                        backgroundColor: colors.gas.background,
+                        color: 'white',
+                        font: {
+                          size: 14
+                        }
+                      }
                     }
                   }
                 }
@@ -909,7 +970,6 @@
                   },
                   ticks: {
                     callback: function(value, index, ticks) {
-                      console.log('value', value);
                       return Utils.formatPrice(value);
                     },
                     color: colors.title.text,
