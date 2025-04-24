@@ -696,7 +696,6 @@
 
           // Generate cost per mile points from $0.00 to $0.25 in $0.001 increments
           for (let costPerMile = 0; costPerMile <= 0.25; costPerMile += 0.001) {
-            costPerMilePoints.push(costPerMile);
             const roundedCostPerMile = parseFloat(costPerMile.toFixed(4));
             costPerMilePoints.push(roundedCostPerMile);
 
@@ -712,7 +711,11 @@
           return {
             costsPerMile: costPerMilePoints,
             evPrices: evPrices,
-            gasPrices: gasPrices
+            gasPrices: gasPrices,
+            // chart.js multiplies values by 1000 internally to avoid floating point precision issues
+            // to match the values in the chart, we need to multiply by 1000
+            evCostPerMile: parseFloat((this.evCostPerMile * 1000).toFixed(4)),
+            gasCostPerMile: parseFloat((this.gasCostPerMile * 1000).toFixed(4)),
           };
         },
 
@@ -740,20 +743,11 @@
               {
                 label: 'Electricity $/kWh',
                 data: data.evPrices,
-                borderColor: colors.electricity.border,
-                backgroundColor: colors.electricity.background,
+                borderColor: colors.equivalentPrice.border,
+                backgroundColor: colors.equivalentPrice.background,
                 borderWidth: 2,
                 tension: 0.1,
                 yAxisID: 'y'
-              },
-              {
-                label: 'Gas $/gal',
-                data: data.gasPrices,
-                borderColor: colors.gas.border,
-                backgroundColor: colors.gas.background,
-                borderWidth: 2,
-                tension: 0.1,
-                yAxisID: 'y1'
               }
               ]
             },
@@ -780,7 +774,7 @@
                 },
                 tooltip: {
                   displayColors: false,
-                  backgroundColor: 'rgba(1, 1, 1, 0.9)',
+                  backgroundColor: '#010101E6',
                   titleFont: {
                     size: 14,
                     weight: 'bold',
@@ -792,26 +786,23 @@
                   callbacks: {
                     title: function(context) {
                       const pricePerMile = context[0].dataset.data[context[0].dataIndex];
-                      console.log('pricePerMile', pricePerMile);
-                      console.log('this.evCostPerMile', this.evCostPerMile);
-                      console.log('this.gasCostPerMile', this.gasCostPerMile);
-                      return Utils.formatPricePerMile(pricePerMile);
+                      return `Cost Per Mile: ${Utils.formatPricePerMile(pricePerMile)}`;
                     },
                     label: function(context) {
                       const label = context.dataset.label;
+                      // todo: is there a more elegant way in chart.js to only show tooltips for one dataset?
                       const isElectric = label.includes('Electricity');
-                      if (isElectric) { // TODO: just for now, to not show both labels
-                        return ''
-                      }
+                      if (!isElectric) return '';
+
                       const evPrice = `${Utils.formatPrice(data.evPrices[context.dataIndex])}/kWh`;
                       const gasPrice = `${Utils.formatPrice(data.gasPrices[context.dataIndex])}/gal`;
 
                       const labels = [
-                        `🔋${evPrice}`,
-                        `⛽️${gasPrice}`,
+                        `EV Cost:🔋${evPrice}`,
+                        `Equivalent gas: ⛽️${gasPrice}`,
                       ];
 
-                      return isElectric ? labels : labels.reverse();
+                      return labels
                     }
                   }
                 },
@@ -819,39 +810,39 @@
                   annotations: {
                     evLine: {
                       type: 'line',
-                      xMin: Utils.formatPricePerMile(this.evCostPerMile),
-                      xMax: Utils.formatPricePerMile(this.evCostPerMile),
+                      xMin: data.evCostPerMile,
+                      xMax: data.evCostPerMile,
                       borderColor: colors.electricity.border,
                       borderWidth: 2,
                       borderDash: [5, 5],
-                      label: {
-                        display: true,
-                        content: '🔋',
-                        position: 'start',
-                        backgroundColor: colors.electricity.background,
-                        color: 'white',
-                        font: {
-                          size: 14
-                        }
-                      }
+                      // label: {
+                      //   display: true,
+                      //   content: '🔋',
+                      //   position: 'start',
+                      //   backgroundColor: colors.electricity.background,
+                      //   color: 'white',
+                      //   font: {
+                      //     size: 14
+                      //   }
+                      // }
                     },
                     gasLine: {
                       type: 'line',
-                      xMin: Utils.formatPricePerMile(this.gasCostPerMile),
-                      xMax: Utils.formatPricePerMile(this.gasCostPerMile),
+                      xMin: data.gasCostPerMile,
+                      xMax: data.gasCostPerMile,
                       borderColor: colors.gas.border,
                       borderWidth: 2,
                       borderDash: [5, 5],
-                      label: {
-                        display: true,
-                        content: '⛽️',
-                        position: 'start',
-                        backgroundColor: colors.gas.background,
-                        color: 'white',
-                        font: {
-                          size: 14
-                        }
-                      }
+                      // label: {
+                      //   display: true,
+                      //   content: '⛽️',
+                      //   position: 'start',
+                      //   backgroundColor: colors.gas.background,
+                      //   color: 'white',
+                      //   font: {
+                      //     size: 14
+                      //   }
+                      // }
                     }
                   }
                 }
@@ -865,6 +856,7 @@
                   },
                   ticks: {
                     callback: function(value, index, ticks) {
+                      // chart.js multiplies values by 1000 internally to avoid floating point precision issues
                       return Utils.formatPricePerMile(value/1000);
                     },
                     color: colors.title.text,
@@ -912,6 +904,7 @@
                   },
                   ticks: {
                     callback: function(value, index, ticks) {
+                      console.log('value', value);
                       return Utils.formatPrice(value);
                     },
                     color: colors.title.text,
