@@ -315,6 +315,43 @@
           </div>
         </fieldset>
       </form>
+
+      <!-- Vehicle Presets Section -->
+      <div class="mt-6">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Vehicle Presets</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- EV Presets -->
+          <div class="space-y-3">
+            <div class="flex flex-wrap gap-3">
+              <template x-for="vehicle in vehiclePresets.ev" :key="vehicle.name">
+                <button
+                  @click="evWhPerMile = vehicle.efficiency; isMiPerKwh = vehicle.isMiPerKwh"
+                  class="group relative px-4 py-2.5 text-sm font-medium text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-900/30 rounded-xl hover:bg-green-100 dark:hover:bg-green-900/50 transition-all duration-200 hover:scale-105 hover:shadow-md border-2 border-transparent hover:border-green-500">
+                  <div class="flex items-center gap-2">
+                    <span class="text-lg">🚗</span>
+                    <span x-text="vehicle.name"></span>
+                  </div>
+                </button>
+              </template>
+            </div>
+          </div>
+          <!-- Gas Presets -->
+          <div class="space-y-3">
+            <div class="flex flex-wrap gap-3">
+              <template x-for="vehicle in vehiclePresets.gas" :key="vehicle.name">
+                <button
+                  @click="mpg = vehicle.efficiency"
+                  class="group relative px-4 py-2.5 text-sm font-medium text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-900/30 rounded-xl hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-all duration-200 hover:scale-105 hover:shadow-md border-2 border-transparent hover:border-rose-500">
+                  <div class="flex items-center gap-2">
+                    <span class="text-lg">🚙</span>
+                    <span x-text="vehicle.name"></span>
+                  </div>
+                </button>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -382,6 +419,34 @@
         defaultValue: false,
         storageKey: 'syncPrices'
       }
+    };
+
+    // Vehicle Presets
+    const vehiclePresets = {
+      ev: [
+        {
+          name: 'Tesla Model Y',
+          efficiency: 250, // Wh/mi
+          isMiPerKwh: false
+        },
+        {
+          name: 'Hyundai IONIQ 6',
+          efficiency: 240, // Wh/mi
+          isMiPerKwh: false
+        }
+      ],
+      gas: [
+        {
+          name: 'Honda CR-V',
+          efficiency: 30, // mpg
+          isMiPerKwh: false
+        },
+        {
+          name: 'Subaru Forester',
+          efficiency: 28, // mpg
+          isMiPerKwh: false
+        }
+      ]
     };
 
     // Helpers
