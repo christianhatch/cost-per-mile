@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 
@@ -11,3 +11,10 @@ alwaysApply: true
 - Keep logic simple, straightforward, and cleanly organized
 - Reduce duplication where possible and remove unused code when possible
 - Logically organize methods and functionality to be near each other in the file
+- Always keep accessibility in mind
+    - ensure proper contrast when choosing colors
+    - always add aria- tags to describe the content in divs
+    - add descriptive ids to divs
+    - Use heading styles to designate content organization
+    - Alternative text (alt text) is required for all visuals that provide meaningful information
+    - Check that color is not the only visual means of distinguishing a visual element
