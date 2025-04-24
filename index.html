@@ -371,54 +371,93 @@
     </div>
   </main>
 
+  <div class="relative z-0 inline-grid grid-cols-3 gap-0.5 rounded-full bg-gray-950/5 p-0.75 text-gray-950 dark:bg-white/10 dark:text-white">
+    <button
+      @click="theme = 'system'; updateTheme()"
+      :class="{'bg-white dark:bg-gray-700 shadow-md': theme === 'system'}"
+      class="rounded-full p-1.5 *:size-7 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+      aria-label="System theme">
+      <svg viewBox="0 0 28 28" fill="none"><path d="M7.5 8.5C7.5 7.94772 7.94772 7.5 8.5 7.5H19.5C20.0523 7.5 20.5 7.94772 20.5 8.5V16.5C20.5 17.0523 20.0523 17.5 19.5 17.5H8.5C7.94772 17.5 7.5 17.0523 7.5 16.5V8.5Z" stroke="currentColor"></path><path d="M7.5 8.5C7.5 7.94772 7.94772 7.5 8.5 7.5H19.5C20.0523 7.5 20.5 7.94772 20.5 8.5V14.5C20.5 15.0523 20.0523 15.5 19.5 15.5H8.5C7.94772 15.5 7.5 15.0523 7.5 14.5V8.5Z" stroke="currentColor"></path><path d="M16.5 20.5V17.5H11.5V20.5M16.5 20.5H11.5M16.5 20.5H17.5M11.5 20.5H10.5" stroke="currentColor" stroke-linecap="round"></path></svg>
+    </button>
+    <button
+      @click="theme = 'light'; updateTheme()"
+      :class="{'bg-white dark:bg-gray-700 shadow-md': theme === 'light'}"
+      class="rounded-full p-1.5 *:size-7 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+      aria-label="Light theme">
+      <svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="3.5" stroke="currentColor"></circle><path d="M14 8.5V6.5" stroke="currentColor" stroke-linecap="round"></path><path d="M17.889 10.1115L19.3032 8.69727" stroke="currentColor" stroke-linecap="round"></path><path d="M19.5 14L21.5 14" stroke="currentColor" stroke-linecap="round"></path><path d="M17.889 17.8885L19.3032 19.3027" stroke="currentColor" stroke-linecap="round"></path><path d="M14 21.5V19.5" stroke="currentColor" stroke-linecap="round"></path><path d="M8.69663 19.3029L10.1108 17.8887" stroke="currentColor" stroke-linecap="round"></path><path d="M6.5 14L8.5 14" stroke="currentColor" stroke-linecap="round"></path><path d="M8.69663 8.69711L10.1108 10.1113" stroke="currentColor" stroke-linecap="round"></path></svg>
+    </button>
+    <button
+      @click="theme = 'dark'; updateTheme()"
+      :class="{'bg-white dark:bg-gray-700 shadow-md': theme === 'dark'}"
+      class="rounded-full p-1.5 *:size-7 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+      aria-label="Dark theme">
+      <svg viewBox="0 0 28 28" fill="none"><path d="M10.5 9.99914C10.5 14.1413 13.8579 17.4991 18 17.4991C19.0332 17.4991 20.0176 17.2902 20.9132 16.9123C19.7761 19.6075 17.109 21.4991 14 21.4991C9.85786 21.4991 6.5 18.1413 6.5 13.9991C6.5 10.8902 8.39167 8.22304 11.0868 7.08594C10.7089 7.98159 10.5 8.96597 10.5 9.99914Z" stroke="currentColor" stroke-linejoin="round"></path><path d="M16.3561 6.50754L16.5 5.5L16.6439 6.50754C16.7068 6.94752 17.0525 7.29321 17.4925 7.35607L18.5 7.5L17.4925 7.64393C17.0525 7.70679 16.7068 8.05248 16.6439 8.49246L16.5 9.5L16.3561 8.49246C16.2932 8.05248 15.9475 7.70679 15.5075 7.64393L14.5 7.5L15.5075 7.35607C15.9475 7.29321 16.2932 6.94752 16.3561 6.50754Z" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path><path d="M20.3561 11.5075L20.5 10.5L20.6439 11.5075C20.7068 11.9475 21.0525 12.2932 21.4925 12.3561L22.5 12.5L21.4925 12.6439C21.0525 12.7068 20.6439 13.4925 20.5 14.5L20.3561 13.4925C20.2932 13.0525 19.9475 12.7068 19.5075 12.6439L18.5 12.5L19.5075 12.3561C19.9475 12.2932 20.2932 11.9475 20.3561 11.5075Z" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </button>
+  </div>
+
+
+  <!-- About Section -->
+  <div class="w-full max-w-4xl flex flex-col gap-10 mb-10">
+    <!-- How to Use Section -->
+    <section class="text-gray-700 dark:text-gray-300 text-sm">
+      <h2 class="text-lg font-semibold mb-2">How to Use the Trip Cost Calculator</h2>
+      <p class="mb-4">
+        Quickly compare the cost per mile between an electric vehicle (EV) and a gas-powered car. This guide walks you through each feature so you can get accurate insights in just a few steps.
+      </p>
+      <ul class="list-disc pl-6 space-y-4">
+        <li>
+          <strong>Enter Energy & Fuel Prices:</strong> Input your local electricity rate ($/kWh) and gas price ($/gallon). This ensures the calculator uses up-to-date energy costs for your area.
+        </li>
+        <li>
+          <strong>Set Vehicle Efficiency:</strong> For EVs, enter efficiency in Wh/mi or mi/kWh (switch easily between units). For gas cars, input miles per gallon (MPG).
+        </li>
+        <li>
+          <strong>Choose Trip Distance:</strong> Specify the number of miles for your trip. The calculator estimates total trip cost and cost per mile for both vehicle types.
+        </li>
+        <li>
+          <strong>Review Cost Comparisons:</strong> Instantly see cost per mile and total trip cost for both your EV and gas car. Savings are clearly displayed, so you know which option costs less.
+        </li>
+        <li>
+          <strong>View Interactive Chart:</strong> The graph below compares electricity and gas prices across cost per mile points, helping you visualize savings at a glance.
+        </li>
+        <li>
+          <strong>Use Vehicle Presets:</strong> Quickly load efficiency values for popular electric and gas vehicles with one click.
+        </li>
+        <li>
+          <strong>Share or Install the App:</strong> Easily share your customized comparison or install the app as a Progressive Web App (PWA) for offline access.
+        </li>
+      </ul>
+      <p class="mt-6">
+        Whether you're evaluating a switch to electric or planning a trip, this tool helps you make informed decisions with real-time calculations and visual insights.
+      </p>
+    </section>
+    <!-- About Section -->
+    <section class="text-gray-700 dark:text-gray-300 text-sm">
+      <h2 class="text-lg font-semibold mb-2">Make Smarter Driving Decisions: Compare Electric Vehicles to Gas Cars</h2>
+      <p>
+        Curious about how much it costs to drive your electric vehicle compared to a gas-powered one? Our trip cost calculator makes it easy. Enter your electricity rate, gas price, vehicle efficiency, and trip distance to calculate the cost per mile for both electric and gas cars. Whether you're commuting daily or planning a road trip, this tool helps you see where your money goes.
+      </p>
+      <h3 class="text-md font-semibold mt-4 mb-2">Calculate Trip Costs and Savings</h3>
+      <p>
+        With this cost per mile estimator, you can quickly calculate the cost of any trip. Simply input your EV's efficiency in Wh/mi or mi/kWh, and compare it to a gas car's MPG. The calculator shows both total trip cost and cost per mile, so you can clearly see the difference in fuel expenses between electric and gas vehicles. It's the perfect tool for planning your next journey or evaluating long-term savings.
+      </p>
+      <h3 class="text-md font-semibold mt-4 mb-2">Built-in Conversions: MPG to kWh, Wh/mi to mi/kWh</h3>
+      <p>
+        Not sure how to compare efficiency across different vehicle types? No problem. Our calculator includes built-in conversions like MPG to kWh and Wh/mi to mi/kWh, so you can easily line up your gas car and EV side by side. This way, you can compare apples to apples and make informed decisions about your driving costs.
+      </p>
+      <h3 class="text-md font-semibold mt-4 mb-2">Why Use This Calculator?</h3>
+      <p>
+        Whether you're evaluating the cost of switching to electric or just curious about your vehicle's efficiency, this tool is designed to help. Get accurate insights into fuel costs, optimize your driving budget, and see how much you could save by going electric. Try it now and take control of your trip expenses.
+      </p>
+    </section>
+  </div>
+
   <!-- Footer Section -->
-  <footer class="w-full max-w-4xl flex justify-between items-center px-2 md:px-4 py-2 md:py-6" role="contentinfo">
+  <footer class="w-full max-w-4xl flex justify-between items-center mb-10" role="contentinfo">
     <div class="text-sm text-gray-700 dark:text-gray-300">
       © <span x-text="new Date().getFullYear()"></span> Cost Per Mile Calculator
     </div>
-    <div class="relative z-0 inline-grid grid-cols-3 gap-0.5 rounded-full bg-gray-950/5 p-0.75 text-gray-950 dark:bg-white/10 dark:text-white">
-      <button
-        @click="theme = 'system'; updateTheme()"
-        :class="{'bg-white dark:bg-gray-700 shadow-md': theme === 'system'}"
-        class="rounded-full p-1.5 *:size-7 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-        aria-label="System theme">
-        <svg viewBox="0 0 28 28" fill="none"><path d="M7.5 8.5C7.5 7.94772 7.94772 7.5 8.5 7.5H19.5C20.0523 7.5 20.5 7.94772 20.5 8.5V16.5C20.5 17.0523 20.0523 17.5 19.5 17.5H8.5C7.94772 17.5 7.5 17.0523 7.5 16.5V8.5Z" stroke="currentColor"></path><path d="M7.5 8.5C7.5 7.94772 7.94772 7.5 8.5 7.5H19.5C20.0523 7.5 20.5 7.94772 20.5 8.5V14.5C20.5 15.0523 20.0523 15.5 19.5 15.5H8.5C7.94772 15.5 7.5 15.0523 7.5 14.5V8.5Z" stroke="currentColor"></path><path d="M16.5 20.5V17.5H11.5V20.5M16.5 20.5H11.5M16.5 20.5H17.5M11.5 20.5H10.5" stroke="currentColor" stroke-linecap="round"></path></svg>
-      </button>
-      <button
-        @click="theme = 'light'; updateTheme()"
-        :class="{'bg-white dark:bg-gray-700 shadow-md': theme === 'light'}"
-        class="rounded-full p-1.5 *:size-7 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-        aria-label="Light theme">
-        <svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="3.5" stroke="currentColor"></circle><path d="M14 8.5V6.5" stroke="currentColor" stroke-linecap="round"></path><path d="M17.889 10.1115L19.3032 8.69727" stroke="currentColor" stroke-linecap="round"></path><path d="M19.5 14L21.5 14" stroke="currentColor" stroke-linecap="round"></path><path d="M17.889 17.8885L19.3032 19.3027" stroke="currentColor" stroke-linecap="round"></path><path d="M14 21.5V19.5" stroke="currentColor" stroke-linecap="round"></path><path d="M8.69663 19.3029L10.1108 17.8887" stroke="currentColor" stroke-linecap="round"></path><path d="M6.5 14L8.5 14" stroke="currentColor" stroke-linecap="round"></path><path d="M8.69663 8.69711L10.1108 10.1113" stroke="currentColor" stroke-linecap="round"></path></svg>
-      </button>
-      <button
-        @click="theme = 'dark'; updateTheme()"
-        :class="{'bg-white dark:bg-gray-700 shadow-md': theme === 'dark'}"
-        class="rounded-full p-1.5 *:size-7 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-        aria-label="Dark theme">
-        <svg viewBox="0 0 28 28" fill="none"><path d="M10.5 9.99914C10.5 14.1413 13.8579 17.4991 18 17.4991C19.0332 17.4991 20.0176 17.2902 20.9132 16.9123C19.7761 19.6075 17.109 21.4991 14 21.4991C9.85786 21.4991 6.5 18.1413 6.5 13.9991C6.5 10.8902 8.39167 8.22304 11.0868 7.08594C10.7089 7.98159 10.5 8.96597 10.5 9.99914Z" stroke="currentColor" stroke-linejoin="round"></path><path d="M16.3561 6.50754L16.5 5.5L16.6439 6.50754C16.7068 6.94752 17.0525 7.29321 17.4925 7.35607L18.5 7.5L17.4925 7.64393C17.0525 7.70679 16.7068 8.05248 16.6439 8.49246L16.5 9.5L16.3561 8.49246C16.2932 8.05248 15.9475 7.70679 15.5075 7.64393L14.5 7.5L15.5075 7.35607C15.9475 7.29321 16.2932 6.94752 16.3561 6.50754Z" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path><path d="M20.3561 11.5075L20.5 10.5L20.6439 11.5075C20.7068 11.9475 21.0525 12.2932 21.4925 12.3561L22.5 12.5L21.4925 12.6439C21.0525 12.7068 20.6439 13.4925 20.5 14.5L20.3561 13.4925C20.2932 13.0525 19.9475 12.7068 19.5075 12.6439L18.5 12.5L19.5075 12.3561C19.9475 12.2932 20.2932 11.9475 20.3561 11.5075Z" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-      </button>
-    </div>
   </footer>
-
-  <section class="w-full max-w-4xl text-gray-700 dark:text-gray-300 text-sm mt-10 px-4">
-    <h2 class="text-lg font-semibold mb-2">Make Smarter Driving Decisions: Compare Tesla Model Y to Gas Cars</h2>
-    <p>
-      Curious about how much it costs to drive your Tesla Model Y compared to a gas-powered vehicle? Our trip cost calculator makes it easy. Enter your electricity rate, gas price, vehicle efficiency, and trip distance to calculate the cost per mile for both electric and gas cars. Whether you're commuting daily or planning a road trip, this tool helps you see where your money goes.
-    </p>
-    <h3 class="text-md font-semibold mt-4 mb-2">Calculate Trip Costs and Savings</h3>
-    <p>
-      With this cost per mile estimator, you can quickly calculate the cost of any trip. Simply input your EV’s efficiency in Wh/mi or mi/kWh, and compare it to a gas car's MPG. The calculator shows both total trip cost and cost per mile, so you can clearly see the difference in fuel expenses between electric and gas vehicles. It’s the perfect tool for planning your next journey or evaluating long-term savings.
-    </p>
-    <h3 class="text-md font-semibold mt-4 mb-2">Built-in Conversions: MPG to kWh, Wh/mi to mi/kWh</h3>
-    <p>
-      Not sure how to compare efficiency across different vehicle types? No problem. Our calculator includes built-in conversions like MPG to kWh and Wh/mi to mi/kWh, so you can easily line up your gas car and EV side by side. This way, you can compare apples to apples and make informed decisions about your driving costs.
-    </p>
-    <h3 class="text-md font-semibold mt-4 mb-2">Why Use This Calculator?</h3>
-    <p>
-      Whether you're evaluating the cost of switching to electric or just curious about your vehicle’s efficiency, this tool is designed to help. Get accurate insights into fuel costs, optimize your driving budget, and see how much you could save by going electric. Try it now and take control of your trip expenses.
-    </p>
-  </section>
 
   <script>
     const stateDefaults = {
