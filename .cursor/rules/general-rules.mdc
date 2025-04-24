@@ -18,3 +18,11 @@ alwaysApply: true
     - Use heading styles to designate content organization
     - Alternative text (alt text) is required for all visuals that provide meaningful information
     - Check that color is not the only visual means of distinguishing a visual element
+
+# Dependencies
+- Chart.js
+- Tailwind 4.x
+- alpine.js
+
+- when working with any of the dependencies, please reaed their documentation very carefully, and cite the docs as you make and suggest changes
+    - also, I want to learn more about these dependencies so please teach me along the way
