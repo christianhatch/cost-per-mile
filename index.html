@@ -592,35 +592,27 @@
         },
 
         chartColors() {
-          // TODO: use tailwind colors
-          const gray200 = '#e5e7eb'
-          const gray400 = '#9ca3af'
-          const gray600 = '#4b5563'
-          const gray700 = '#374151'
-          const rose400 = '#fb7186'
-          const rose600 = '#e11d48'
-          const green400 = '#4ade80'
-          const green600 = '#16a34a'
+          const getColor = (varName) => getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
           const darkMode = this.darkMode;
 
           return {
             electricity: {
-              background: darkMode ? green400 : green600,
-              border: darkMode ? green400 : green600,
-              text: darkMode ? green400 : green600,
+              background: darkMode ? getColor('--color-green-400') : getColor('--color-green-600'),
+              border: darkMode ? getColor('--color-green-400') : getColor('--color-green-600'),
+              text: darkMode ? getColor('--color-green-400') : getColor('--color-green-600'),
             },
             gas: {
-              background: darkMode ? rose400 : rose600,
-              border: darkMode ? rose400 : rose600,
-              text: darkMode ? rose400 : rose600,
+              background: darkMode ? getColor('--color-rose-400') : getColor('--color-rose-600'),
+              border: darkMode ? getColor('--color-rose-400') : getColor('--color-rose-600'),
+              text: darkMode ? getColor('--color-rose-400') : getColor('--color-rose-600'),
             },
             title: {
-              text: darkMode ? gray400 : gray600,
+              text: darkMode ? getColor('--color-gray-400') : getColor('--color-gray-600'),
             },
             grid: {
-              line: darkMode ? gray700 : gray200,
+              line: darkMode ? getColor('--color-gray-700') : getColor('--color-gray-200'),
             },
-          }
+          };
         },
 
         generateChartData() {
