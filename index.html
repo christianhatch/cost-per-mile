@@ -906,25 +906,22 @@
                           weight: 'bold',
                       }
                     },
-                    verticalGasPriceLine: {
-                      type: 'line',
-                      xMin: data.gasCostPerMile,
-                      xMax: data.gasCostPerMile,
+                    gasPriceIntersection: {
+                      type: 'label',
+                      xScaleID: 'x',
+                      yScaleID: 'y',
+                      xValue: data.gasCostPerMile,
+                      yValue: data.equivalentElectricPrice,
+                      backgroundColor: data.colors.gas.background,
                       borderColor: data.colors.gas.border,
-                      borderWidth: 2,
-                      borderDash: [5, 5],
-                      label: {
-                        display: true,
-                        content: toolTipLabel(data.equivalentElectricPrice, data.gasPrice, false),
-                        textAlign: 'start',
-                        position: 'start',
-                        backgroundColor: data.colors.gas.background,
-                        color: 'white',
+                      borderRadius: 5,
+                      content: toolTipLabel(data.equivalentElectricPrice, data.gasPrice, false),
+                      color: 'white',
                         font: {
-                          size: 12
-                        }
+                          size: 12,
+                          weight: 'bold',
                       }
-                    }
+                    },
                   }
                 }
               },
