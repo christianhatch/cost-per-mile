@@ -220,6 +220,7 @@
                       x-mask:dynamic="$money($input, '.', ',', 4)"
                       @keydown.enter.prevent
                       type="text"
+                      inputmode="decimal"
                       id="ev-price"
                       x-ref="evPrice"
                       aria-labelledby="ev-price-label"
@@ -262,6 +263,7 @@
                       x-model="evEfficiencyDisplay"
                       @keydown.enter.prevent
                       step="0.01"
+                      inputmode="decimal"
                       id="ev-efficiency"
                       x-ref="evEfficiency"
                       aria-labelledby="ev-efficiency-label"
@@ -334,6 +336,7 @@
                       x-mask:dynamic="$money($input, '.', ',', 4)"
                       @keydown.enter.prevent
                       type="text"
+                      inputmode="decimal"
                       id="gas-price"
                       x-ref="gasPrice"
                       aria-labelledby="gas-price-label"
@@ -373,6 +376,7 @@
                   <span class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" id="gas-efficiency-label">Efficiency</span>
                   <div class="relative">
                     <input type="number"
+                      inputmode="decimal"
                       x-model="mpg"
                       @keydown.enter.prevent
                       step="0.1"
@@ -412,6 +416,7 @@
                 <label class="block">
                   <div class="relative">
                     <input type="number"
+                      inputmode="decimal"
                       x-model="miles"
                       step="1"
                       min="1"
