@@ -225,13 +225,13 @@
                       aria-labelledby="ev-price-label"
                       :class="{
                         'border-green-500 dark:border-green-400 ring-2 ring-green-500 dark:ring-green-400': pulseInput === 'ev-price',
-                        'border-gray-600/50 dark:border-gray-300/50': pulseInput !== 'ev-price'
+                        'border-gray-200 dark:border-gray-700': pulseInput !== 'ev-price'
                       }"
                       class="w-full px-3 py-2 pr-16 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
                       border border-gray-200 dark:border-gray-700
                       hover:border-gray-300 dark:hover:border-gray-600
                       focus:border-gray-400 dark:focus:border-gray-500 focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-500
-                      outline-none transition-colors" />
+                      outline-none transition-all duration-300 ease-in-out" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                       <span class="text-gray-700 dark:text-gray-300" aria-hidden="true">$/kWh</span>
                     </div>
@@ -267,13 +267,13 @@
                       aria-labelledby="ev-efficiency-label"
                       :class="{
                         'border-green-500 dark:border-green-400 ring-2 ring-green-500 dark:ring-green-400': pulseInput === 'ev',
-                        'border-blue-600/50 dark:border-blue-300/50': pulseInput !== 'ev'
+                        'border-gray-200 dark:border-gray-700': pulseInput !== 'ev'
                       }"
                       class="w-full px-3 py-2 pr-16 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
                       border border-gray-200 dark:border-gray-700
                       hover:border-gray-300 dark:hover:border-gray-600
                       focus:border-gray-400 dark:focus:border-gray-500 focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-500
-                      outline-none transition-colors" />
+                      outline-none transition-all duration-300 ease-in-out" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                       <template x-if="!isMiPerKwh">
                         <span class="text-gray-700 dark:text-gray-300" aria-hidden="true">Wh/mi</span>
@@ -339,13 +339,13 @@
                       aria-labelledby="gas-price-label"
                       :class="{
                         'border-rose-500 dark:border-rose-400 ring-2 ring-rose-500 dark:ring-rose-400': pulseInput === 'gas-price',
-                        'border-blue-600/50 dark:border-blue-300/50': pulseInput !== 'gas-price'
+                        'border-gray-200 dark:border-gray-700': pulseInput !== 'gas-price'
                       }"
                       class="w-full px-3 py-2 pr-16 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
                       border border-gray-200 dark:border-gray-700
                       hover:border-gray-300 dark:hover:border-gray-600
                       focus:border-gray-400 dark:focus:border-gray-500 focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-500
-                      outline-none transition-colors" />
+                      outline-none transition-all duration-300 ease-in-out" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                       <span class="text-gray-700 dark:text-gray-300" aria-hidden="true">$/gallon</span>
                     </div>
@@ -381,13 +381,13 @@
                       aria-labelledby="gas-efficiency-label"
                       :class="{
                         'border-rose-500 dark:border-rose-400 ring-2 ring-rose-500 dark:ring-rose-400': pulseInput === 'gas',
-                        'border-blue-600/50 dark:border-blue-300/50': pulseInput !== 'gas'
+                        'border-gray-200 dark:border-gray-700': pulseInput !== 'gas'
                       }"
                       class="w-full px-3 py-2 pr-12 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
                       border border-gray-200 dark:border-gray-700
                       hover:border-gray-300 dark:hover:border-gray-600
                       focus:border-gray-400 dark:focus:border-gray-500 focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-500
-                      outline-none transition-colors" />
+                      outline-none transition-all duration-300 ease-in-out" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                       <span class="text-gray-700 dark:text-gray-300" aria-hidden="true">mpg</span>
                     </div>
