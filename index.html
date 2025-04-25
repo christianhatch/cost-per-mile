@@ -134,16 +134,20 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <!-- EV Presets -->
         <div class="border-r border-gray-100 dark:border-gray-700">
-          <div class="flex flex-wrap gap-2">
+          <div class="flex flex-wrap gap-1">
             <template x-for="(vehicles, manufacturer) in Utils.vehiclesByManufacturer('ev')" :key="manufacturer">
-              <div class="flex flex-wrap items-start gap-1 mr-2">
-                <span class="text-[10px] font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded-sm" x-text="manufacturer"></span>
+              <div class="flex flex-wrap items-start gap-1">
                 <template x-for="vehicle in vehicles" :key="vehicle.model">
                   <button
                     @click="evWhPerMile = vehicle.efficiency; isMiPerKwh = vehicle.isMiPerKwh"
-                    class="group px-1.5 py-0.5 text-[11px] font-medium text-green-700 dark:text-green-300 bg-green-100/50 dark:bg-green-900/20 rounded hover:bg-green-200/50 dark:hover:bg-green-900/40 transition-all duration-200 hover:shadow-sm border border-green-200 dark:border-green-800">
+                    class="group px-1.5 py-0.5 text-[10px] font-medium text-green-700 dark:text-green-300
+                      bg-green-100/50 dark:bg-green-900/20 rounded
+                      hover:bg-green-200/50 dark:hover:bg-green-900/40
+                      transition-all duration-200 hover:shadow-sm
+                      border border-green-200 dark:border-green-800
+                      relative"
+                    :title="manufacturer">
                     <div class="flex items-center gap-1">
-                      <span class="text-xs">🚗</span>
                       <span x-text="vehicle.model"></span>
                     </div>
                   </button>
@@ -154,16 +158,20 @@
         </div>
         <!-- Gas Presets -->
         <div>
-          <div class="flex flex-wrap gap-2">
+          <div class="flex flex-wrap gap-1">
             <template x-for="(vehicles, manufacturer) in Utils.vehiclesByManufacturer('gas')" :key="manufacturer">
-              <div class="flex flex-wrap items-start gap-1 mr-2">
-                <span class="text-[10px] font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded-sm" x-text="manufacturer"></span>
+              <div class="flex flex-wrap items-start gap-1">
                 <template x-for="vehicle in vehicles" :key="vehicle.model">
                   <button
                     @click="mpg = vehicle.efficiency"
-                    class="group px-1.5 py-0.5 text-[11px] font-medium text-rose-700 dark:text-rose-300 bg-rose-100/50 dark:bg-rose-900/20 rounded hover:bg-rose-200/50 dark:hover:bg-rose-900/40 transition-all duration-200 hover:shadow-sm border border-rose-200 dark:border-rose-800">
+                    class="group px-1.5 py-0.5 text-[10px] font-medium text-rose-700 dark:text-rose-300
+                      bg-rose-100/50 dark:bg-rose-900/20 rounded
+                      hover:bg-rose-200/50 dark:hover:bg-rose-900/40
+                      transition-all duration-200 hover:shadow-sm
+                      border border-rose-200 dark:border-rose-800
+                      relative"
+                    :title="manufacturer">
                     <div class="flex items-center gap-1">
-                      <span class="text-xs">🚙</span>
                       <span x-text="vehicle.model"></span>
                     </div>
                   </button>
@@ -219,7 +227,8 @@
                       focus:border-blue-700 dark:focus:border-blue-300 focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-300
                       outline-none transition-colors
                       flex items-center gap-2">
-                    <span class="text-xs">→</span>
+                    <span class="text-xs hidden md:block">→</span>
+                    <span class="text-xs block md:hidden">↓</span>
                     <span>Convert to ⛽️ price</span>
                   </button>
                 </label>
@@ -318,7 +327,8 @@
                       focus:border-blue-700 dark:focus:border-blue-300 focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-300
                       outline-none transition-colors
                       flex items-center gap-2">
-                    <span class="text-xs">←</span>
+                    <span class="text-xs hidden md:block">←</span>
+                    <span class="text-xs block md:hidden">↑</span>
                     <span>Convert to 🔋 price</span>
                   </button>
                 </label>
