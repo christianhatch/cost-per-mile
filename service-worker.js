@@ -1,5 +1,6 @@
 // service-worker.js
-const CACHE_NAME = 'cost-per-mile-v1';
+const CACHE_VERSION = '1.0.0';
+const CACHE_NAME = `cost-per-mile-${CACHE_VERSION}`;
 const FILES_TO_CACHE = [
   '/',
   '/index.html',
@@ -10,27 +11,40 @@ const FILES_TO_CACHE = [
   '/assets/apple-touch-icon.png',
   '/assets/android-chrome-192x192.png',
   '/assets/android-chrome-512x512.png',
+]
+
+const CDN_FILES = [
   'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js',
   'https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js',
   'https://cdn.jsdelivr.net/npm/chart.js',
   'https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0/dist/chartjs-plugin-annotation.min.js'
 ];
 
-// Cache-first strategy for static assets
-const STATIC_CACHE = 'static-cache-v1';
+// TODO: don't be as aggressive with the cache busting
+// Add timestamp to cache name to force updates
+const CACHE_TIMESTAMP = new Date().toISOString();
+const CACHE_KEY = `${CACHE_NAME}-${CACHE_TIMESTAMP}`;
 
 self.addEventListener('install', event => {
-  // Skip caching if running on localhost
-  if (self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1') {
-    console.log('Skipping caching on localhost');
-    return;
-  }
-
   event.waitUntil(
-    Promise.all([
-      caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE)),
-      caches.open(STATIC_CACHE).then(cache => cache.addAll(FILES_TO_CACHE))
-    ])
+    caches.open(CACHE_KEY).then(cache => {
+      // Add cache control headers to all requests
+      const requests = FILES_TO_CACHE.map(url => {
+        const request = new Request(url, {
+          headers: new Headers({
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          })
+        });
+        // Skip cross-origin requests
+        if (!url.startsWith(self.location.origin) && !CDN_FILES.includes(url)) {
+          return cache.add(request);
+        }
+        return cache.add(request);
+      });
+      return Promise.all(requests);
+    })
   );
   // Force the waiting service worker to become the active service worker
   self.skipWaiting();
@@ -42,16 +56,24 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // For static assets, use cache-first strategy
-  if (FILES_TO_CACHE.some(url => event.request.url.includes(url))) {
+  // For static assets, use cache-first strategy with exact path match
+  const url = new URL(event.request.url);
+  if (FILES_TO_CACHE.includes(url.pathname)) {
     event.respondWith(
       caches.match(event.request).then(response => {
-        return response || fetch(event.request).then(response => {
-          return caches.open(STATIC_CACHE).then(cache => {
-            cache.put(event.request, response.clone());
+        // Always fetch from network first
+        return fetch(event.request)
+          .then(networkResponse => {
+            // Update cache with new response
+            return caches.open(CACHE_KEY).then(cache => {
+              cache.put(event.request, networkResponse.clone());
+              return networkResponse;
+            });
+          })
+          .catch(() => {
+            // Fall back to cache if network fails
             return response;
           });
-        });
       })
     );
     return;
@@ -72,7 +94,7 @@ self.addEventListener('activate', event => {
       caches.keys().then(keys =>
         Promise.all(
           keys.map(key => {
-            if (key !== CACHE_NAME && key !== STATIC_CACHE) {
+            if (key.startsWith('cost-per-mile-') && key !== CACHE_KEY) {
               return caches.delete(key);
             }
           })
@@ -83,3 +105,14 @@ self.addEventListener('activate', event => {
     ])
   );
 });
+
+// Add update notification
+self.addEventListener('message', event => {
+  if (event.data === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});// Check for updates every hour
+setInterval(() => {
+  self.registration.update();
+}, 3600000);
+

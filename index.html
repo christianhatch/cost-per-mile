@@ -110,11 +110,6 @@
             <div x-text="savingsResult.trip" class="text-lg font-bold text-blue-700 dark:text-blue-300"></div>
             <div x-text="savingsResult.perMile" class="text-sm text-blue-700 dark:text-blue-300"></div>
           </div>
-          <!-- Prices -->
-          <div class="flex flex-col flex-1 justify-center" role="region" aria-label="Cost Prices">
-            <div x-text="`🔋 ${formattedElectricPrice}`" class="text-lg font-bold text-green-700 dark:text-green-300"></div>
-            <div x-text="`⛽️ ${formattedGasPrice}`" class="text-lg font-bold text-rose-700 dark:text-rose-300"></div>
-          </div>
         </div>
       </div>
     </div>
@@ -134,7 +129,7 @@
     <div class="bg-white dark:bg-slate-800 rounded-xl p-3 md:p-4 shadow-md">
       <legend class="flex items-center mb-4">
         <span class="text-2xl mr-2" role="img" aria-label="Vehicles">🚗</span>
-        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">Vehicles</h2>
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Vehicles</h2>
       </legend>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <!-- EV Presets -->
@@ -215,6 +210,18 @@
                       <span class="text-gray-700 dark:text-gray-300" aria-hidden="true">$/kWh</span>
                     </div>
                   </div>
+                  <button
+                    @click="syncGasPrice"
+                    class="mt-2 px-2 py-1 text-xs rounded-lg text-gray-800 dark:text-gray-200
+                      bg-white dark:bg-slate-700
+                      border border-blue-700/50 dark:border-blue-300/50
+                      hover:border-blue-700 dark:hover:border-blue-300
+                      focus:border-blue-700 dark:focus:border-blue-300 focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-300
+                      outline-none transition-colors
+                      flex items-center gap-2">
+                    <span class="text-xs">→</span>
+                    <span>Convert to ⛽️ price</span>
+                  </button>
                 </label>
               </div>
 
@@ -302,6 +309,18 @@
                       <span class="text-gray-700 dark:text-gray-300" aria-hidden="true">$/gallon</span>
                     </div>
                   </div>
+                  <button
+                    @click="syncElectricPrice"
+                    class="mt-2 px-2 py-1 text-xs rounded-lg text-gray-800 dark:text-gray-200
+                      bg-white dark:bg-slate-700
+                      border border-blue-700/50 dark:border-blue-300/50
+                      hover:border-blue-700 dark:hover:border-blue-300
+                      focus:border-blue-700 dark:focus:border-blue-300 focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-300
+                      outline-none transition-colors
+                      flex items-center gap-2">
+                    <span class="text-xs">←</span>
+                    <span>Convert to 🔋 price</span>
+                  </button>
                 </label>
               </div>
 
@@ -360,32 +379,6 @@
                   </div>
                 </label>
               </div>
-            </div>
-          </div>
-
-          <!-- Divider -->
-          <hr class="border-gray-200 dark:border-gray-700 my-6 lg:hidden">
-          <!-- Vertical Divider for Desktop -->
-          <div class="hidden lg:block border-l border-gray-200 dark:border-gray-700"></div>
-
-          <!-- Sync Button -->
-          <div class="flex-1 max-w-sm">
-            <div class="flex items-center mb-4">
-              <span class="text-2xl mr-2">🔗</span>
-              <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Price Sync</h2>
-            </div>
-            <div>
-              <button @click="toggleSync" class="w-full px-3 py-2 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
-                border border-gray-200 dark:border-gray-700
-                hover:border-gray-300 dark:hover:border-gray-600
-                focus:border-gray-400 dark:focus:border-gray-500 focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-500
-                outline-none transition-colors flex items-center justify-center gap-2"
-                :class="syncPrices ? 'border-blue-500 dark:border-blue-400 hover:border-blue-600 dark:hover:border-blue-300' : ''">
-                <span x-text="syncPrices ? '🔄' : '🔗'" class="text-lg"></span>
-                <span x-text="syncPrices ? 'Syncing Prices' : 'Sync Prices'"
-                      :class="syncPrices ? 'text-blue-700 dark:text-blue-300 animate-pulse-blue' : 'text-gray-700 dark:text-gray-300'"
-                      class="text-sm font-bold transition-colors"></span>
-              </button>
             </div>
           </div>
         </fieldset>
@@ -510,10 +503,6 @@
       miles: {
         defaultValue: 10,
         storageKey: 'miles'
-      },
-      syncPrices: {
-        defaultValue: false,
-        storageKey: 'syncPrices'
       }
     };
     const vehiclePresets = [
@@ -580,12 +569,12 @@
         return gasPrice / mpg;
       }
 
-      static equivalentEvPrice(gasCostPerMile, whPerMile) {
+      static equivalentElectricPrice(gasCostPerMile, whPerMile) {
         return (gasCostPerMile * 1000) / whPerMile;
       }
 
-      static equivalentGasPrice(evCostPerMile, mpg) {
-        return evCostPerMile * mpg;
+      static equivalentGasPrice(electricCostPerMile, mpg) {
+        return electricCostPerMile * mpg;
       }
 
       static vehiclesByManufacturer(kind) {
@@ -612,7 +601,6 @@
         isMiPerKwh: localStorage.getItem(stateDefaults.isMiPerKwh.storageKey) === 'true' || stateDefaults.isMiPerKwh.defaultValue,
         mpg: parseFloat(localStorage.getItem(stateDefaults.mpg.storageKey)) || stateDefaults.mpg.defaultValue,
         miles: parseFloat(localStorage.getItem(stateDefaults.miles.storageKey)) || stateDefaults.miles.defaultValue,
-        syncPrices: localStorage.getItem(stateDefaults.syncPrices.storageKey) === 'true' || stateDefaults.syncPrices.defaultValue,
         focusedField: null,
         chart: null,
         deferredPrompt: null,
@@ -631,14 +619,6 @@
 
         get darkMode() {
           return this.theme === 'dark' || (this.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-        },
-
-        get formattedElectricPrice() {
-          return `${Utils.formatPrice(this.electricPrice)}/kWh`;
-        },
-
-        get formattedGasPrice() {
-          return `${Utils.formatPrice(this.gasPrice)}/gal`;
         },
 
         get evEfficiencyDisplay() {
@@ -660,9 +640,9 @@
           return Utils.gasCostPerMile(this.mpg, this.gasPrice);
         },
 
-        get equivalentEvPrice() {
+        get equivalentElectricPrice() {
           if (!this.gasCostPerMile || !this.evWhPerMile) return '';
-          return Utils.equivalentEvPrice(this.gasCostPerMile, this.evWhPerMile);
+          return Utils.equivalentElectricPrice(this.gasCostPerMile, this.evWhPerMile);
         },
 
         get equivalentGasPrice() {
@@ -692,13 +672,6 @@
 
         get savingsResult() {
           if (!this.evCostPerMile || !this.gasCostPerMile) return { trip: '-', perMile: '-' };
-
-          if (this.syncPrices) {
-            return {
-              trip: `Syncing prices`,
-              perMile: `-`
-            }
-          }
 
           const ev = this.evCostPerMile;
           const gas = this.gasCostPerMile;
@@ -761,7 +734,7 @@
             costPerMilePoints.push(roundedCostPerMile);
 
             // Calculate equivalent electricity price for this cost per mile
-            const evPrice = Utils.equivalentEvPrice(roundedCostPerMile, this.evWhPerMile);
+            const evPrice = Utils.equivalentElectricPrice(roundedCostPerMile, this.evWhPerMile);
             evPrices.push(evPrice);
 
             // Calculate equivalent gas price for this cost per mile
@@ -778,7 +751,9 @@
             evCostPerMile: parseFloat((this.evCostPerMile * 1000).toFixed(4)),
             gasCostPerMile: parseFloat((this.gasCostPerMile * 1000).toFixed(4)),
             electricPrice: this.electricPrice,
+            equivalentElectricPrice: this.equivalentElectricPrice,
             gasPrice: this.gasPrice,
+            equivalentGasPrice: this.equivalentGasPrice,
             colors: this.chartColors(),
           };
         },
@@ -798,6 +773,16 @@
         },
 
         chartConfig(data) {
+          const toolTipLabel = (evPrice, gasPrice) => {
+            const formattedEvPrice = `${Utils.formatPrice(evPrice)}/kWh`;
+            const formattedGasPrice = `${Utils.formatPrice(gasPrice)}/gal`;
+
+            return [
+              `EV Cost: 🔋${formattedEvPrice}`,
+              `Equivalent Cost: ⛽️${formattedGasPrice}`,
+            ];
+          }
+
           return {
             type: 'line',
             data: {
@@ -854,68 +839,16 @@
                   },
                   callbacks: {
                     title: function(context) {
-                      const pricePerMile = context[0].dataset.data[context[0].dataIndex];
-                      return `Cost Per Mile: ${Utils.formatPricePerMile(pricePerMile)}`;
+                      const costPerMile = context[0].dataset.data[context[0].dataIndex];
+                      return `Cost Per Mile: ${Utils.formatPricePerMile(costPerMile)}`;
                     },
                     label: function(context) {
-                      const evPrice = `${Utils.formatPrice(data.evPrices[context.dataIndex])}/kWh`;
-                      const gasPrice = `${Utils.formatPrice(data.gasPrices[context.dataIndex])}/gal`;
-
-                      return [
-                        `EV Cost:🔋${evPrice}`,
-                        `Equivalent Cost: ⛽️${gasPrice}`,
-                      ];
+                      return toolTipLabel(data.evPrices[context.dataIndex], data.gasPrices[context.dataIndex]);
                     }
                   }
                 },
                 annotation: {
-                  drawTime: 'beforeDatasetsDraw',
                   annotations: {
-                    horizontalEvPriceLine: {
-                      type: 'line',
-                      scaleID: 'y',
-                      value: data.electricPrice,
-                      borderColor: data.colors.electricity.border,
-                      borderWidth: 2,
-                      borderDash: [5, 5],
-                      label: {
-                        display: false,
-                        content: [
-                          `🔋${Utils.formatPrice(data.electricPrice)}/kWh`,
-                          `⛽️${Utils.formatPrice(data.gasPrice)}/gal`,
-                        ],
-                        textAlign: 'left',
-                        position: 'start',
-                        backgroundColor: data.colors.electricity.background,
-                        color: 'white',
-                        font: {
-                          size: 14
-                        }
-                      }
-                    },
-                    horizontalGasPriceLine: {
-                      type: 'line',
-                      value: data.gasPrice,
-                      borderColor: data.colors.gas.border,
-                      borderWidth: 2,
-                      borderDash: [5, 5],
-                      scaleID: 'y1',
-                      drawTime: 'beforeDatasetsDraw',
-                      label: {
-                        display: false,
-                        content: [
-                          `⛽️${Utils.formatPrice(data.gasPrice)}/gal`,
-                          `🔋${Utils.formatPrice(data.electricPrice)}/kWh`,
-                        ],
-                        textAlign: 'left',
-                        position: 'end',
-                        backgroundColor: data.colors.gas.background,
-                        color: 'white',
-                        font: {
-                          size: 14
-                        }
-                      }
-                    },
                     verticalEvPriceLine: {
                       type: 'line',
                       xMin: data.evCostPerMile,
@@ -924,11 +857,9 @@
                       borderWidth: 2,
                       borderDash: [5, 5],
                       label: {
-                        display: false,
-                        content: [
-                          `🔋${Utils.formatPrice(data.electricPrice)}/kWh`,
-                          `⛽️${Utils.formatPrice(data.gasPrice)}/gal`,
-                        ],
+                        z: 100,
+                        display: true,
+                        content: toolTipLabel(data.electricPrice, data.equivalentGasPrice),
                         textAlign: 'start',
                         position: 'start',
                         backgroundColor: data.colors.electricity.background,
@@ -946,11 +877,8 @@
                       borderWidth: 2,
                       borderDash: [5, 5],
                       label: {
-                        display: false,
-                        content: [
-                          `⛽️${Utils.formatPrice(data.gasPrice)}/gal`,
-                          `🔋${Utils.formatPrice(data.electricPrice)}/kWh`,
-                        ],
+                        display: true,
+                        content: toolTipLabel(data.equivalentElectricPrice, data.gasPrice),
                         textAlign: 'start',
                         position: 'end',
                         backgroundColor: data.colors.gas.background,
@@ -1039,43 +967,16 @@
           }
         },
 
-        toggleSync() {
-          this.syncPrices = !this.syncPrices;
-          localStorage.setItem(stateDefaults.syncPrices.storageKey, this.syncPrices);
-          this.updateURL();
-        },
-
-        updateLockedPrices() {
-          if (!this.syncPrices) return;
-
-          // Only update the unfocused field
-          if (this.focusedField === 'electric' && this.equivalentGasPrice) {
-            this.gasPrice = parseFloat(this.equivalentGasPrice);
-          } else if (this.focusedField === 'gas' && this.equivalentEvPrice) {
-            this.electricPrice = parseFloat(this.equivalentEvPrice);
+        syncElectricPrice() {
+          if (this.equivalentElectricPrice) {
+            this.electricPrice = parseFloat(this.equivalentElectricPrice.toFixed(4));
           }
         },
 
-        async share() {
-          if (navigator.share) {
-            try {
-              await navigator.share({
-                title: 'Cost Per Mile Comparison',
-                url: window.location.href
-              });
-            } catch {
-              // Fall back to clipboard if share is cancelled or fails
-              this.copyToClipboard();
-            }
-          } else {
-            this.copyToClipboard();
+        syncGasPrice() {
+          if (this.equivalentGasPrice) {
+            this.gasPrice = parseFloat(this.equivalentGasPrice.toFixed(4));
           }
-        },
-
-        async copyToClipboard() {
-          await navigator.clipboard.writeText(window.location.href);
-          this.$refs.shareButton.textContent = 'Copied!';
-          setTimeout(() => this.$refs.shareButton.textContent = 'Share', 2000);
         },
 
         updateURL() {
@@ -1086,7 +987,6 @@
           params.set(stateDefaults.isMiPerKwh.storageKey, this.isMiPerKwh);
           if (this.mpg) params.set(stateDefaults.mpg.storageKey, this.mpg);
           if (this.miles) params.set(stateDefaults.miles.storageKey, this.miles);
-          params.set(stateDefaults.syncPrices.storageKey, this.syncPrices);
 
           // Update URL without reloading the page
           const newURL = `${window.location.pathname}?${params.toString()}`;
@@ -1106,8 +1006,7 @@
             evWhPerMile: parseFloat(params.get(stateDefaults.evWhPerMile.storageKey)) || null,
             isMiPerKwh: params.get(stateDefaults.isMiPerKwh.storageKey) === 'true',
             mpg: parseFloat(params.get(stateDefaults.mpg.storageKey)) || null,
-            miles: parseFloat(params.get(stateDefaults.miles.storageKey)) || null,
-            syncPrices: params.get(stateDefaults.syncPrices.storageKey) === 'true'
+            miles: parseFloat(params.get(stateDefaults.miles.storageKey)) || null
           };
 
           if (Object.values(urlValues).some(v => v !== null)) {
@@ -1135,10 +1034,6 @@
               this.miles = urlValues.miles;
               localStorage.setItem(stateDefaults.miles.storageKey, urlValues.miles);
             }
-            if (params.has(stateDefaults.syncPrices.storageKey)) {
-              this.syncPrices = urlValues.syncPrices;
-              localStorage.setItem(stateDefaults.syncPrices.storageKey, this.syncPrices);
-            }
           }
 
           // Update URL with initial values if no params were present
@@ -1152,35 +1047,30 @@
             if (this.theme === 'system') this.updateTheme();
           });
 
-          // Watch for changes and update both localStorage and URL and locked prices
+          // Watch for changes and update both localStorage and URL
           this.$watch('electricPrice', value => {
             localStorage.setItem(stateDefaults.electricPrice.storageKey, value);
             this.updateURL();
-            this.updateLockedPrices();
             this.renderChart();
           });
           this.$watch('gasPrice', value => {
             localStorage.setItem(stateDefaults.gasPrice.storageKey, value);
             this.updateURL();
-            this.updateLockedPrices();
             this.renderChart();
           });
           this.$watch('mpg', value => {
             localStorage.setItem(stateDefaults.mpg.storageKey, value);
             this.updateURL();
-            this.updateLockedPrices();
             this.renderChart();
           });
           this.$watch('evWhPerMile', value => {
             localStorage.setItem(stateDefaults.evWhPerMile.storageKey, value);
             this.updateURL();
-            this.updateLockedPrices();
             this.renderChart();
           });
           this.$watch('isMiPerKwh', value => {
             localStorage.setItem(stateDefaults.isMiPerKwh.storageKey, this.isMiPerKwh);
             this.updateURL();
-            this.updateLockedPrices();
             this.renderChart();
           });
           this.$watch('miles', value => {
@@ -1227,11 +1117,37 @@
   </script>
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-          .catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
+      // Unregister any existing service workers first
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+
+      // Register new service worker
+      navigator.serviceWorker.register('/service-worker.js', {
+        updateViaCache: 'none'
+      }).then(registration => {
+        // Check for updates immediately
+        registration.update();
+
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // New version available
+              if (confirm('A new version is available. Would you like to update?')) {
+                newWorker.postMessage('SKIP_WAITING');
+                window.location.reload();
+              }
+            }
           });
+        });
+
+        // Check for updates every hour
+        setInterval(() => {
+          registration.update();
+        }, 3600000);
       });
     }
   </script>
