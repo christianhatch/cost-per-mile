@@ -116,11 +116,35 @@
   <!-- Vehicle Presets Section -->
   <section class="w-full max-w-4xl">
     <div class="bg-white dark:bg-slate-800 rounded-xl p-3 md:p-4 shadow-md">
-      <legend class="flex items-center mb-4">
-        <span class="text-2xl mr-2" role="img" aria-label="Vehicles">🚗</span>
-        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Vehicles</h2>
-      </legend>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div class="flex items-center justify-between">
+        <legend class="flex items-center">
+          <span class="text-2xl mr-2" role="img" aria-label="Vehicles">🚗</span>
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Compare Vehicles</h2>
+        </legend>
+        <button
+          @click="showVehicles = !showVehicles"
+          class="p-1.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+          :aria-expanded="showVehicles"
+          aria-label="Toggle vehicle list">
+          <svg
+            class="w-5 h-5 transition-transform duration-300"
+            :class="{ 'rotate-180': showVehicles }"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
+      <div
+        x-show="showVehicles"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform -translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-300"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform -translate-y-2"
+        class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
         <!-- EV Presets -->
         <div class="border-r border-gray-100 dark:border-gray-700">
           <div class="flex flex-wrap gap-1">
@@ -199,12 +223,16 @@
                       @blur="focusedField = null"
                       type="text"
                       id="ev-price"
+                      x-ref="evPrice"
                       aria-labelledby="ev-price-label"
+                      :class="{
+                        'border-green-500 dark:border-green-400 ring-2 ring-green-500 dark:ring-green-400': pulseInput === 'ev-price',
+                        'border-blue-700/50 dark:border-blue-300/50': pulseInput !== 'ev-price'
+                      }"
                       class="w-full px-3 py-2 pr-16 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
-                      border border-blue-700/50 dark:border-blue-300/50
                       hover:border-blue-700 dark:hover:border-blue-300
                       focus:border-blue-700 dark:focus:border-blue-300 focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-300
-                      outline-none transition-colors" />
+                      outline-none transition-all duration-300 ease-in-out" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                       <span class="text-gray-700 dark:text-gray-300" aria-hidden="true">$/kWh</span>
                     </div>
@@ -236,8 +264,11 @@
                       id="ev-efficiency"
                       x-ref="evEfficiency"
                       aria-labelledby="ev-efficiency-label"
+                      :class="{
+                        'border-green-500 dark:border-green-400 ring-2 ring-green-500 dark:ring-green-400': pulseInput === 'ev',
+                        'border-blue-700/50 dark:border-blue-300/50': pulseInput !== 'ev'
+                      }"
                       class="w-full px-3 py-2 pr-16 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
-                      border border-blue-700/50 dark:border-blue-300/50
                       focus:border-blue-700 dark:focus:border-blue-300 focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-300
                       outline-none transition-all duration-300 ease-in-out" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -300,12 +331,16 @@
                       @blur="focusedField = null"
                       type="text"
                       id="gas-price"
+                      x-ref="gasPrice"
                       aria-labelledby="gas-price-label"
+                      :class="{
+                        'border-rose-500 dark:border-rose-400 ring-2 ring-rose-500 dark:ring-rose-400': pulseInput === 'gas-price',
+                        'border-blue-700/50 dark:border-blue-300/50': pulseInput !== 'gas-price'
+                      }"
                       class="w-full px-3 py-2 pr-16 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
-                      border border-blue-700/50 dark:border-blue-300/50
                       hover:border-blue-700 dark:hover:border-blue-300
                       focus:border-blue-700 dark:focus:border-blue-300 focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-300
-                      outline-none transition-colors" />
+                      outline-none transition-all duration-300 ease-in-out" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                       <span class="text-gray-700 dark:text-gray-300" aria-hidden="true">$/gallon</span>
                     </div>
@@ -337,8 +372,11 @@
                       id="gas-efficiency"
                       x-ref="gasEfficiency"
                       aria-labelledby="gas-efficiency-label"
+                      :class="{
+                        'border-rose-500 dark:border-rose-400 ring-2 ring-rose-500 dark:ring-rose-400': pulseInput === 'gas',
+                        'border-blue-700/50 dark:border-blue-300/50': pulseInput !== 'gas'
+                      }"
                       class="w-full px-3 py-2 pr-12 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
-                      border border-blue-700/50 dark:border-blue-300/50
                       hover:border-blue-700 dark:hover:border-blue-300
                       focus:border-blue-700 dark:focus:border-blue-300 focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-300
                       outline-none transition-all duration-300 ease-in-out" />
@@ -609,6 +647,8 @@
         deferredPrompt: null,
         isStandalone: window.matchMedia('(display-mode: standalone)').matches,
         isSafari: /^((?!chrome|android).)*safari/i.test(navigator.userAgent),
+        showVehicles: true,
+        pulseInput: null,
 
         init() {
           this.initializeStateFromUrl();
@@ -973,12 +1013,16 @@
         syncElectricPrice() {
           if (this.equivalentElectricPrice) {
             this.electricPrice = parseFloat(this.equivalentElectricPrice.toFixed(4));
+            this.pulseInput = 'ev-price';
+            setTimeout(() => this.pulseInput = null, 1000);
           }
         },
 
         syncGasPrice() {
           if (this.equivalentGasPrice) {
             this.gasPrice = parseFloat(this.equivalentGasPrice.toFixed(4));
+            this.pulseInput = 'gas-price';
+            setTimeout(() => this.pulseInput = null, 1000);
           }
         },
 
@@ -1142,16 +1186,12 @@
           if (type === 'ev') {
             this.evWhPerMile = efficiency;
             this.isMiPerKwh = isMiPerKwh;
-            this.$refs.evEfficiency.classList.add('bg-green-300', 'ring-2', 'ring-green-500', 'dark:bg-green-700', 'dark:ring-green-400');
-            setTimeout(() => {
-              this.$refs.evEfficiency.classList.remove('bg-green-300', 'ring-2', 'ring-green-500', 'dark:bg-green-700', 'dark:ring-green-400');
-            }, 1000);
+            this.pulseInput = 'ev';
+            setTimeout(() => this.pulseInput = null, 1000);
           } else {
             this.mpg = efficiency;
-            this.$refs.gasEfficiency.classList.add('bg-rose-300', 'ring-2', 'ring-rose-500', 'dark:bg-rose-700', 'dark:ring-rose-400');
-            setTimeout(() => {
-              this.$refs.gasEfficiency.classList.remove('bg-rose-300', 'ring-2', 'ring-rose-500', 'dark:bg-rose-700', 'dark:ring-rose-400');
-            }, 1000);
+            this.pulseInput = 'gas';
+            setTimeout(() => this.pulseInput = null, 1000);
           }
         }
       }));
