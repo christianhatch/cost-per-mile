@@ -219,19 +219,17 @@
                     <input
                       x-model="electricPrice"
                       x-mask:dynamic="$money($input, '.', ',', 4)"
-                      @focus="focusedField = 'electric'"
-                      @blur="focusedField = null"
+                      @keydown.enter.prevent
                       type="text"
                       id="ev-price"
                       x-ref="evPrice"
                       aria-labelledby="ev-price-label"
                       :class="{
                         'border-green-500 dark:border-green-400 ring-2 ring-green-500 dark:ring-green-400': pulseInput === 'ev-price',
-                        'border-blue-600 dark:border-blue-300': pulseInput !== 'ev-price'
+                        'border-blue-600/50 dark:border-blue-300/50': pulseInput !== 'ev-price'
                       }"
                       class="w-full px-3 py-2 pr-16 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
-                      border border-blue-600 dark:border-blue-300
-                      hover:border-blue-700 dark:hover:border-blue-300
+                      border hover:border-blue-700 dark:hover:border-blue-300
                       focus:border-blue-700 dark:focus:border-blue-300 focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-300
                       outline-none transition-all duration-300 ease-in-out" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -240,7 +238,7 @@
                   </div>
                   <button
                     @click="syncGasPrice"
-                    class="mt-2 px-2 py-1 text-xs rounded-lg text-gray-800 dark:text-gray-200
+                    class="mt-2 px-2 py-1 text-xs rounded-lg text-blue-700 dark:text-blue-300
                       bg-white dark:bg-slate-700
                       border border-blue-700/50 dark:border-blue-300/50
                       hover:border-blue-700 dark:hover:border-blue-300
@@ -267,11 +265,10 @@
                       aria-labelledby="ev-efficiency-label"
                       :class="{
                         'border-green-500 dark:border-green-400 ring-2 ring-green-500 dark:ring-green-400': pulseInput === 'ev',
-                        'border-blue-600 dark:border-blue-300': pulseInput !== 'ev'
+                        'border-blue-600/50 dark:border-blue-300/50': pulseInput !== 'ev'
                       }"
                       class="w-full px-3 py-2 pr-16 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
-                      border border-blue-600 dark:border-blue-300
-                      focus:border-blue-700 dark:focus:border-blue-300 focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-300
+                      border focus:border-blue-700 dark:focus:border-blue-300 focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-300
                       outline-none transition-all duration-300 ease-in-out" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                       <template x-if="!isMiPerKwh">
@@ -330,39 +327,37 @@
                     <input
                       x-model="gasPrice"
                       x-mask:dynamic="$money($input, '.', ',', 4)"
-                      @focus="focusedField = 'gas'"
-                      @blur="focusedField = null"
+                      @keydown.enter.prevent
                       type="text"
                       id="gas-price"
                       x-ref="gasPrice"
                       aria-labelledby="gas-price-label"
                       :class="{
                         'border-rose-500 dark:border-rose-400 ring-2 ring-rose-500 dark:ring-rose-400': pulseInput === 'gas-price',
-                        'border-blue-700/50 dark:border-blue-300/50': pulseInput !== 'gas-price'
+                        'border-blue-600/50 dark:border-blue-300/50': pulseInput !== 'gas-price'
                       }"
                       class="w-full px-3 py-2 pr-16 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
-                      border border-blue-700/50 dark:border-blue-300/50
-                      hover:border-blue-700 dark:hover:border-blue-300
+                      border hover:border-blue-700 dark:hover:border-blue-300
                       focus:border-blue-700 dark:focus:border-blue-300 focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-300
                       outline-none transition-all duration-300 ease-in-out" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                       <span class="text-gray-700 dark:text-gray-300" aria-hidden="true">$/gallon</span>
                     </div>
                   </div>
-                  <button
-                    @click="syncElectricPrice"
-                    class="mt-2 px-2 py-1 text-xs rounded-lg text-gray-800 dark:text-gray-200
-                      bg-white dark:bg-slate-700
-                      border border-blue-700/50 dark:border-blue-300/50
-                      hover:border-blue-700 dark:hover:border-blue-300
-                      focus:border-blue-700 dark:focus:border-blue-300 focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-300
-                      outline-none transition-colors
-                      flex items-center gap-2">
-                    <span class="text-xs hidden md:block">←</span>
-                    <span class="text-xs block md:hidden">↑</span>
-                    <span>Convert to 🔋 price</span>
-                  </button>
                 </label>
+                <button
+                  @click="syncElectricPrice"
+                  class="mt-2 px-2 py-1 text-xs text-blue-700 dark:text-blue-300 rounded-lg
+                    bg-white dark:bg-slate-700
+                    border border-blue-700/50 dark:border-blue-300/50
+                    hover:border-blue-700 dark:hover:border-blue-300
+                    focus:border-blue-700 dark:focus:border-blue-300 focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-300
+                    outline-none transition-colors
+                    flex items-center gap-2">
+                  <span class="text-xs hidden md:block">←</span>
+                  <span class="text-xs block md:hidden">↑</span>
+                  <span>Convert to 🔋 price</span>
+                </button>
               </div>
 
               <!-- Gas Efficiency Input -->
@@ -378,11 +373,10 @@
                       aria-labelledby="gas-efficiency-label"
                       :class="{
                         'border-rose-500 dark:border-rose-400 ring-2 ring-rose-500 dark:ring-rose-400': pulseInput === 'gas',
-                        'border-blue-700/50 dark:border-blue-300/50': pulseInput !== 'gas'
+                        'border-blue-600/50 dark:border-blue-300/50': pulseInput !== 'gas'
                       }"
                       class="w-full px-3 py-2 pr-12 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
-                      border border-blue-700/50 dark:border-blue-300/50
-                      hover:border-blue-700 dark:hover:border-blue-300
+                      border hover:border-blue-700 dark:hover:border-blue-300
                       focus:border-blue-700 dark:focus:border-blue-300 focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-300
                       outline-none transition-all duration-300 ease-in-out" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -647,7 +641,6 @@
         isMiPerKwh: localStorage.getItem(stateDefaults.isMiPerKwh.storageKey) === 'true' || stateDefaults.isMiPerKwh.defaultValue,
         mpg: parseFloat(localStorage.getItem(stateDefaults.mpg.storageKey)) || stateDefaults.mpg.defaultValue,
         miles: parseFloat(localStorage.getItem(stateDefaults.miles.storageKey)) || stateDefaults.miles.defaultValue,
-        focusedField: null,
         chart: null,
         deferredPrompt: null,
         isStandalone: window.matchMedia('(display-mode: standalone)').matches,
