@@ -1086,6 +1086,28 @@
           });
         },
 
+        async share() {
+          if (navigator.share) {
+            try {
+              await navigator.share({
+                title: 'Cost Per Mile Comparison',
+                url: window.location.href
+              });
+            } catch {
+              // Fall back to clipboard if share is cancelled or fails
+              this.copyToClipboard();
+            }
+          } else {
+            this.copyToClipboard();
+          }
+        },
+
+        async copyToClipboard() {
+          await navigator.clipboard.writeText(window.location.href);
+          this.$refs.shareButton.textContent = 'Copied!';
+          setTimeout(() => this.$refs.shareButton.textContent = 'Share', 2000);
+        },
+
         registerPwaPrompt() {
           window.addEventListener('beforeinstallprompt', (e) => {
             // Store the event for later use
