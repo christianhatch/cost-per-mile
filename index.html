@@ -768,7 +768,8 @@
             title: {
               text: darkMode ? getColor('--color-gray-400') : getColor('--color-gray-600'),
               font: {
-                size: 14
+                size: 14,
+                weight: 'bold'
               }
             },
             body: {
@@ -875,7 +876,8 @@
                   text: 'Equivalent Gas Price',
                   color: data.style.title.text,
                   font: {
-                    size: data.style.title.font.size
+                    size: data.style.title.font.size,
+                    weight: data.style.title.font.weight
                   }
                 },
                 legend: {
@@ -886,11 +888,11 @@
                   backgroundColor: '#010101E6',
                   titleFont: {
                     size: data.style.title.font.size,
-                    weight: 'bold',
+                    weight: data.style.title.font.weight,
                   },
                   bodyFont: {
                     size: data.style.body.font.size,
-                    weight: 'bold',
+                    weight: data.style.title.font.weight,
                   },
                   padding: 10,
                   titleMarginBottom: 10,
@@ -923,7 +925,7 @@
                       color: 'white',
                         font: {
                           size: data.style.body.font.size,
-                          weight: 'bold',
+                          weight: data.style.title.font.weight,
                       }
                     },
                     evPriceIntersection: {
@@ -939,7 +941,7 @@
                       color: 'white',
                         font: {
                           size: data.style.body.font.size,
-                          weight: 'bold',
+                          weight: data.style.title.font.weight,
                       }
                     },
                   }
@@ -952,7 +954,8 @@
                     text: 'Cost per Mile ($/mi)',
                     color: data.style.title.text,
                     font: {
-                      size: data.style.title.font.size
+                      size: data.style.title.font.size,
+                      weight: data.style.title.font.weight
                     }
                   },
                   ticks: {
@@ -963,7 +966,8 @@
                     maxTicksLimit: 10,
                     color: data.style.title.text,
                     font: {
-                      size: data.style.body.font.size
+                      size: data.style.body.font.size,
+                      weight: data.style.title.font.weight
                     },
                   },
                   grid: {
@@ -976,10 +980,11 @@
                   position: 'left',
                   title: {
                     display: true,
-                    text: 'Electricity ($/kWh)',
+                    text: '🔋 $ / kWh',
                     color: data.style.electricity.text,
                     font: {
-                      size: data.style.title.font.size
+                      size: data.style.title.font.size,
+                      weight: data.style.title.font.weight
                     }
                   },
                   ticks: {
@@ -1001,10 +1006,11 @@
                   position: 'right',
                   title: {
                     display: true,
-                    text: 'Gas ($/gal)',
+                    text: '⛽️ $ / gal',
                     color: data.style.gas.text,
                     font: {
-                      size: data.style.title.font.size
+                      size: data.style.title.font.size,
+                      weight: data.style.title.font.weight
                     }
                   },
                   ticks: {
