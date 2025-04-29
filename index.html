@@ -742,7 +742,7 @@
           };
         },
 
-        chartColors() {
+        chartStyle() {
           const getColor = (varName) => getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
           const darkMode = this.darkMode;
 
@@ -764,6 +764,14 @@
             },
             title: {
               text: darkMode ? getColor('--color-gray-400') : getColor('--color-gray-600'),
+              font: {
+                size: 14
+              }
+            },
+            body: {
+              font: {
+                size: 12
+              }
             },
             grid: {
               line: darkMode ? getColor('--color-gray-700') : getColor('--color-gray-200'),
@@ -802,7 +810,7 @@
             equivalentElectricPrice: this.equivalentElectricPrice,
             gasPrice: this.gasPrice,
             equivalentGasPrice: this.equivalentGasPrice,
-            colors: this.chartColors(),
+            style: this.chartStyle(),
           };
         },
 
@@ -842,10 +850,9 @@
                 {
                   label: 'Electricity $/kWh',
                   data: data.evPrices,
-                  borderColor: data.colors.equivalentPrice.border,
-                  backgroundColor: data.colors.equivalentPrice.background,
+                  borderColor: data.style.equivalentPrice.border,
+                  backgroundColor: data.style.equivalentPrice.background,
                   borderWidth: 2,
-                  tension: 0.1,
                   yAxisID: 'y'
                 }
               ]
@@ -863,9 +870,9 @@
                 title: {
                   display: true,
                   text: 'Equivalent Gas Price',
-                  color: data.colors.title.text,
+                  color: data.style.title.text,
                   font: {
-                    size: 16
+                    size: data.style.title.font.size
                   }
                 },
                 legend: {
@@ -875,11 +882,11 @@
                   displayColors: false,
                   backgroundColor: '#010101E6',
                   titleFont: {
-                    size: 16,
+                    size: data.style.title.font.size,
                     weight: 'bold',
                   },
                   bodyFont: {
-                    size: 14,
+                    size: data.style.body.font.size,
                     weight: 'bold',
                   },
                   padding: 10,
@@ -900,35 +907,35 @@
                 },
                 annotation: {
                   annotations: {
-                    evPriceIntersection: {
-                      type: 'label',
-                      xScaleID: 'x',
-                      yScaleID: 'y',
-                      xValue: data.evCostPerMile,
-                      yValue: data.electricPrice,
-                      backgroundColor: data.colors.electricity.background,
-                      borderColor: data.colors.electricity.border,
-                      borderRadius: 5,
-                      content: toolTipLabel(data.electricPrice, data.equivalentGasPrice, true),
-                      color: 'white',
-                        font: {
-                          size: 12,
-                          weight: 'bold',
-                      }
-                    },
                     gasPriceIntersection: {
-                      type: 'label',
+                      type: 'point',
                       xScaleID: 'x',
                       yScaleID: 'y',
                       xValue: data.gasCostPerMile,
                       yValue: data.equivalentElectricPrice,
-                      backgroundColor: data.colors.gas.background,
-                      borderColor: data.colors.gas.border,
+                      backgroundColor: data.style.gas.background,
+                      borderColor: data.style.gas.border,
                       borderRadius: 5,
                       content: toolTipLabel(data.equivalentElectricPrice, data.gasPrice, false),
                       color: 'white',
                         font: {
-                          size: 12,
+                          size: data.style.body.font.size,
+                          weight: 'bold',
+                      }
+                    },
+                    evPriceIntersection: {
+                      type: 'point',
+                      xScaleID: 'x',
+                      yScaleID: 'y',
+                      xValue: data.evCostPerMile,
+                      yValue: data.electricPrice,
+                      backgroundColor: data.style.electricity.background,
+                      borderColor: data.style.electricity.border,
+                      borderRadius: 5,
+                      content: toolTipLabel(data.electricPrice, data.equivalentGasPrice, true),
+                      color: 'white',
+                        font: {
+                          size: data.style.body.font.size,
                           weight: 'bold',
                       }
                     },
@@ -940,23 +947,24 @@
                   title: {
                     display: true,
                     text: 'Cost per Mile ($/mi)',
-                    color: data.colors.title.text,
+                    color: data.style.title.text,
                     font: {
-                      size: 12
+                      size: data.style.title.font.size
                     }
                   },
                   ticks: {
                     callback: function(value, index, ticks) {
                       // chart.js multiplies values by 1000 internally to avoid floating point precision issues
-                      return Utils.formatPricePerMile(value/1000);
+                      return Utils.formatPricePerMile(value/1000, 3);
                     },
-                    color: data.colors.title.text,
+                    maxTicksLimit: 10,
+                    color: data.style.title.text,
                     font: {
-                      size: 10
-                    }
+                      size: data.style.body.font.size
+                    },
                   },
                   grid: {
-                    color: data.colors.grid.line
+                    color: data.style.grid.line
                   }
                 },
                 y: {
@@ -966,22 +974,22 @@
                   title: {
                     display: true,
                     text: 'Electricity ($/kWh)',
-                    color: data.colors.electricity.text,
+                    color: data.style.electricity.text,
                     font: {
-                      size: 12
+                      size: data.style.title.font.size
                     }
                   },
                   ticks: {
                     callback: function(value, index, ticks) {
                       return Utils.formatPrice(value);
                     },
-                    color: data.colors.title.text,
+                    color: data.style.title.text,
                   },
                   beginAtZero: true,
                   min: 0,
                   max: 1.0,
                   grid: {
-                    color: data.colors.grid.line
+                    color: data.style.grid.line
                   }
                 },
                 y1: {
@@ -991,22 +999,22 @@
                   title: {
                     display: true,
                     text: 'Gas ($/gal)',
-                    color: data.colors.gas.text,
+                    color: data.style.gas.text,
                     font: {
-                      size: 12
+                      size: data.style.title.font.size
                     }
                   },
                   ticks: {
                     callback: function(value, index, ticks) {
                       return Utils.formatPrice(value);
                     },
-                    color: data.colors.title.text,
+                    color: data.style.title.text,
                   },
                   beginAtZero: true,
                   min: 0,
                   max: 8.0,
                   grid: {
-                    drawOnChartArea: true
+                    color: data.style.grid.line,
                   }
                 }
               }
