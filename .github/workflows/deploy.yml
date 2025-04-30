@@ -44,12 +44,6 @@ jobs:
           cp main.css dist/
           cp manifest.json dist/
           cp service-worker.js dist/
-      - name: Debug - List files in dist directory
-        run: |
-          echo "Contents of dist directory:"
-          ls -la dist/
-          echo "Contents of dist/assets directory:"
-          ls -la dist/assets/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
