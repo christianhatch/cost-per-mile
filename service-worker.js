@@ -30,13 +30,7 @@ self.addEventListener('install', event => {
     caches.open(CACHE_KEY).then(cache => {
       // Add cache control headers to all requests
       const requests = FILES_TO_CACHE.map(url => {
-        const request = new Request(url, {
-          headers: new Headers({
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          })
-        });
+        const request = new Request(url);
         // Skip cross-origin requests
         if (!url.startsWith(self.location.origin) && !CDN_FILES.includes(url)) {
           return cache.add(request);
