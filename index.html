@@ -96,8 +96,8 @@
         <div class="flex flex-row md:pl-8 pt-4 md:pt-0">
           <!-- Savings Result -->
           <div class="flex flex-col flex-1 justify-center" role="region" aria-label="Cost Savings">
-            <div x-text="savingsResult.trip" class="text-lg font-bold text-blue-700 dark:text-blue-300"></div>
-            <div x-text="savingsResult.perMile" class="text-sm text-blue-700 dark:text-blue-300"></div>
+            <div x-text="savingsResult.trip" class="text-lg font-bold text-sky-600 dark:text-sky-300"></div>
+            <div x-text="savingsResult.perMile" class="text-sm text-sky-600 dark:text-sky-300"></div>
           </div>
         </div>
       </div>
@@ -155,7 +155,7 @@
               <template x-for="vehicle in vehicles" :key="vehicle.model">
                 <button
                   @click="setVehicleEfficiency(vehicle.efficiency, vehicle.isMiPerKwh, 'ev')"
-                  class="group px-1.5 py-0.5 text-[10px] font-medium text-green-700 dark:text-green-300
+                  class="group px-1.5 py-0.5 text-xs font-medium text-green-700 dark:text-green-300
                     bg-green-100/50 dark:bg-green-900/20 rounded
                     hover:bg-green-200/50 dark:hover:bg-green-900/40
                     transition-all duration-200 hover:shadow-sm
@@ -185,7 +185,7 @@
               <template x-for="vehicle in vehicles" :key="vehicle.model">
                 <button
                   @click="setVehicleEfficiency(vehicle.efficiency, false, 'gas')"
-                  class="group px-1.5 py-0.5 text-[10px] font-medium text-rose-700 dark:text-rose-300
+                  class="group px-1.5 py-0.5 text-xs font-medium text-rose-700 dark:text-rose-300
                     bg-rose-100/50 dark:bg-rose-900/20 rounded
                     hover:bg-rose-200/50 dark:hover:bg-rose-900/40
                     transition-all duration-200 hover:shadow-sm
@@ -220,7 +220,7 @@
             <div class="grid grid-cols-2 gap-4">
               <div class="w-full">
                 <label class="block">
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" id="ev-price-label">Price</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" id="ev-price-label" for="ev-price">Price</label>
                   <div class="relative">
                     <input
                       x-model="electricPrice"
@@ -247,12 +247,12 @@
                 </label>
                 <button
                 @click="syncGasPrice"
-                class="mt-2 px-2 py-1 text-xs rounded-lg text-blue-700 dark:text-blue-300
+                class="mt-2 px-2 py-1 text-xs rounded-lg text-sky-700 dark:text-sky-300
                   bg-white dark:bg-slate-700
-                  border border-blue-700/50 dark:border-blue-300/50
-                  hover:border-blue-700 dark:hover:border-blue-300
-                  hover:bg-blue-50 dark:hover:bg-blue-900/50
-                  focus:border-blue-700 dark:focus:border-blue-300 focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-300
+                  border border-sky-700/50 dark:border-sky-300/50
+                  hover:border-sky-700 dark:hover:border-sky-300
+                  hover:bg-sky-50 dark:hover:bg-sky-900/50
+                  focus:border-sky-700 dark:focus:border-sky-300 focus:ring-1 focus:ring-sky-700 dark:focus:ring-sky-300
                   outline-none transition-colors
                   flex items-center gap-2">
                 <span class="text-xs hidden md:block">→</span>
@@ -363,12 +363,12 @@
                 </label>
                 <button
                   @click="syncElectricPrice"
-                  class="mt-2 px-2 py-1 text-xs text-blue-700 dark:text-blue-300 rounded-lg
+                  class="mt-2 px-2 py-1 text-xs text-sky-700 dark:text-sky-300 rounded-lg
                     bg-white dark:bg-slate-700
-                    border border-blue-700/50 dark:border-blue-300/50
-                    hover:border-blue-700 dark:hover:border-blue-300
-                    hover:bg-blue-50 dark:hover:bg-blue-900/50
-                    focus:border-blue-700 dark:focus:border-blue-300 focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-300
+                    border border-sky-700/50 dark:border-sky-300/50
+                    hover:border-sky-700 dark:hover:border-sky-300
+                    hover:bg-sky-50 dark:hover:bg-sky-900/50
+                    focus:border-sky-700 dark:focus:border-sky-300 focus:ring-1 focus:ring-sky-700 dark:focus:ring-sky-300
                     outline-none transition-colors
                     flex items-center gap-2">
                   <span class="text-xs hidden md:block">←</span>
@@ -580,22 +580,18 @@
       { manufacturer: 'Chevrolet', model: 'Bolt EV', efficiency: 281, isMiPerKwh: false, kind: 'ev' },
       { manufacturer: 'Toyota', model: 'bZ4X', efficiency: 283, isMiPerKwh: false, kind: 'ev' },
       { manufacturer: 'Kia', model: 'EV6', efficiency: 288, isMiPerKwh: false, kind: 'ev' },
-      { manufacturer: 'Hyundai', model: 'Kona Electric', efficiency: 280, isMiPerKwh: false, kind: 'ev' },
       { manufacturer: 'Polestar', model: '2 Long Range', efficiency: 300, isMiPerKwh: false, kind: 'ev' },
-      { manufacturer: 'Volkswagen', model: 'ID.4', efficiency: 310, isMiPerKwh: false, kind: 'ev' },
       { manufacturer: 'Toyota', model: 'Camry', efficiency: 40, isMiPerKwh: false, kind: 'gas' },
       { manufacturer: 'Honda', model: 'Accord', efficiency: 41, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Honda', model: 'Pilot', efficiency: 23, isMiPerKwh: false, kind: 'gas' },
       { manufacturer: 'Subaru', model: 'Impreza', efficiency: 32, isMiPerKwh: false, kind: 'gas' },
       { manufacturer: 'Subaru', model: 'Forester', efficiency: 28, isMiPerKwh: false, kind: 'gas' },
       { manufacturer: 'Mazda', model: 'Mazda3', efficiency: 32, isMiPerKwh: false, kind: 'gas' },
       { manufacturer: 'Volkswagen', model: 'Jetta', efficiency: 33, isMiPerKwh: false, kind: 'gas' },
       { manufacturer: 'Chevrolet', model: 'Cruze', efficiency: 34, isMiPerKwh: false, kind: 'gas' },
       { manufacturer: 'Dodge', model: 'Charger', efficiency: 25, isMiPerKwh: false, kind: 'gas' },
-      { manufacturer: 'Honda', model: 'Pilot', efficiency: 23, isMiPerKwh: false, kind: 'gas' },
       { manufacturer: 'Ford', model: 'Mustang', efficiency: 24, isMiPerKwh: false, kind: 'gas' },
       { manufacturer: 'Ford', model: 'F-150', efficiency: 20, isMiPerKwh: false, kind: 'gas' },
-      { manufacturer: 'Chevrolet', model: 'Silverado', efficiency: 19, isMiPerKwh: false, kind: 'gas' },
-      { manufacturer: 'Nissan', model: 'Altima', efficiency: 32, isMiPerKwh: false, kind: 'gas' },
     ];
 
     // Helpers
@@ -751,9 +747,9 @@
 
           return {
             equivalentPrice: {
-              background: darkMode ? getColor('--color-blue-300') : getColor('--color-blue-700'),
-              border: darkMode ? getColor('--color-blue-300') : getColor('--color-blue-700'),
-              text: darkMode ? getColor('--color-blue-300') : getColor('--color-blue-700'),
+              background: darkMode ? getColor('--color-sky-300') : getColor('--color-sky-600'),
+              border: darkMode ? getColor('--color-sky-300') : getColor('--color-sky-600'),
+              text: darkMode ? getColor('--color-sky-300') : getColor('--color-sky-600'),
             },
             electricity: {
               background: darkMode ? getColor('--color-green-700') : getColor('--color-green-700'),
@@ -903,7 +899,7 @@
                   callbacks: {
                     title: function(context) {
                       const costPerMile = context[0].label;
-                      return `Cost Per Mile: ${Utils.formatPricePerMile(costPerMile)}`;
+                      return `Cost Per Mile: ${Utils.formatPricePerMile(costPerMile, 2)}`;
                     },
                     label: function(context) {
                       return toolTipLabel(data.evPrices[context.dataIndex], data.gasPrices[context.dataIndex], true);
@@ -961,7 +957,7 @@
                   ticks: {
                     callback: function(value, index, ticks) {
                       // chart.js multiplies values by 1000 internally to avoid floating point precision issues
-                      return Utils.formatPricePerMile(value/1000, 3);
+                      return Utils.formatPricePerMile(value/1000, 2);
                     },
                     maxTicksLimit: 10,
                     color: data.style.title.text,
