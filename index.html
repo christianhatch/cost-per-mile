@@ -88,7 +88,7 @@
   </header>
 
   <!-- Results Section -->
-  <section aria-label="Cost Results" class="w-full max-w-4xl sticky top-0 z-50">
+  <main aria-label="Cost Results" class="w-full max-w-4xl sticky top-0 z-50">
     <div class="bg-white dark:bg-slate-800 rounded-xl p-4 md:p-6 shadow-md">
       <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-700">
         <!-- Trip Costs -->
@@ -115,16 +115,7 @@
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- Chart Section -->
-  <section aria-label="Cost Comparison Chart" class="w-full max-w-4xl">
-    <div class="bg-white dark:bg-slate-800 rounded-xl p-2 md:p-6 shadow-md">
-      <div class="aspect-[16/9] md:aspect-[4/3] w-full">
-        <canvas id="costChart" role="img" aria-label="Graph comparing electric and gas costs per mile"></canvas>
-      </div>
-    </div>
-  </section>
+  </main>
 
   <!-- Vehicle Presets Section -->
   <section class="w-full max-w-4xl">
@@ -167,13 +158,17 @@
             <div class="flex flex-wrap items-start gap-1">
               <template x-for="vehicle in vehicles" :key="vehicle.model">
                 <button
-                  @click="setVehicleEfficiency(vehicle.efficiency, vehicle.isMiPerKwh, 'ev')"
-                  class="group px-1.5 py-0.5 text-xs font-medium text-green-700 dark:text-green-300
+                  @click="setWhPerMile(vehicle.efficiency)"
+                  :class="{
+                    'border-green-500 dark:border-green-400 ring-2 ring-green-500 dark:ring-green-400': isEvEfficiency(vehicle),
+                    'border-gray-200 dark:border-gray-700': !isEvEfficiency(vehicle)
+                  }"
+                  class="group p-1 text-xs font-medium text-green-700 dark:text-green-300
                     bg-green-100/50 dark:bg-green-900/20 rounded
-                    hover:bg-green-200/50 dark:hover:bg-green-900/40
+                    hover:bg-green-300/50 dark:hover:bg-green-950/80
                     transition-all duration-200 hover:shadow-sm
                     border border-green-200 dark:border-green-800
-                    active:scale-95 active:opacity-80
+                    active:bg-green-300/50 active:border-green-400 dark:active:bg-green-800/40 dark:active:border-green-600
                     relative"
                   :title="manufacturer">
                   <div class="flex items-center gap-1">
@@ -197,10 +192,14 @@
             <div class="flex flex-wrap items-start gap-1">
               <template x-for="vehicle in vehicles" :key="vehicle.model">
                 <button
-                  @click="setVehicleEfficiency(vehicle.efficiency, false, 'gas')"
+                  @click="setMpg(vehicle.efficiency)"
+                  :class="{
+                    'border-rose-500 dark:border-rose-400 ring-2 ring-rose-500 dark:ring-rose-400': isMpg(vehicle),
+                    'border-gray-200 dark:border-gray-700': !isMpg(vehicle)
+                  }"
                   class="group px-1.5 py-0.5 text-xs font-medium text-rose-700 dark:text-rose-300
                     bg-rose-100/50 dark:bg-rose-900/20 rounded
-                    hover:bg-rose-200/50 dark:hover:bg-rose-900/40
+                    hover:bg-rose-300/50 dark:hover:bg-rose-950/80
                     transition-all duration-200 hover:shadow-sm
                     border border-rose-200 dark:border-rose-800
                     active:scale-95 active:opacity-80
@@ -219,7 +218,7 @@
   </section>
 
   <!-- Inputs Section -->
-  <main class="w-full max-w-4xl">
+  <section class="w-full max-w-4xl">
     <div class="bg-white dark:bg-slate-800 rounded-xl p-4 md:p-6 shadow-md">
       <form class="flex flex-col gap-6 max-w-4xl mx-auto" @submit.prevent>
         <div class="flex flex-col md:flex-row md:gap-12 md:justify-center">
@@ -245,8 +244,8 @@
                       x-ref="evPrice"
                       aria-labelledby="ev-price-label"
                       :class="{
-                        'border-green-500 dark:border-green-400 ring-2 ring-green-500 dark:ring-green-400': pulseInput === 'ev-price',
-                        'border-gray-200 dark:border-gray-700': pulseInput !== 'ev-price'
+                        'border-green-500 dark:border-green-400 ring-2 ring-green-500 dark:ring-green-400': isPulseInput('ev-price'),
+                        'border-gray-200 dark:border-gray-700': !isPulseInput('ev-price')
                       }"
                       class="w-full px-3 py-2 pr-16 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
                       border border-gray-200 dark:border-gray-700
@@ -288,8 +287,8 @@
                       x-ref="evEfficiency"
                       aria-labelledby="ev-efficiency-label"
                       :class="{
-                        'border-green-500 dark:border-green-400 ring-2 ring-green-500 dark:ring-green-400': pulseInput === 'ev',
-                        'border-gray-200 dark:border-gray-700': pulseInput !== 'ev'
+                        'border-green-500 dark:border-green-400 ring-2 ring-green-500 dark:ring-green-400': isPulseInput('ev-efficiency'),
+                        'border-gray-200 dark:border-gray-700': !isPulseInput('ev-efficiency')
                       }"
                       class="w-full px-3 py-2 pr-16 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
                       border border-gray-200 dark:border-gray-700
@@ -297,10 +296,10 @@
                       focus:border-gray-400 dark:focus:border-gray-500 focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-500
                       outline-none transition-all duration-300 ease-in-out" />
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <template x-if="!isMiPerKwh">
+                      <template x-if="!displayMiPerKwh">
                         <span class="text-gray-700 dark:text-gray-300" aria-hidden="true">Wh/mi</span>
                       </template>
-                      <template x-if="isMiPerKwh">
+                      <template x-if="displayMiPerKwh">
                         <span class="text-gray-700 dark:text-gray-300" aria-hidden="true">mi/kWh</span>
                       </template>
                     </div>
@@ -310,21 +309,21 @@
                 <div class="flex justify-end mt-2">
                   <div class="inline-flex rounded-lg p-0.5 bg-gray-100 dark:bg-slate-700" role="radiogroup" aria-label="Efficiency unit">
                     <button
-                      @click.stop="isMiPerKwh = false; $event.target.blur()"
-                      :class="{'bg-white dark:bg-slate-600 shadow-md text-green-700 dark:text-green-300 hover:border-green-500 dark:hover:border-green-400': !isMiPerKwh, 'text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-slate-600/50': isMiPerKwh}"
+                      @click.stop="displayMiPerKwh = false; $event.target.blur()"
+                      :class="{'bg-white dark:bg-slate-600 shadow-md text-green-700 dark:text-green-300 hover:border-green-500 dark:hover:border-green-400': !displayMiPerKwh, 'text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-slate-600/50': displayMiPerKwh}"
                       class="px-3 py-1 text-sm rounded-md transition-colors duration-200 focus:outline-none focus:ring-2
                       focus:ring-green-500 focus:ring-opacity-50"
                       role="radio"
-                      :aria-checked="!isMiPerKwh"
+                      :aria-checked="!displayMiPerKwh"
                       aria-label="Watt-hours per mile">
                       Wh/mi
                     </button>
                     <button
-                      @click.stop="isMiPerKwh = true; $event.target.blur()"
-                      :class="{'bg-white dark:bg-slate-600 shadow-md text-green-700 dark:text-green-300 hover:border-green-500 dark:hover:border-green-400': isMiPerKwh, 'text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-slate-600/50': !isMiPerKwh}"
+                      @click.stop="displayMiPerKwh = true; $event.target.blur()"
+                      :class="{'bg-white dark:bg-slate-600 shadow-md text-green-700 dark:text-green-300 hover:border-green-500 dark:hover:border-green-400': displayMiPerKwh, 'text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-slate-600/50': !displayMiPerKwh}"
                       class="px-3 py-1 text-sm rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
                       role="radio"
-                      :aria-checked="isMiPerKwh"
+                      :aria-checked="displayMiPerKwh"
                       aria-label="Miles per kilowatt-hour">
                       mi/kWh
                     </button>
@@ -361,8 +360,8 @@
                       x-ref="gasPrice"
                       aria-labelledby="gas-price-label"
                       :class="{
-                        'border-rose-500 dark:border-rose-400 ring-2 ring-rose-500 dark:ring-rose-400': pulseInput === 'gas-price',
-                        'border-gray-200 dark:border-gray-700': pulseInput !== 'gas-price'
+                        'border-rose-500 dark:border-rose-400 ring-2 ring-rose-500 dark:ring-rose-400': isPulseInput('gas-price'),
+                        'border-gray-200 dark:border-gray-700': !isPulseInput('gas-price')
                       }"
                       class="w-full px-3 py-2 pr-16 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
                       border border-gray-200 dark:border-gray-700
@@ -404,8 +403,8 @@
                       x-ref="gasEfficiency"
                       aria-labelledby="gas-efficiency-label"
                       :class="{
-                        'border-rose-500 dark:border-rose-400 ring-2 ring-rose-500 dark:ring-rose-400': pulseInput === 'gas',
-                        'border-gray-200 dark:border-gray-700': pulseInput !== 'gas'
+                        'border-rose-500 dark:border-rose-400 ring-2 ring-rose-500 dark:ring-rose-400': isPulseInput('gas-efficiency'),
+                        'border-gray-200 dark:border-gray-700': !isPulseInput('gas-efficiency')
                       }"
                       class="w-full px-3 py-2 pr-12 text-base rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700
                       border border-gray-200 dark:border-gray-700
@@ -458,7 +457,17 @@
         </fieldset>
       </form>
     </div>
-  </main>
+  </section>
+
+  <!-- Chart Section -->
+  <section aria-label="Cost Comparison Chart" class="w-full max-w-4xl">
+    <div class="bg-white dark:bg-slate-800 rounded-xl p-2 md:p-6 shadow-md">
+      <div class="aspect-[4/3] md:aspect-[4/3] w-full">
+        <canvas id="costChart" role="img" aria-label="Graph comparing electric and gas costs per mile"></canvas>
+      </div>
+    </div>
+  </section>
+
 
   <!-- Theme Selector -->
   <div class="relative z-0 inline-grid grid-cols-3 gap-0.5 rounded-full bg-gray-950/5 p-0.75 text-gray-950 dark:bg-white/10 dark:text-white">
@@ -554,6 +563,10 @@
         defaultValue: 'system',
         storageKey: 'theme'
       },
+      displayMiPerKwh: {
+        defaultValue: false,
+        storageKey: 'displayMiPerKwh'
+      },
       electricPrice: {
         defaultValue: 0.25,
         storageKey: 'electricPrice'
@@ -562,16 +575,12 @@
         defaultValue: 3.17,
         storageKey: 'gasPrice'
       },
-      evWhPerMile: {
-        defaultValue: 230,
-        storageKey: 'evWhPerMile'
-      },
-      isMiPerKwh: {
-        defaultValue: false,
-        storageKey: 'isMiPerKwh'
+      whPerMile: {
+        defaultValue: 240,
+        storageKey: 'whPerMile'
       },
       mpg: {
-        defaultValue: 27,
+        defaultValue: 28,
         storageKey: 'mpg'
       },
       miles: {
@@ -580,32 +589,31 @@
       }
     };
     const vehiclePresets = [
-      { manufacturer: 'Tesla', model: 'Model Y', efficiency: 240, isMiPerKwh: false, kind: 'ev' },
-      { manufacturer: 'Tesla', model: 'Model 3', efficiency: 260, isMiPerKwh: false, kind: 'ev' },
-      { manufacturer: 'Ford', model: 'Mustang Mach-E', efficiency: 318, isMiPerKwh: false, kind: 'ev' },
-      { manufacturer: 'Hyundai', model: 'Ioniq 5', efficiency: 256, isMiPerKwh: false, kind: 'ev' },
-      { manufacturer: 'Tesla', model: 'Cybertruck', efficiency: 259, isMiPerKwh: false, kind: 'ev' },
-      { manufacturer: 'Ford', model: 'F-150 Lightning', efficiency: 481, isMiPerKwh: false, kind: 'ev' },
-      { manufacturer: 'Honda', model: 'Prologue', efficiency: 340, isMiPerKwh: false, kind: 'ev' },
-      { manufacturer: 'Cadillac', model: 'Lyriq', efficiency: 379, isMiPerKwh: false, kind: 'ev' },
-      { manufacturer: 'Rivian', model: 'R1S', efficiency: 406, isMiPerKwh: false, kind: 'ev' },
-      { manufacturer: 'Lucid', model: 'Air Pure RWD', efficiency: 263, isMiPerKwh: false, kind: 'ev' },
-      { manufacturer: 'Chevrolet', model: 'Bolt EV', efficiency: 281, isMiPerKwh: false, kind: 'ev' },
-      { manufacturer: 'Toyota', model: 'bZ4X', efficiency: 283, isMiPerKwh: false, kind: 'ev' },
-      { manufacturer: 'Kia', model: 'EV6', efficiency: 288, isMiPerKwh: false, kind: 'ev' },
-      { manufacturer: 'Polestar', model: '2 Long Range', efficiency: 300, isMiPerKwh: false, kind: 'ev' },
-      { manufacturer: 'Toyota', model: 'Camry', efficiency: 40, isMiPerKwh: false, kind: 'gas' },
-      { manufacturer: 'Honda', model: 'Accord', efficiency: 41, isMiPerKwh: false, kind: 'gas' },
-      { manufacturer: 'Honda', model: 'Pilot', efficiency: 23, isMiPerKwh: false, kind: 'gas' },
-      { manufacturer: 'Subaru', model: 'Impreza', efficiency: 32, isMiPerKwh: false, kind: 'gas' },
-      { manufacturer: 'Subaru', model: 'Forester', efficiency: 28, isMiPerKwh: false, kind: 'gas' },
-      { manufacturer: 'Mazda', model: 'Mazda3', efficiency: 32, isMiPerKwh: false, kind: 'gas' },
-      { manufacturer: 'Volkswagen', model: 'Jetta', efficiency: 33, isMiPerKwh: false, kind: 'gas' },
-      { manufacturer: 'Chevrolet', model: 'Cruze', efficiency: 34, isMiPerKwh: false, kind: 'gas' },
-      { manufacturer: 'Dodge', model: 'Charger', efficiency: 25, isMiPerKwh: false, kind: 'gas' },
-      { manufacturer: 'Ford', model: 'Mustang', efficiency: 24, isMiPerKwh: false, kind: 'gas' },
-      { manufacturer: 'Ford', model: 'F-150', efficiency: 20, isMiPerKwh: false, kind: 'gas' },
-      { manufacturer: 'Rolls Royce', model: 'Phantom', efficiency: 15, isMiPerKwh: false, kind: 'gas' },
+      { manufacturer: 'Tesla', model: 'Model Y', efficiency: 240, kind: 'ev' },
+      { manufacturer: 'Tesla', model: 'Model 3', efficiency: 260, kind: 'ev' },
+      { manufacturer: 'Ford', model: 'Mustang Mach-E', efficiency: 318, kind: 'ev' },
+      { manufacturer: 'Hyundai', model: 'Ioniq 5', efficiency: 256, kind: 'ev' },
+      { manufacturer: 'Tesla', model: 'Cybertruck', efficiency: 259, kind: 'ev' },
+      { manufacturer: 'Ford', model: 'F-150 Lightning', efficiency: 481, kind: 'ev' },
+      { manufacturer: 'Honda', model: 'Prologue', efficiency: 340, kind: 'ev' },
+      { manufacturer: 'Cadillac', model: 'Lyriq', efficiency: 379, kind: 'ev' },
+      { manufacturer: 'Rivian', model: 'R1S', efficiency: 406, kind: 'ev' },
+      { manufacturer: 'Lucid', model: 'Air Pure RWD', efficiency: 263, kind: 'ev' },
+      { manufacturer: 'Chevrolet', model: 'Bolt EV', efficiency: 281, kind: 'ev' },
+      { manufacturer: 'Toyota', model: 'bZ4X', efficiency: 283, kind: 'ev' },
+      { manufacturer: 'Kia', model: 'EV6', efficiency: 288, kind: 'ev' },
+      { manufacturer: 'Polestar', model: '2 Long Range', efficiency: 300, kind: 'ev' },
+      { manufacturer: 'Toyota', model: 'Camry', efficiency: 40, kind: 'gas' },
+      { manufacturer: 'Honda', model: 'Accord', efficiency: 41, kind: 'gas' },
+      { manufacturer: 'Honda', model: 'Pilot', efficiency: 23, kind: 'gas' },
+      { manufacturer: 'Subaru', model: 'Impreza', efficiency: 32, kind: 'gas' },
+      { manufacturer: 'Subaru', model: 'Forester', efficiency: 28, kind: 'gas' },
+      { manufacturer: 'Volkswagen', model: 'Jetta', efficiency: 33, kind: 'gas' },
+      { manufacturer: 'Chevrolet', model: 'Cruze', efficiency: 34, kind: 'gas' },
+      { manufacturer: 'Dodge', model: 'Charger', efficiency: 25, kind: 'gas' },
+      { manufacturer: 'Ford', model: 'Mustang', efficiency: 24, kind: 'gas' },
+      { manufacturer: 'Ford', model: 'F-150', efficiency: 20, kind: 'gas' },
+      { manufacturer: 'Rolls Royce', model: 'Phantom', efficiency: 15, kind: 'gas' },
     ];
 
     // Helpers
@@ -655,10 +663,10 @@
     document.addEventListener('alpine:init', () => {
       Alpine.data('app', () => ({
         theme: localStorage.getItem(stateDefaults.theme.storageKey) || stateDefaults.theme.defaultValue,
+        displayMiPerKwh: localStorage.getItem(stateDefaults.displayMiPerKwh.storageKey) === 'true' || stateDefaults.displayMiPerKwh.defaultValue,
         electricPrice: parseFloat(localStorage.getItem(stateDefaults.electricPrice.storageKey)) || stateDefaults.electricPrice.defaultValue,
         gasPrice: parseFloat(localStorage.getItem(stateDefaults.gasPrice.storageKey)) || stateDefaults.gasPrice.defaultValue,
-        evWhPerMile: parseFloat(localStorage.getItem(stateDefaults.evWhPerMile.storageKey)) || stateDefaults.evWhPerMile.defaultValue,
-        isMiPerKwh: localStorage.getItem(stateDefaults.isMiPerKwh.storageKey) === 'true' || stateDefaults.isMiPerKwh.defaultValue,
+        whPerMile: parseFloat(localStorage.getItem(stateDefaults.whPerMile.storageKey)) || stateDefaults.whPerMile.defaultValue,
         mpg: parseFloat(localStorage.getItem(stateDefaults.mpg.storageKey)) || stateDefaults.mpg.defaultValue,
         miles: parseFloat(localStorage.getItem(stateDefaults.miles.storageKey)) || stateDefaults.miles.defaultValue,
         chart: null,
@@ -678,22 +686,34 @@
           this.registerPwaPrompt();
         },
 
+        isPulseInput(input) {
+          return this.pulseInput === input;
+        },
+
+        isEvEfficiency(vehicle) {
+          return this.whPerMile === parseFloat(vehicle.efficiency);
+        },
+
+        isMpg(vehicle) {
+          return this.mpg === parseFloat(vehicle.efficiency);
+        },
+
         get darkMode() {
           return this.theme === 'dark' || (this.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
         },
 
         get evEfficiencyDisplay() {
-          return this.isMiPerKwh ? parseFloat((1000 / this.evWhPerMile).toFixed(2)) : parseFloat(this.evWhPerMile.toFixed(2));
+          return this.displayMiPerKwh ? parseFloat((1000 / this.whPerMile).toFixed(2)) : parseFloat(this.whPerMile.toFixed(2));
         },
         set evEfficiencyDisplay(val) {
           const parsed = parseFloat(val);
           if (!parsed || parsed <= 0) return;
-          this.evWhPerMile = this.isMiPerKwh ? parseFloat((1000 / parsed).toFixed(2)) : parseFloat(parsed.toFixed(2));
+          this.whPerMile = this.displayMiPerKwh ? parseFloat((1000 / parsed).toFixed(2)) : parseFloat(parsed.toFixed(2));
         },
 
         get evCostPerMile() {
-          if (!this.evWhPerMile || !this.electricPrice) return '';
-          return Utils.evCostPerMile(this.evWhPerMile, this.electricPrice);
+          if (!this.whPerMile || !this.electricPrice) return '';
+          return Utils.evCostPerMile(this.whPerMile, this.electricPrice);
         },
 
         get gasCostPerMile() {
@@ -702,8 +722,8 @@
         },
 
         get equivalentElectricPrice() {
-          if (!this.gasCostPerMile || !this.evWhPerMile) return '';
-          return Utils.equivalentElectricPrice(this.gasCostPerMile, this.evWhPerMile);
+          if (!this.gasCostPerMile || !this.whPerMile) return '';
+          return Utils.equivalentElectricPrice(this.gasCostPerMile, this.whPerMile);
         },
 
         get equivalentGasPrice() {
@@ -804,7 +824,7 @@
             costPerMilePoints.push(roundedCostPerMile);
 
             // Calculate equivalent electricity price for this cost per mile
-            const evPrice = Utils.equivalentElectricPrice(costPerMile, this.evWhPerMile);
+            const evPrice = Utils.equivalentElectricPrice(costPerMile, this.whPerMile);
             evPrices.push(evPrice);
 
             // Calculate equivalent gas price for this cost per mile
@@ -1057,12 +1077,23 @@
           }
         },
 
+        setWhPerMile(whPerMile) {
+          this.whPerMile = whPerMile;
+          this.pulseInput = 'ev-efficiency';
+          setTimeout(() => this.pulseInput = null, 1000);
+        },
+
+        setMpg(mpg) {
+          this.mpg = mpg;
+          this.pulseInput = 'gas-efficiency';
+          setTimeout(() => this.pulseInput = null, 1000);
+        },
+
         updateURL() {
           const params = new URLSearchParams();
           if (this.electricPrice) params.set(stateDefaults.electricPrice.storageKey, this.electricPrice);
           if (this.gasPrice) params.set(stateDefaults.gasPrice.storageKey, this.gasPrice);
-          if (this.evWhPerMile) params.set(stateDefaults.evWhPerMile.storageKey, this.evWhPerMile);
-          params.set(stateDefaults.isMiPerKwh.storageKey, this.isMiPerKwh);
+          if (this.whPerMile) params.set(stateDefaults.whPerMile.storageKey, this.whPerMile);
           if (this.mpg) params.set(stateDefaults.mpg.storageKey, this.mpg);
           if (this.miles) params.set(stateDefaults.miles.storageKey, this.miles);
 
@@ -1081,8 +1112,7 @@
           const urlValues = {
             electricPrice: parseFloat(params.get(stateDefaults.electricPrice.storageKey)) || null,
             gasPrice: parseFloat(params.get(stateDefaults.gasPrice.storageKey)) || null,
-            evWhPerMile: parseFloat(params.get(stateDefaults.evWhPerMile.storageKey)) || null,
-            isMiPerKwh: params.get(stateDefaults.isMiPerKwh.storageKey) === 'true',
+            whPerMile: parseFloat(params.get(stateDefaults.whPerMile.storageKey)) || null,
             mpg: parseFloat(params.get(stateDefaults.mpg.storageKey)) || null,
             miles: parseFloat(params.get(stateDefaults.miles.storageKey)) || null
           };
@@ -1096,13 +1126,9 @@
               this.gasPrice = parseFloat(urlValues.gasPrice);
               localStorage.setItem(stateDefaults.gasPrice.storageKey, urlValues.gasPrice);
             }
-            if (urlValues.evWhPerMile !== null) {
-              this.evWhPerMile = urlValues.evWhPerMile;
-              localStorage.setItem(stateDefaults.evWhPerMile.storageKey, urlValues.evWhPerMile);
-            }
-            if (params.has(stateDefaults.isMiPerKwh.storageKey)) {
-              this.isMiPerKwh = urlValues.isMiPerKwh;
-              localStorage.setItem(stateDefaults.isMiPerKwh.storageKey, this.isMiPerKwh);
+            if (urlValues.whPerMile !== null) {
+              this.whPerMile = urlValues.whPerMile;
+              localStorage.setItem(stateDefaults.whPerMile.storageKey, urlValues.whPerMile);
             }
             if (urlValues.mpg !== null) {
               this.mpg = urlValues.mpg;
@@ -1141,15 +1167,13 @@
             this.updateURL();
             this.renderChart();
           });
-          this.$watch('evWhPerMile', value => {
-            localStorage.setItem(stateDefaults.evWhPerMile.storageKey, value);
+          this.$watch('whPerMile', value => {
+            localStorage.setItem(stateDefaults.whPerMile.storageKey, value);
             this.updateURL();
             this.renderChart();
           });
-          this.$watch('isMiPerKwh', value => {
-            localStorage.setItem(stateDefaults.isMiPerKwh.storageKey, this.isMiPerKwh);
-            this.updateURL();
-            this.renderChart();
+          this.$watch('displayMiPerKwh', value => {
+            localStorage.setItem(stateDefaults.displayMiPerKwh.storageKey, this.displayMiPerKwh);
           });
           this.$watch('miles', value => {
             localStorage.setItem(stateDefaults.miles.storageKey, value);
@@ -1212,19 +1236,6 @@
           // Clear the deferredPrompt
           this.deferredPrompt = null;
         },
-
-        setVehicleEfficiency(efficiency, isMiPerKwh, type) {
-          if (type === 'ev') {
-            this.evWhPerMile = efficiency;
-            this.isMiPerKwh = isMiPerKwh;
-            this.pulseInput = 'ev';
-            setTimeout(() => this.pulseInput = null, 1000);
-          } else {
-            this.mpg = efficiency;
-            this.pulseInput = 'gas';
-            setTimeout(() => this.pulseInput = null, 1000);
-          }
-        }
       }));
     });
   </script>
